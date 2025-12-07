@@ -8,6 +8,11 @@
 ## Summary
 Conducted a deep recursive audit of Sessions 01-07, identified critical drifts (Licensing, Zone 4), and upgraded the repository architecture to a **Decentralized Model**. Migrated all history from the legacy `changes/` directory to `apps/proposal-prepper/.agent/` to support standalone delivery ("Ejectability").
 
+## Supporting Artifacts
+- **Implementation Plan**: [implementation_plan.md](./08-audit-optimization/implementation_plan.md)
+- **Walkthrough**: [walkthrough.md](./08-audit-optimization/walkthrough.md)
+- **Tasks Snapshot**: [tasks_snapshot.md](./08-audit-optimization/tasks_snapshot.md)
+
 ## Key Decisions (ADRs)
 - **ADR-0001**: Use Architecture Decision Records (MADR).
 - **ADR-0002**: Copybara & NPM Scope (Migrated from Session 2).

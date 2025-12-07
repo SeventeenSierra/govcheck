@@ -1,7 +1,7 @@
 # Task List: Proposal Prepper (GovCheck Integration)
 
 ## Status: Active
-**Protocol**: `.agent` Decentralized
+**Protocol**: `.agent` Decentralized (Refining Memory Model)
 
 - [x] **Session 01**: Planning & Copybara Strategy
 - [x] **Session 02**: Extraction (Lib/UI)
@@ -15,8 +15,14 @@
     - [x] **Protocol**: Migrated to Decentralized `.agent` Protocol.
     - [x] **Docs**: Updated `human-ai-pair-programming.md` (Obsidian/Task Types).
     - [x] **Prep**: Created `next_session_prep.md`.
+    - [x] **Memory Refinement**: Split Short-Term vs Long-Term
+
+- [x] **Session 09**: The Template Factory
+    - [x] **Spec**: Design `apps/template` & `create-app`
+    - [x] **Impl**: `apps/template` (Next.js 16, Tailwind 3)
+    - [x] **Impl**: `scripts/create-app.ts`
+    - [x] **Verify**: Create generic test app
 
 ## Backlog
 - [ ] **Next Session**: Fix Dropped Balls (Template & Spec-First)
 - [ ] **User Action**: Create AGPL-3.0 LICENSE for `proposal-prepper`
-- [ ] **User Action**: Commit Session 08 Results
