@@ -18,7 +18,7 @@
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts"
   },
   "dependencies": {
-    "@17sierra/ai-flows": "workspace:*",
+    "@17sierra/ai-flows": "^0.2.0",
     "@17sierra/lib": "workspace:*",
     "@17sierra/ui": "workspace:*",
     "@genkit-ai/google-genai": "^1.20.0",
