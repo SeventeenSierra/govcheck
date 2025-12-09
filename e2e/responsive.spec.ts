@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+
 import { test, expect } from '@playwright/test';
 
 test('sidebar works responsive', async ({ page }) => {
