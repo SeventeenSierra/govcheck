@@ -25,6 +25,7 @@
   ],
   "exclude": [
     "node_modules",
-    "**/*.stories.tsx"
+    "**/*.stories.tsx",
+    "vitest.config.ts"
   ]
 }

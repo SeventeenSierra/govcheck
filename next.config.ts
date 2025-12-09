@@ -5,6 +5,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone", // For container support
+  transpilePackages: ["@17sierra/ui", "@17sierra/lib", "@17sierra/ai-flows"],
+  serverExternalPackages: ["genkit", "@genkit-ai/googleai", "express"],
   // NOTE: No ignoreBuildErrors - must fix actual TS errors
   // NOTE: No external image hosts - use local assets only
 };
