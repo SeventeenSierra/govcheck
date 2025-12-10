@@ -1,13 +1,13 @@
 {
   "name": "proposal-prepper",
   "version": "0.1.0",
-  "private": false,
-  "description": "Federated Mesh microservice application for NSF grant proposal compliance checking",
+  "private": true,
+  "description": "Phase 1 NSF grant proposal compliance checking application - laptop deployment",
   "license": "AGPL-3.0-or-later",
   "scripts": {
     "prepare": "husky",
     "dev": "next dev",
-    "dev:docker": "docker-compose up --build",
+    "dev:local": "docker-compose up --build",
     "dev:strands": "cd services/strands-agent && python -m uvicorn app.main:app --reload --port 8080",
     "dev:genkit": "cd services/genkit-service && pnpm dev",
     "build": "next build",

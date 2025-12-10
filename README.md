@@ -1,10 +1,12 @@
-# Proposal Prepper (Contract Checker)
+# Proposal Prepper (Contract Checker) - Phase 1
 
 > SPDX-License-Identifier: PolyForm-Strict-1.0.0
 
 ## Overview
 
-Proposal Prepper is a **Federated Mesh microservice architecture** designed to validate NSF PAPPG compliance for research proposals. The system uses AI-powered analysis to ensure proposals meet federal funding requirements before submission.
+Proposal Prepper Phase 1 is a **laptop-deployable application** designed to validate NSF PAPPG compliance for research proposals. The system uses AI-powered analysis to ensure proposals meet federal funding requirements before submission.
+
+**Note:** This is Phase 1 of the larger OBI-One platform. For comprehensive end-state specifications and the full platform architecture, see the [obi-one repository](https://github.com/yourusername/obi-one).
 
 ## Quick Start
 
@@ -49,6 +51,37 @@ services/genkit-service/  # Node.js AI orchestration service
 packages/ui/              # Shared UI components
 packages/lib/             # Shared utilities
 ```
+
+## Specification Structure
+
+The base application specifications are organized in `.kiro/specs/base-app/` with the following architecture:
+
+### Strategic Planning
+- **`product/`** - Product management, roadmap, user stories, sprint planning
+- **`docs/`** - Documentation strategy, user guides, API docs, architecture docs
+
+### Core Application
+- **`app-base/`** - Core application architecture and design
+- **`app-enhancement/`** - Application improvements and feature enhancements
+- **`api/`** - API design, interfaces, and integration patterns
+
+### Domain-Specific
+- **`compliance/`** - NSF/FAR compliance logic, validation rules, regulatory requirements
+- **`ai/`** - AI integration (Strands/Genkit), model configuration, prompt engineering
+- **`data/`** - Data management, storage, processing pipelines
+
+### Infrastructure & Operations
+- **`infrastructure/`** - Infrastructure setup, deployment configuration
+- **`deployment/`** - Deployment strategies, environment management
+- **`security/`** - Security architecture, access controls, compliance
+- **`ops/`** - Operations, monitoring, logging, performance metrics
+
+### Development
+- **`design-system/`** - UI components, design tokens, accessibility standards
+- **`testing/`** - Testing strategies, test automation, quality assurance
+- **`repository/`** - Repository structure, development workflows, CI/CD
+
+Each specification folder contains requirements, design, and task documents following the three-stage design-first workflow.
 
 ## License
 
