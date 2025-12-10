@@ -1,0 +1,64 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", ":semanticCommitTypeAll(chore)", "group:allNonMajor"],
+  "baseBranches": ["develop"],
+  "labels": ["dependencies"],
+  "rangeStrategy": "bump",
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on monday"]
+  },
+  "packageRules": [
+    {
+      "description": "Auto-merge critical security patches immediately",
+      "matchUpdateTypes": ["patch"],
+      "matchPackagePatterns": ["*"],
+      "vulnerabilityAlerts": {
+        "enabled": true
+      },
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true,
+      "schedule": ["at any time"]
+    },
+    {
+      "groupName": "security tooling",
+      "matchPackagePatterns": [
+        "semgrep",
+        "gitleaks",
+        "trivy",
+        "syft",
+        "grype",
+        "scancode",
+        "cosign"
+      ],
+      "automerge": false
+    },
+    {
+      "groupName": "dev tooling",
+      "matchPackagePatterns": [
+        "biome",
+        "eslint",
+        "prettier",
+        "commitlint",
+        "husky",
+        "turbo",
+        "vitest"
+      ],
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
+      "groupName": "testing",
+      "matchPackagePatterns": ["vitest", "jest", "@testing-library", "playwright"],
+      "automerge": true
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security", "critical"],
+    "automerge": true,
+    "schedule": ["at any time"],
+    "prPriority": 10
+  }
+}

@@ -1,18 +1,44 @@
-# Contributing Guidelines
+# Contributing to Seventeen Sierra
 
-Thank you for your interest in contributing to this project!
+Thank you for your interest in contributing! This document explains our contribution process.
+
+## Quick Start
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feat/my-feature`
+3. Make changes with conventional commits
+4. Sign off your commits: `git commit -s`
+5. Push and create a Pull Request
 
 ## Developer Certificate of Origin (DCO)
 
-All contributions must be signed-off per the [DCO](https://developercertificate.org/):
+All commits must be signed off to certify you have the right to submit the code:
 
 ```bash
-git commit -s -m "feat(scope): description"
+git commit -s -m "feat: add new feature"
 ```
 
-This attestation confirms you have the right to submit the contribution under this project's license.
+This adds `Signed-off-by: Your Name <email>` to your commit. See [DCO.md](./DCO.md) for details.
 
-## Commit Standards
+## Contributor License Agreement (CLA)
+
+**First-time contributors** must sign our CLA via [CLA Assistant](https://cla-assistant.io/) when submitting a PR.
+
+### Federal Government Employees
+
+If you're a U.S. Federal Government employee contributing within scope of employment:
+
+- ✅ **No CLA required** (your work is public domain under 17 U.S.C. § 105)
+- ✅ DCO sign-off is still required
+- ✅ Add `US-Government-Work: true` to commit messages
+
+```bash
+git commit -s -m "feat: add compliance feature
+
+US-Government-Work: true"
+```
+
+## Commit Convention
 
 We use [Conventional Commits](https://www.conventionalcommits.org/):
 
@@ -21,51 +47,90 @@ We use [Conventional Commits](https://www.conventionalcommits.org/):
 
 [optional body]
 
-Signed-off-by: Your Name <email@example.com>
-AI-Agent: <model-if-applicable>
+[optional footer]
+Signed-off-by: Name <email>
 ```
 
 ### Types
-- `feat` - New feature
-- `fix` - Bug fix
-- `docs` - Documentation
-- `style` - Formatting
-- `refactor` - Code restructuring
-- `test` - Tests
-- `chore` - Maintenance
 
-## Development Setup
+| Type | Description |
+|------|-------------|
+| `feat` | New feature |
+| `fix` | Bug fix |
+| `docs` | Documentation only |
+| `style` | Formatting, no code change |
+| `refactor` | Code restructuring |
+| `test` | Adding tests |
+| `chore` | Maintenance tasks |
 
-1. Enter the Nix development shell:
-   ```bash
-   nix develop
-   ```
-
-2. Install dependencies:
-   ```bash
-   pnpm install
-   ```
-
-3. Run development server:
-   ```bash
-   pnpm dev
-   ```
-
-## Quality Checks
-
-Before submitting a PR:
+### Examples
 
 ```bash
-pnpm lint      # Check for lint errors
-pnpm format    # Format code
-pnpm typecheck # Type check
-pnpm e2e       # Run E2E tests
+git commit -s -m "feat(auth): add OAuth2 support"
+git commit -s -m "fix(api): handle null response"
+git commit -s -m "docs: update README installation steps"
 ```
 
-## Code of Conduct
+## Development Workflow
 
-This project adheres to a Code of Conduct. By participating, you agree to uphold this code.
+### Prerequisites
+
+- [Nix](https://nixos.org/) with flakes enabled
+- Git with GPG signing configured
+
+### Setup
+
+```bash
+# Enter dev environment
+nix develop
+
+# Install dependencies
+pnpm install
+
+# Run checks
+pnpm run lint
+pnpm run typecheck
+pnpm run test
+```
+
+### Branch Strategy
+
+We use trunk-based development:
+
+- `main` is always deployable
+- Feature branches are short-lived (< 1 week)
+- PRs require CI passing and review
+
+#### CI/CD Compliance
+All PRs must pass the CI checks, which are powered by **GitHub Actions**:
+- Linting (Biome)
+- Typechecking (TypeScript)
+- Tests (Vitest)
+- Build Verification
+- Secret Scanning (Gitleaks, Trivy, Semgrep)
+
+The CI pipeline uses **Workload Identity Federation** to authenticate with Google Artifact Registry for private packages.
+
+## Pull Requests Process
+
+1. **Title**: Use conventional commit format
+2. **Description**: Explain what and why
+3. **Tests**: Add/update tests for changes
+4. **Docs**: Update documentation if needed
+5. **Sign-off**: Ensure all commits are signed
+
+## Code Style
+
+- TypeScript files: Biome formatting
+- Python files: Ruff + Black
+- All files need SPDX headers:
+
+```typescript
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+```
 
 ## Questions?
 
-Open a GitHub Discussion or reach out to the maintainers.
+- 📧 Email: dev@seventeensierra.com
+- 💬 Discussions: GitHub Discussions

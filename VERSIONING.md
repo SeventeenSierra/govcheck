@@ -1,38 +1,72 @@
-# Versioning Strategy
+# Versioning Policy
 
-## Semantic Versioning
+This project follows [Semantic Versioning 2.0.0](https://semver.org/).
 
-This project follows [Semantic Versioning 2.0.0](https://semver.org/):
+## Version Format
 
 ```
 MAJOR.MINOR.PATCH
 ```
 
-- **MAJOR**: Breaking changes
-- **MINOR**: New features (backward compatible)
-- **PATCH**: Bug fixes (backward compatible)
+| Component | When to Increment |
+|-----------|------------------|
+| **MAJOR** | Breaking changes to public APIs |
+| **MINOR** | New features, backwards compatible |
+| **PATCH** | Bug fixes, backwards compatible |
 
-## Version Lifecycle
+## What Constitutes a Breaking Change?
 
-| Stage | Version | Stability |
-|-------|---------|-----------|
-| Alpha | 0.0.x | Experimental |
-| Beta | 0.x.x | API may change |
-| Stable | 1.0.0+ | Production ready |
+### Breaking (MAJOR bump)
+
+- Removing or renaming public API endpoints
+- Changing response structure in incompatible ways
+- Removing exported functions/components
+- Changing function signatures in incompatible ways
+- Dropping support for a runtime/platform
+
+### Non-Breaking (MINOR bump)
+
+- Adding new API endpoints
+- Adding optional parameters
+- Adding new exported functions/components
+- Deprecating (not removing) features
+
+### Patch (PATCH bump)
+
+- Bug fixes
+- Performance improvements
+- Documentation updates
+- Internal refactoring (no API changes)
+
+## Pre-Release Versions
+
+During initial development (0.x.x):
+
+- `0.MINOR.PATCH` format
+- MINOR bumps may include breaking changes
+- Stability not guaranteed until 1.0.0
 
 ## Release Process
 
-1. Update version in `package.json`
-2. Update `CHANGELOG.md`
-3. Create git tag: `git tag v1.0.0`
-4. Push: `git push --tags`
+Releases are automated via [release-please](https://github.com/googleapis/release-please):
 
-## Changelog
+1. Conventional commits trigger release PR creation
+2. Merging release PR creates GitHub release
+3. Changelogs generated automatically
 
-All notable changes are documented in [CHANGELOG.md](./CHANGELOG.md).
+## Package Versioning in Monorepo
 
-## Pre-release Versions
+| Package | Versioning |
+|---------|------------|
+| `apps/*` | Independent versions |
+| `packages/*` | Independent versions |
+| Root monorepo | Follows primary app |
 
-- Alpha: `1.0.0-alpha.1`
-- Beta: `1.0.0-beta.1`
-- Release Candidate: `1.0.0-rc.1`
+## Deprecation Policy
+
+Deprecated features:
+
+1. Marked with `@deprecated` in code
+2. Documented in CHANGELOG
+3. Removed in next MAJOR version
+4. Minimum 1 minor release warning period
