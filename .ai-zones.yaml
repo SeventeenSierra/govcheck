@@ -1,0 +1,202 @@
+# SPDX-License-Identifier: PolyForm-Strict-1.0.0
+# SPDX-FileCopyrightText: 2025 Alyssa Feola
+
+# AI Autonomy Zones Configuration (WIP)
+# Defines which code areas AI agents can modify autonomously
+# This configuration is specific to the Proposal Prepper (Contract Checker) project
+
+zones:
+  # ZONE 0: Full Autonomy - No human required
+  full-autonomy:
+    paths:
+      - "pnpm-lock.yaml"
+      - "package-lock.json"
+      - "yarn.lock"
+      - "**/*.lock"
+      - ".changeset/*.md"
+      - "**/CHANGELOG.md"
+    allowed-agents:
+      - renovate
+      - dependabot
+      - release-please
+    merge-strategy: auto
+    human-involvement: automated
+
+  # ZONE 1: Auto-merge after CI passes
+  auto-merge-ci:
+    paths:
+      - "**/*.test.ts"
+      - "**/*.test.tsx"
+      - "**/*.spec.ts"
+      - "**/*.stories.tsx"
+      - "packages/ui/**"
+      - "packages/lib/**"
+      - "docs/**/*.md"
+      - "data/seed/**"
+      - "!docs/runbooks/security-*.md"
+    allowed-agents:
+      - kiro
+      - antigravity
+      - cline
+      - jules
+      - copilot
+      - cursor
+      - gemini
+    merge-strategy: auto-after-ci
+    human-notify: true
+    human-involvement: approved
+
+  # ZONE 2: Human review required
+  human-required:
+    paths:
+      - "apps/*/src/**"
+      - "packages/*/src/**"
+      - "services/*/src/**"
+      - "services/*/app/**"
+      - "!**/*.test.ts"
+    allowed-agents:
+      - kiro
+      - antigravity
+      - cline
+      - jules
+      - copilot
+      - cursor
+      - gemini
+    merge-strategy: require-approval
+    required-approvals: 1
+    human-involvement: reviewed
+
+  # ZONE 3: Security review required
+  security-review:
+    paths:
+      - "**/auth/**"
+      - "**/security/**"
+      - "**/crypto/**"
+      - ".github/workflows/**"
+      - "**/*secret*"
+      - "**/*credential*"
+      - "**/middleware/**"
+      - "services/strands-agent/**"  # AWS Bedrock integration
+    allowed-agents:
+      - kiro      # Limited agents for security areas
+      - antigravity
+      - jules
+    merge-strategy: require-approval
+    required-approvals: 2
+    required-reviewers:
+      - security-team
+    human-involvement: full
+
+  # ZONE 4: Human only - AI cannot modify
+  human-only:
+    paths:
+      - "CODEOWNERS"
+      - ".ai-zones.yaml"
+      - "LICENSE"
+      - "LICENSING.md"
+      - "CLA.md"
+      - "DCO.md"
+      - "SECURITY.md"
+      - "AI_CONTRIBUTOR_POLICY.md"
+      - ".github/CODEOWNERS"
+      - "railway.toml"
+      - "docker-compose.yml"
+    allowed-agents: []
+    merge-strategy: human-only
+    human-involvement: full
+
+# Commit trailer requirements
+commit-trailers:
+  required:
+    - "AI-Agent"           # Which agent made the change
+    - "Human-Involvement"  # full | reviewed | approved | automated
+  optional:
+    - "AI-Session"         # Session ID for audit
+    - "Reviewed-By"        # Human reviewer
+    - "Zone"               # Which zone this falls under
+    - "Commit-Type"        # Conventional commit type for validation
+
+# Commit type validation rules (aligned with commitlint.config.mjs)
+commit-type-rules:
+  feat:
+    min-human-involvement: reviewed
+    allowed-zones: [1, 2, 3]
+    allowed-scopes: [web, strands, genkit, ui, lib, compliance, orchestration, api, components]
+  fix:
+    min-human-involvement: reviewed
+    allowed-zones: [1, 2, 3]
+    allowed-scopes: [web, strands, genkit, ui, lib, compliance, orchestration, api, components]
+  docs:
+    min-human-involvement: approved
+    allowed-zones: [0, 1, 2]
+    allowed-scopes: [docs, web, strands, genkit, ui, lib]
+  style:
+    min-human-involvement: approved
+    allowed-zones: [0, 1, 2]
+    allowed-scopes: [web, genkit, ui, lib, components]
+  refactor:
+    min-human-involvement: reviewed
+    allowed-zones: [1, 2, 3]
+    allowed-scopes: [web, strands, genkit, ui, lib, compliance, orchestration, api, components]
+  test:
+    min-human-involvement: approved
+    allowed-zones: [0, 1, 2]
+    allowed-scopes: [tests, web, strands, genkit, ui, lib, compliance, api]
+  chore:
+    min-human-involvement: approved
+    allowed-zones: [0, 1, 2]
+    allowed-scopes: [deps, config, ci, docker, railway]
+  ci:
+    min-human-involvement: reviewed
+    allowed-zones: [2, 3]
+    allowed-scopes: [ci, docker, railway, security]
+  perf:
+    min-human-involvement: reviewed
+    allowed-zones: [1, 2, 3]
+    allowed-scopes: [web, strands, genkit, orchestration, api]
+  build:
+    min-human-involvement: approved
+    allowed-zones: [0, 1, 2]
+    allowed-scopes: [docker, railway, config, deps]
+  revert:
+    min-human-involvement: reviewed
+    allowed-zones: [1, 2, 3, 4]
+    allowed-scopes: ["*"]  # Reverts can affect any scope
+
+# Scope-based path mapping (aligned with commitlint scopes)
+scope-path-mapping:
+  # Services
+  web: ["apps/web/**"]
+  strands: ["services/strands-agent/**"]
+  genkit: ["services/genkit-service/**"]
+  
+  # Packages
+  ui: ["packages/ui/**"]
+  lib: ["packages/lib/**"]
+  
+  # Infrastructure
+  docker: ["docker-compose.yml", "**/Dockerfile*", ".dockerignore"]
+  railway: ["railway.toml", ".railway/**"]
+  ci: [".github/workflows/**", ".pre-commit-config.yaml"]
+  deps: ["package.json", "pnpm-lock.yaml", "**/package.json"]
+  
+  # Project areas
+  compliance: ["**/compliance/**", "**/validation/**", "services/strands-agent/sops/**"]
+  orchestration: ["apps/web/src/services/**", "apps/web/src/api/**"]
+  api: ["apps/web/src/app/api/**", "services/*/src/routes/**"]
+  components: ["**/components/**", "packages/ui/src/components/**"]
+  docs: ["docs/**", "README.md", "**/*.md"]
+  config: ["*.config.*", ".*rc", ".env*", "biome.json", "commitlint.config.mjs"]
+  security: [".gitleaks.toml", ".ai-zones.yaml", "AI_CONTRIBUTOR_POLICY.md"]
+  tests: ["**/*.test.*", "**/*.spec.*", "e2e/**", "**/tests/**"]
+  
+  # Data
+  seed: ["data/seed/**", "data/fixtures/**"]
+  schemas: ["**/schemas/**", "**/types/**", "**/models/**"]
+
+# Human involvement levels
+involvement-levels:
+  full: "Human wrote the code, AI may have assisted"
+  reviewed: "AI wrote, human reviewed line-by-line"
+  approved: "AI wrote, human approved without line-by-line review"
+  automated: "Fully autonomous, no human involvement"

@@ -1,0 +1,205 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop, 'feature/**']
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  lint-and-typecheck:
+    name: Lint & Typecheck
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      id-token: write # Required for Workload Identity Federation
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          token_format: 'access_token'
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: '10.24.0'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Dependencies
+        run: |
+          cat <<EOF > .npmrc
+          registry=https://registry.npmjs.org/
+          @17sierra:registry=https://us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/
+          //us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/:_authToken=${{ steps.auth.outputs.access_token }}
+          EOF
+          rm pnpm-lock.yaml
+          pnpm install --no-frozen-lockfile
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Typecheck
+        run: pnpm run typecheck
+
+  test:
+    name: Test
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          token_format: 'access_token'
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: '10.24.0'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Dependencies
+        run: |
+          cat <<EOF > .npmrc
+          registry=https://registry.npmjs.org/
+          @17sierra:registry=https://us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/
+          //us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/:_authToken=${{ steps.auth.outputs.access_token }}
+          EOF
+          pnpm install --no-frozen-lockfile
+
+      - name: Build Packages
+        run: pnpm --filter "./packages/*" run build
+
+      - name: Test
+        run: pnpm run test
+
+  build:
+    name: Build Verification
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          token_format: 'access_token'
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: '10.24.0'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Dependencies
+        run: |
+          cat <<EOF > .npmrc
+          registry=https://registry.npmjs.org/
+          @17sierra:registry=https://us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/
+          //us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/:_authToken=${{ steps.auth.outputs.access_token }}
+          EOF
+          pnpm install --no-frozen-lockfile
+
+      - name: Build
+        run: pnpm run build
+
+  unused-deps:
+    name: Check Unused Deps
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          token_format: 'access_token'
+          
+      - uses: pnpm/action-setup@v2
+        with:
+          version: '10.24.0'
+          
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Dependencies
+        run: |
+          cat <<EOF > .npmrc
+          registry=https://registry.npmjs.org/
+          @17sierra:registry=https://us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/
+          //us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/:_authToken=${{ steps.auth.outputs.access_token }}
+          EOF
+          pnpm install --no-frozen-lockfile
+
+      - name: Knip
+        run: pnpm run unused
+
+  commitlint:
+    name: Commit Lint
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          token_format: 'access_token'
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: '10.24.0'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Dependencies
+        run: |
+          cat <<EOF > .npmrc
+          registry=https://registry.npmjs.org/
+          @17sierra:registry=https://us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/
+          //us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/:_authToken=${{ steps.auth.outputs.access_token }}
+          EOF
+          pnpm install --no-frozen-lockfile
+
+      - name: Validate Commit
+        if: github.event_name == 'pull_request'
+        run: pnpm exec commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose

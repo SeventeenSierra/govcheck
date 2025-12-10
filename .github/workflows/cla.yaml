@@ -1,0 +1,44 @@
+# SPDX-License-Identifier: PolyForm-Strict-1.0.0
+# SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+
+name: CLA Check
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  cla-check:
+    name: CLA Assistant
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if federal contributor
+        id: fed-check
+        env:
+          AUTHOR_EMAIL: ${{ github.event.pull_request.user.email }}
+          AUTHOR_LOGIN: ${{ github.event.pull_request.user.login }}
+        run: |
+          # Check for federal domains
+          if [[ "$AUTHOR_EMAIL" =~ \.(gov|mil)$ ]]; then
+            echo "Federal employee detected, CLA not required"
+            echo "is_federal=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_federal=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: CLA Assistant
+        if: steps.fed-check.outputs.is_federal != 'true'
+        uses: cla-assistant/github-action@v2.4.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.CLA_TOKEN }}
+        with:
+          path-to-signatures: 'signatures/cla.json'
+          path-to-document: 'https://github.com/${{ github.repository }}/blob/main/CLA.md'
+          branch: 'main'
+          allowlist: 'bot*,dependabot*,renovate*'
+
+      - name: Federal attestation notice
+        if: steps.fed-check.outputs.is_federal == 'true'
+        run: |
+          echo "::notice::Federal employee contribution - CLA not required. Please ensure commits include 'US-Government-Work: true' and DCO sign-off."

@@ -1,86 +1,66 @@
-# Design: Monorepo Template Factory (Revised)
+# Design: Proposal Prepper
 
-## 1. Goal
-Create `apps/template` as a "Golden Master" and `scripts/create-app.ts` to scaffold new apps with **full SSDF compliance** baked in.
+## Overview
+This file provides design guidance for the Proposal Prepper (Contract Checker) microservice application. The system uses a **Federated Mesh architecture** to orchestrate NSF grant proposal compliance checking across multiple AI services.
 
----
+For detailed information, see the organized documentation:
+- **Repository Structure & Workflow**: See [repository.md](./repository.md)
+- **Technology Stack & Infrastructure**: See [infrastructure.md](./infrastructure.md)  
+- **Application Features & Architecture**: See [app.md](./app.md)
 
-## 2. Template Directory Structure (`apps/template`)
+## Architectural Principles
 
-```
-apps/template/
-├── .agent/                     # AI Agent Memory (Decentralized)
-│   ├── short-term/
-│   │   ├── tasks.md
-│   │   ├── context.md
-│   │   └── scratchpad.md
-│   └── long-term/
-│       ├── sessions/
-│       └── knowledge/
-│
-├── docs/                       # App-Specific Documentation
-│   ├── README.md               # App Overview
-│   ├── adr/                    # Architecture Decision Records
-│   └── runbooks/               # Operational Runbooks
-│
-├── e2e/                        # End-to-End Tests (Playwright)
-│   └── example.spec.ts
-│
-├── src/
-│   ├── app/                    # Next.js App Router
-│   │   ├── layout.tsx
-│   │   ├── page.tsx
-│   │   └── globals.css         # Tailwind 4 CSS-first
-│   └── components/             # App-Specific Components
-│
-├── .storybook/                 # Storybook Config (Optional)
-│
-├── biome.json                  # Linting/Formatting (inherits root)
-├── next.config.ts
-├── package.json                # @17sierra/<app-name>
-├── playwright.config.ts
-├── postcss.config.mjs          # Tailwind 4 PostCSS
-├── tailwind.config.ts          # Tailwind 4 Config
-└── tsconfig.json
-```
+### Federated Mesh Pattern
+- **Service Independence**: Each AI service (AWS Strands, Google Genkit, Semantic Kernel) operates independently
+- **Vendor Neutrality**: No lock-in to any single AI provider or platform
+- **Transparent Orchestration**: Users see which service provided each analysis result
+- **Component Provenance**: Every finding is tagged with its source service and model
 
-### Key SSDF Features Included
-| Artifact          | Source              | Purpose                       |
-|-------------------|---------------------|-------------------------------|
-| `.agent/`         | App-Local           | Per-App AI Memory             |
-| `docs/adr/`       | App-Local           | App-Level ADRs                |
-| `docs/runbooks/`  | App-Local           | Operational Docs              |
-| `e2e/`            | App-Local           | E2E Testing (Playwright)      |
-| `biome.json`      | Extends Root        | Linting/Formatting            |
+## Design Principles
 
-> **Note**: Monorepo-level SSDF artifacts (`SECURITY.md`, `LICENSING.md`, `DCO.md`, etc.) live at the **root** and are NOT duplicated per-app.
+### User-Centered Design
+- Prioritize user experience and workflow efficiency
+- Minimize cognitive load with intuitive interfaces
+- Provide clear feedback and guidance throughout the process
 
----
+### Performance First
+- Optimize for Core Web Vitals
+- Implement efficient data loading strategies
+- Use progressive enhancement techniques
 
-## 3. `scripts/create-app.ts` CLI
+### Accessibility by Default
+- Follow WCAG 2.1 AA guidelines
+- Ensure keyboard navigation support
+- Provide proper semantic markup and ARIA labels
 
-### Usage
-```bash
-pnpm create-app <app-name>
-```
+### Microservice Architecture
+- **Service Separation**: Clear boundaries between UI, orchestration, and AI services
+- **API-First Design**: Well-defined interfaces between services
+- **Independent Deployment**: Each service can be deployed and scaled independently
+- **Technology Diversity**: Each service uses the most appropriate technology stack
 
-### Logic
-1. **Validate**: `<app-name>` is kebab-case, doesn't exist.
-2. **Copy**: `apps/template` → `apps/<app-name>`.
-3. **Transform**:
-   - Update `package.json` name to `@17sierra/<app-name>`.
-   - Clear `.agent/short-term/*.md` content (retain structure).
-4. **Output**: Success message with next steps.
+## Development Approach
 
----
+### Design-First Workflow
+1. **Design & Specification**: Create architecture and task breakdown before coding
+2. **Section-Based Implementation**: Work in commit-bounded sections with review gates
+3. **Fresh Context**: New conversations for each major section to prevent drift
+4. **Human Review Gates**: Mandatory blocking checklists for all AI changes
 
-## 4. Dependencies (Template `package.json`)
+### AI-Human Collaboration
+- **Supervised Development**: AI assists with development under human oversight
+- **Session Documentation**: Comprehensive records of decisions and rationale
+- **Context Management**: Clear session boundaries prevent accumulated drift
+- **Review Gates**: Human approval required for all significant changes
 
-### Production
-- `next`, `react`, `react-dom` (v15, v19)
-- `@17sierra/ui`, `@17sierra/lib` (workspace:*)
+### Quality Assurance
+- **Test-Driven Development**: Tests written before implementation
+- **Best Practices**: Follows Next.js and React best practices
+- **Automated Security**: Dependency scanning and vulnerability detection
+- **Open Source License**: AGPL-3.0 for application code
 
-### Development
-- `tailwindcss`, `@tailwindcss/postcss`, `postcss` (v4 stack)
-- `@17sierra/config` (workspace:*)
-- `@playwright/test`, `typescript`
+### Iterative Development
+1. **MVP**: Core proposal creation and editing
+2. **Enhanced Features**: AI integration and templates
+3. **Advanced Features**: Collaboration and analytics
+4. **Optimization**: Performance and user experience refinements
