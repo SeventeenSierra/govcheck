@@ -3,9 +3,9 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
-import { Bot, FileCheck, CheckCircle2, Loader2, ChevronRight } from "lucide-react";
 import { Button, Textarea } from "@17sierra/ui";
+import { Bot, CheckCircle2, ChevronRight, FileCheck, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 type AnalysisStep = {
   id: number;

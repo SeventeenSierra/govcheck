@@ -7,21 +7,21 @@ import type { StorybookConfig } from "@storybook/react-vite";
 const require = createRequire(import.meta.url);
 
 const config: StorybookConfig = {
-    core: {
-        builder: "@storybook/builder-vite",
-    },
-    framework: "@storybook/react-vite",
-    stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
-    addons: [
-        "@storybook/addon-links",
-        "@storybook/addon-a11y",
-        "@storybook/addon-themes",
-        "@chromatic-com/storybook",
-    ],
-    viteFinal: async (config) => {
-        // Enable React fast refresh
-        config.plugins?.push(require("@vitejs/plugin-react"));
-        return config;
-    },
+  core: {
+    builder: "@storybook/builder-vite",
+  },
+  framework: "@storybook/react-vite",
+  stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
+  addons: [
+    "@storybook/addon-links",
+    "@storybook/addon-a11y",
+    "@storybook/addon-themes",
+    "@chromatic-com/storybook",
+  ],
+  viteFinal: async (config) => {
+    // Enable React fast refresh
+    config.plugins?.push(require("@vitejs/plugin-react"));
+    return config;
+  },
 };
 export default config;
