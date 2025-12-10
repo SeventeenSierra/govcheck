@@ -40,9 +40,9 @@ Aligned with [DoD DevSecOps Reference Design](https://dodcio.defense.gov/Portals
 - **Secrets**: Mock/test secrets only
 
 ### Development
-- **Branch**: `develop` (default)
+- **Branch**: `develop` (main development branch)
 - **Lifecycle**: Persistent
-- **Purpose**: Integration, team testing
+- **Purpose**: Integration, team testing, feature merging
 - **Secrets**: Development secrets (non-sensitive)
 
 ### Demo
@@ -99,11 +99,12 @@ git tag -s v1.2.0 -m "Release 1.2.0"
 
 ## AI Agent Guidelines
 
-Autonomous agents (Jules, Copilot, etc.) should:
+Autonomous agents (Kiro, Antigravity, Cline, etc.) should:
 
 1. **Set environment**: `export HUSKY=0`
 2. **Target feature branches**: Never push directly to `develop`/`main`
-3. **Sign off commits**: Use `git commit -s`
-4. **Create PRs**: Let CI validate changes
+3. **Never sign commits**: AI cannot use `git commit -s` - only humans sign off
+4. **Provide commit commands**: Give humans the full `git commit -s -m '...'` command to run
+5. **Create PRs**: Let CI validate changes
 
 See [.agent/config.yaml](/.agent/config.yaml) for configuration.

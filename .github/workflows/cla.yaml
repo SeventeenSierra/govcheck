@@ -15,19 +15,43 @@ jobs:
       - name: Check if federal contributor
         id: fed-check
         env:
-          AUTHOR_EMAIL: ${{ github.event.pull_request.user.email }}
           AUTHOR_LOGIN: ${{ github.event.pull_request.user.login }}
         run: |
-          # Check for federal domains
+          # Get user's public email from GitHub API
+          AUTHOR_EMAIL=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/users/$AUTHOR_LOGIN" | jq -r '.email // empty')
+          
+          echo "Checking contributor: $AUTHOR_LOGIN"
+          echo "Public email: $AUTHOR_EMAIL"
+          
+          # Check for federal domains in public email
           if [[ "$AUTHOR_EMAIL" =~ \.(gov|mil)$ ]]; then
-            echo "Federal employee detected, CLA not required"
+            echo "Federal employee detected (.gov/.mil email), CLA not required"
             echo "is_federal=true" >> $GITHUB_OUTPUT
           else
-            echo "is_federal=false" >> $GITHUB_OUTPUT
+            # Also check for common federal GitHub usernames patterns
+            if [[ "$AUTHOR_LOGIN" =~ (usgs|nasa|nist|dod|army|navy|airforce|marines|uscg)- ]]; then
+              echo "Federal employee detected (username pattern), CLA not required"
+              echo "is_federal=true" >> $GITHUB_OUTPUT
+            else
+              echo "Non-federal contributor, CLA required"
+              echo "is_federal=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Check CLA Token
+        if: steps.fed-check.outputs.is_federal != 'true'
+        id: cla-token-check
+        run: |
+          if [ -z "${{ secrets.CLA_TOKEN }}" ]; then
+            echo "CLA_TOKEN secret not configured"
+            echo "token_exists=false" >> $GITHUB_OUTPUT
+          else
+            echo "token_exists=true" >> $GITHUB_OUTPUT
           fi
 
       - name: CLA Assistant
-        if: steps.fed-check.outputs.is_federal != 'true'
+        if: steps.fed-check.outputs.is_federal != 'true' && steps.cla-token-check.outputs.token_exists == 'true'
         uses: cla-assistant/github-action@v2.4.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -37,6 +61,16 @@ jobs:
           path-to-document: 'https://github.com/${{ github.repository }}/blob/main/CLA.md'
           branch: 'main'
           allowlist: 'bot*,dependabot*,renovate*'
+
+      - name: CLA Token Missing Notice
+        if: steps.fed-check.outputs.is_federal != 'true' && steps.cla-token-check.outputs.token_exists == 'false'
+        run: |
+          echo "::error::CLA_TOKEN secret not configured. Please set up CLA_TOKEN in repository secrets."
+          echo "::notice::To set up CLA_TOKEN:"
+          echo "::notice::1. Go to GitHub Settings → Developer settings → Personal access tokens"
+          echo "::notice::2. Create token with 'repo' permissions"
+          echo "::notice::3. Add as CLA_TOKEN secret in repository settings"
+          exit 1
 
       - name: Federal attestation notice
         if: steps.fed-check.outputs.is_federal == 'true'

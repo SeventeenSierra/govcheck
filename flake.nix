@@ -1,5 +1,5 @@
 {
-  description = "Baryonic Ionosphere Monorepo";
+  description = "Proposal Prepper (Contract Checker) - NSF PAPPG Compliance Validation";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -19,6 +19,12 @@
             nodejs_22
             pnpm
             biome
+            
+            # Python for strands-agent service
+            python313
+            python313Packages.pip
+            python313Packages.uvicorn
+            python313Packages.fastapi
 
             # E2E testing (Playwright)
             playwright
@@ -40,9 +46,15 @@
           ];
 
           shellHook = ''
-            echo "🚀 17s Dev Environment"
+            echo "🚀 Proposal Prepper Dev Environment"
+            echo "📋 NSF PAPPG Compliance Validation System"
             echo "Node: $(node --version)"
             echo "pnpm: $(pnpm --version)"
+            echo ""
+            echo "Services:"
+            echo "  • Web (Next.js): Port 3000"
+            echo "  • Strands (Python): Port 8080"
+            echo "  • Genkit (Node.js): Port 8081"
           '';
         };
       }

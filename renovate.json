@@ -52,6 +52,24 @@
       "groupName": "testing",
       "matchPackagePatterns": ["vitest", "jest", "@testing-library", "playwright"],
       "automerge": true
+    },
+    {
+      "groupName": "@17sierra packages",
+      "matchPackagePatterns": ["@17sierra/*"],
+      "automerge": false,
+      "labels": ["17sierra", "dependencies"]
+    },
+    {
+      "groupName": "AI/ML packages",
+      "matchPackagePatterns": ["@genkit-ai/*", "genkit", "anthropic", "openai"],
+      "automerge": false,
+      "labels": ["ai-ml", "dependencies"]
+    },
+    {
+      "groupName": "NSF compliance",
+      "matchPackagePatterns": ["pdf-parse", "mammoth", "docx", "pdfjs-dist"],
+      "automerge": false,
+      "labels": ["compliance", "dependencies"]
     }
   ],
   "vulnerabilityAlerts": {

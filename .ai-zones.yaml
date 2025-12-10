@@ -96,6 +96,7 @@ zones:
       - "LICENSING.md"
       - "CLA.md"
       - "DCO.md"
+      - "CODE_OF_CONDUCT.md"
       - "SECURITY.md"
       - "AI_CONTRIBUTOR_POLICY.md"
       - ".github/CODEOWNERS"

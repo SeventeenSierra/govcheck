@@ -44,4 +44,4 @@ services:
 
 networks:
   default:
-    name: proposal-prepper-mesh
+    name: proposal-prepper-federated-mesh

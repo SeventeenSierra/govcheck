@@ -27,6 +27,7 @@ pnpm build
 | Document | Purpose |
 |----------|---------|
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | How to contribute |
+| [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) | Community guidelines |
 | [SECURITY.md](./SECURITY.md) | Security policy |
 | [DEPENDENCY-MANAGEMENT.md](./DEPENDENCY-MANAGEMENT.md) | Dependency guidelines |
 | [VERSIONING.md](./VERSIONING.md) | Version strategy |

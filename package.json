@@ -1,7 +1,7 @@
 {
   "name": "proposal-prepper",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "description": "Federated Mesh microservice application for NSF grant proposal compliance checking",
   "license": "AGPL-3.0-or-later",
   "scripts": {
@@ -15,17 +15,15 @@
     "test": "pnpm --filter web test",
     "test:watch": "pnpm --filter web test:watch",
     "e2e": "pnpm --filter web e2e",
-    "lint": "pnpm --filter web lint && pnpm --filter @aatb/ui lint",
-    "format": "pnpm --filter web format && pnpm --filter @aatb/ui format",
+    "lint": "pnpm --filter web lint && pnpm --filter @17sierra/ui lint",
+    "format": "pnpm --filter web format && pnpm --filter @17sierra/ui format",
     "typecheck": "pnpm --filter web typecheck",
-    "storybook": "pnpm --filter @aatb/ui storybook",
-    "build-storybook": "pnpm --filter @aatb/ui build-storybook",
+    "storybook": "pnpm --filter @17sierra/ui storybook",
+    "build-storybook": "pnpm --filter @17sierra/ui build-storybook",
     "clean": "rm -rf .next node_modules apps/*/node_modules packages/*/node_modules services/*/node_modules",
     "unused": "knip"
   },
   "dependencies": {
-    "@17sierra/ai-flows": "^0.2.1",
-    "@17sierra/lib": "^0.2.1",
     "@17sierra/ui": "^0.2.4",
     "@genkit-ai/google-genai": "^1.20.0",
     "@genkit-ai/next": "^1.20.0",
@@ -68,7 +66,6 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@17sierra/config": "^0.1.0",
     "@biomejs/biome": "^2.3.8",
     "@chromatic-com/storybook": "^4.1.3",
     "@commitlint/cli": "^19.0.0",

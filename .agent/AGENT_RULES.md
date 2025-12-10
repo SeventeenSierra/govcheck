@@ -14,8 +14,9 @@ These rules apply to ALL sessions in this repository for the **Proposal Prepper*
 ## Session Protocol
 1. **Self-identify** at start: "I am [Agent] powered by [Model]"
 2. **Read** `.agent/session-context.md` for current context
-3. **Default workflow**: `/design-first` — NO CODE without design.md and task.md
-4. **Follow** blocking review before any commit
+3. **Check environment**: Acknowledge if Nix development shell is needed
+4. **Default workflow**: `/design-first` — NO CODE without design.md and task.md
+5. **Follow** blocking review before any commit
 
 ### Alternative Modes (human must explicitly request)
 - **Dialogue** - Exploring requirements, clarifying ambiguity
@@ -47,6 +48,8 @@ These rules apply to ALL sessions in this repository for the **Proposal Prepper*
 - ✅ Follow code style (Biome configuration)
 - ✅ Respect AI zones (see `.ai-zones.yaml`)
 - ✅ Human signs off (AI cannot use `-s`)
+- ✅ **Use Nix environment**: All development tools available via `nix develop`
+- ✅ **Environment awareness**: Don't run tools outside Nix shell
 
 **Read `/commit-standards` for format, microservice scopes, and trailers.**
 
@@ -84,6 +87,22 @@ AI-Agent: <model>'
 ```
 
 **Human checks items → copies command → runs it.**
+
+## Nix Environment Awareness
+
+This project uses **Nix flakes** for reproducible development environments:
+
+- **All development tools** (pnpm, python, biome, etc.) are available via `nix develop`
+- **AI cannot run tools directly** without the Nix shell environment
+- **When tools are needed**: Inform human to run `nix develop` first
+- **Environment validation**: If commands fail, suggest Nix environment setup
+
+**Example AI Response:**
+```
+I need to run pnpm to check dependencies, but this requires the Nix development 
+environment. Please run `nix develop` first, then I can guide you through the 
+validation steps.
+```
 
 ## Microservice Scopes
 Use these scopes in commit messages (aligned with commitlint.config.mjs):
@@ -134,6 +153,8 @@ Create `.agent/sessions/<N>/session-record.md` at end of work with:
 - Read previous session record at start
 - **Suggest fresh conversation at section end** (see `/context-management`)
 - Respect AI zones and human involvement levels
+- **Acknowledge Nix environment**: Inform human when tools need `nix develop`
+- **Environment-aware validation**: Use available tools or request human setup
 
 ## ❌ AI MUST NOT
 - Commit without human checking ALL items
@@ -146,6 +167,8 @@ Create `.agent/sessions/<N>/session-record.md` at end of work with:
 - Use `git commit -s` flag (sign-off is HUMAN ONLY)
 - **Assume context from long-running conversation** (context creep)
 - Modify security-sensitive areas without proper human involvement
+- **Run development tools without Nix environment** (pnpm, python, etc.)
+- **Ignore environment setup requirements** (assume tools are globally available)
 
 ---
 
