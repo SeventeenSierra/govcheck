@@ -142,10 +142,10 @@ feat(ui): improve button accessibility
 AI-Agent: jules
 AI-Session: abc123
 Human-Involvement: reviewed
-Reviewed-By: alice <alice@example.com>
+Reviewed-By: alice <alice@seventeensierra.com>
 Zone: auto-merge-ci
 CI-Passed: true
-Signed-off-by: alice <alice@example.com>
+Signed-off-by: alice <alice@seventeensierra.com>
 ```
 
 ---

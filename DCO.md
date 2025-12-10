@@ -46,7 +46,7 @@ Add a `Signed-off-by` line to your commit messages:
 ```
 feat: add new authentication module
 
-Signed-off-by: Your Name <your-email@example.com>
+Signed-off-by: Your Name <your-email@yourdomain.com>
 ```
 
 You can do this automatically with:

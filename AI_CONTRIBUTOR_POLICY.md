@@ -65,7 +65,7 @@ All AI-authored commits must follow conventional commit format with required tra
 
 AI-Agent: <agent-name>
 Human-Involvement: <level>
-Signed-off-by: Human Sponsor <human@example.com>
+Signed-off-by: Human Sponsor <human@seventeensierra.com>
 ```
 
 ### Conventional Commit Types & Scopes
@@ -192,16 +192,17 @@ See [.agent/config.yaml](/.agent/config.yaml) for full configuration.
 | Branch Pattern | AI Direct Push | Allowed Commit Types | Notes |
 |----------------|----------------|---------------------|-------|
 | **Feature Branches** | | | |
-| `feat/*` | ✅ Yes | `feat`, `docs`, `test` | Feature development |
-| `fix/*` | ✅ Yes | `fix`, `test`, `docs` | Bug fixes |
+| `feature/*` | ✅ Yes | `feat`, `docs`, `test` | Feature development from develop |
+| `fix/*` | ✅ Yes | `fix`, `test`, `docs` | Bug fixes from develop |
 | `docs/*` | ✅ Yes | `docs`, `style` | Documentation updates |
 | `refactor/*` | ✅ Yes | `refactor`, `test`, `docs` | Code improvements |
 | `test/*` | ✅ Yes | `test`, `docs` | Test additions |
 | `chore/*` | ✅ Yes | `chore`, `ci`, `build` | Maintenance |
 | **Protected Branches** | | | |
-| `develop` | ❌ PR only | All types (via PR) | Integration branch |
-| `release/*` | ❌ PR only | `chore`, `docs` only | Release preparation |
-| `main` | ❌ Never | Human only | Production branch |
+| `develop` | ❌ PR only | All types (via PR) | Integration branch - main development |
+| `release/*` | ❌ PR only | `chore`, `docs`, `fix` only | Release preparation from develop |
+| `hotfix/*` | ❌ PR only | `fix` only | Critical fixes from main |
+| `main` | ❌ Never | Human only | Production releases only |
 
 ### Scope Validation Rules
 
@@ -274,7 +275,7 @@ Zone: 2
 Commit-Type: feat
 Scope: compliance
 Reviewed-By: afeola
-Signed-off-by: Alyssa Feola <afeola@example.com>
+Signed-off-by: Alyssa Feola <afeola@seventeensierra.com>
 ```
 
 #### Medium-Risk Change (Documentation)
@@ -289,7 +290,7 @@ Human-Involvement: approved
 Zone: 1
 Commit-Type: docs
 Scope: orchestration
-Signed-off-by: Alyssa Feola <afeola@example.com>
+Signed-off-by: Alyssa Feola <afeola@seventeensierra.com>
 ```
 
 #### Low-Risk Change (Dependencies)
@@ -319,7 +320,7 @@ Zone: 3
 Commit-Type: ci
 Scope: security
 Reviewed-By: afeola
-Signed-off-by: Alyssa Feola <afeola@example.com>
+Signed-off-by: Alyssa Feola <afeola@seventeensierra.com>
 ```
 
 ### ❌ Invalid Commit Examples

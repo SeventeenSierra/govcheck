@@ -66,7 +66,7 @@ using AWS Bedrock Claude integration.
 
 Human-Involvement: reviewed
 AI-Agent: kiro
-Signed-off-by: Alice <alice@example.com>
+Signed-off-by: Alice <alice@seventeensierra.com>
 ```
 
 ### Bug Fix
@@ -78,7 +78,7 @@ Adds progress indicator for user feedback.
 
 Human-Involvement: reviewed
 AI-Agent: antigravity
-Signed-off-by: Bob <bob@example.com>
+Signed-off-by: Bob <bob@seventeensierra.com>
 ```
 
 ### Documentation
@@ -90,7 +90,7 @@ strategies for the orchestration layer.
 
 Human-Involvement: approved
 AI-Agent: cline
-Signed-off-by: Carol <carol@example.com>
+Signed-off-by: Carol <carol@seventeensierra.com>
 ```
 
 ## AI Workflow for Commits

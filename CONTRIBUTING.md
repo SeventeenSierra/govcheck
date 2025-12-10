@@ -5,10 +5,10 @@ Thank you for your interest in contributing to the Proposal Prepper (Contract Ch
 ## Quick Start
 
 1. Fork the repository
-2. Create a feature branch: `git checkout -b feat/my-feature`
+2. Create a feature branch from develop: `git checkout -b feat/my-feature develop`
 3. Make changes with conventional commits
 4. Sign off your commits: `git commit -s`
-5. Push and create a Pull Request
+5. Push and create a Pull Request to `develop` branch
 
 ## Developer Certificate of Origin (DCO)
 
@@ -104,11 +104,19 @@ pnpm run test
 
 ### Branch Strategy
 
-We use trunk-based development:
+We use **Gitflow** for development:
 
-- `main` is always deployable
-- Feature branches are short-lived (< 1 week)
-- PRs require CI passing and review
+- `main` - Production-ready releases only
+- `develop` - Integration branch for features
+- `feature/*` - Feature development (branch from `develop`)
+- `release/*` - Release preparation (branch from `develop`)
+- `hotfix/*` - Critical fixes (branch from `main`)
+
+**Workflow:**
+1. Create feature branches from `develop`
+2. Submit PRs to `develop` for integration
+3. Release branches merge to both `main` and `develop`
+4. Hotfixes merge to both `main` and `develop`
 
 #### CI/CD Compliance
 All PRs must pass the CI checks, which are powered by **GitHub Actions**:
@@ -139,7 +147,12 @@ The CI pipeline uses **Workload Identity Federation** to authenticate with Googl
 // SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
 ```
 
+## Code of Conduct
+
+This project and everyone participating in it is governed by our [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to conduct@seventeensierra.com.
+
 ## Questions?
 
 - 📧 Email: dev@seventeensierra.com
 - 💬 Discussions: GitHub Discussions
+- 🚨 Code of Conduct: conduct@seventeensierra.com
