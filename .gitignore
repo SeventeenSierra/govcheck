@@ -5,8 +5,8 @@
 
 # testing
 /coverage
-/playwright-report
-/test-results
+/test-results/
+/playwright-report/
 
 # next.js
 /.next/
@@ -14,16 +14,20 @@
 
 # production
 /build
-/storybook-static
+
+# storybook
+/storybook-static/
 
 # misc
 .DS_Store
 *.pem
+/inbox/
 
 # debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+dev_output.log
 
 # local env files
 .env*.local
