@@ -1,22 +1,21 @@
 # Licensing
 
-This monorepo uses a **multi-license strategy** to balance open source principles with commercial viability.
+The Proposal Prepper (Contract Checker) project uses a **multi-license strategy** to balance open source principles with commercial viability for NSF PAPPG compliance validation.
 
 ## Quick Reference
 
 | Directory | License | SPDX Identifier |
 |-----------|---------|-----------------|
 | `/` (root) | [PolyForm Strict 1.0.0](./LICENSE) | `PolyForm-Strict-1.0.0` |
-| `/apps/*` | AGPL-3.0 OR Commercial | `AGPL-3.0-or-later OR LicenseRef-17s-Commercial` |
-| `/packages/ui/` | MIT | `MIT` |
-| `/packages/lib/` | MIT | `MIT` |
-| `/packages/config/` | MIT | `MIT` |
-| `/packages/ai-flows-stub/` | MIT | `MIT` |
-| `/packages/ai-flows/` | Proprietary (Private) | `UNLICENSED` |
+| `/apps/web/` | All Rights Reserved | `UNLICENSED` |
+| `/services/strands-agent/` | All Rights Reserved | `UNLICENSED` |
+| `/services/genkit-service/` | All Rights Reserved | `UNLICENSED` |
+| `/packages/ui/` | All Rights Reserved | `UNLICENSED` |
+| `/packages/lib/` | All Rights Reserved | `UNLICENSED` |
 | `/scripts/` | PolyForm Perimeter 1.0.0 | `PolyForm-Perimeter-1.0.0` |
 | `/.agent/` | PolyForm Perimeter 1.0.0 | `PolyForm-Perimeter-1.0.0` |
+| `/.kiro/` | PolyForm Perimeter 1.0.0 | `PolyForm-Perimeter-1.0.0` |
 | `/docs/*` | CC-BY-SA-4.0 | `CC-BY-SA-4.0` |
-| `/assets/icons/` | CC0 (Public Domain) | `CC0-1.0` |
 | `/vendor/*` | Various (see directory) | Original licenses preserved |
 
 ## License Details
@@ -34,16 +33,16 @@ The monorepo structure, build configurations, and DevSecOps automation are licen
 - Use commercially without a license
 - Redistribute or create derivative works
 
-### Web Applications: AGPL-3.0 OR Commercial
+### Microservices and Applications: All Rights Reserved
 
-Applications in `/apps/` are dual-licensed:
+The core Proposal Prepper services and applications are proprietary:
 
-1. **AGPL-3.0-or-later**: Free for use, but modifications must be shared under the same terms
-2. **Commercial License**: Contact licensing@seventeensierra.com for proprietary use
+- **Web App** (`/apps/web/`): Next.js interface for proposal validation
+- **Strands Service** (`/services/strands-agent/`): NSF PAPPG compliance validation engine
+- **Genkit Service** (`/services/genkit-service/`): AI workflow orchestration
+- **Shared Packages** (`/packages/`): UI components and utilities
 
-### Shared Libraries (UI, Lib, Config): MIT
-
-The shared libraries in `/packages/ui/`, `/packages/lib/`, and `/packages/config/` are MIT-licensed for maximum adoption and ease of use across projects.
+Contact licensing@seventeensierra.com for licensing inquiries.
 
 ### Tools & Utilities: PolyForm Perimeter
 

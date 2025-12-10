@@ -54,13 +54,15 @@ Releases are automated via [release-please](https://github.com/googleapis/releas
 2. Merging release PR creates GitHub release
 3. Changelogs generated automatically
 
-## Package Versioning in Monorepo
+## Package Versioning in Microservice Architecture
 
-| Package | Versioning |
-|---------|------------|
-| `apps/*` | Independent versions |
+| Component | Versioning |
+|-----------|------------|
+| `apps/web` | Independent versions |
+| `services/strands-agent` | Independent versions |
+| `services/genkit-service` | Independent versions |
 | `packages/*` | Independent versions |
-| Root monorepo | Follows primary app |
+| Root project | Follows web app version |
 
 ## Deprecation Policy
 

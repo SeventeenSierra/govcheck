@@ -1,10 +1,10 @@
-# 17Sierra Application
+# Proposal Prepper (Contract Checker)
 
 > SPDX-License-Identifier: PolyForm-Strict-1.0.0
 
 ## Overview
 
-This is a Next.js 16 application built as part of the 17Sierra monorepo, designed for enterprise-grade compliance.
+Proposal Prepper is a **Federated Mesh microservice architecture** designed to validate NSF PAPPG compliance for research proposals. The system uses AI-powered analysis to ensure proposals meet federal funding requirements before submission.
 
 ## Quick Start
 
@@ -35,16 +35,23 @@ pnpm build
 
 ## Architecture
 
+**Federated Mesh Microservices:**
+
+- **Web Service** (Next.js) - Port 3000: User interface and orchestration
+- **Strands Service** (Python) - Port 8080: NSF PAPPG compliance validation using AWS Bedrock
+- **Genkit Service** (Node.js) - Port 8081: AI workflow orchestration and document processing
+
 ```
-src/
-├── app/          # Next.js App Router
-├── components/   # Application components
-└── ...
+apps/web/                 # Next.js web application
+services/strands-agent/   # Python compliance validation service
+services/genkit-service/  # Node.js AI orchestration service
+packages/ui/              # Shared UI components
+packages/lib/             # Shared utilities
 ```
 
 ## License
 
-This project is licensed under the [GNU Affero General Public License v3.0](./LICENSE).
+This project uses a multi-license strategy. See [LICENSING.md](./LICENSING.md) for details.
 
 ## Contact
 

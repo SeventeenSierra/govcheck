@@ -1,6 +1,6 @@
 # Dependency Management
 
-Guidelines for managing dependencies across the Seventeen Sierra monorepo.
+Guidelines for managing dependencies across the Proposal Prepper microservice architecture.
 
 ## Adding Dependencies
 
