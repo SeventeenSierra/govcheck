@@ -4,7 +4,7 @@
   "defaultEnvironment": "dev",
   "gitBranchLinking": {
     "feat/*": "dev",
-    "fix/*": "dev",
+    "fix/*": "dev", 
     "develop": "dev",
     "release/*": "staging",
     "main": "prod"
@@ -15,19 +15,22 @@
       "environments": ["dev", "staging", "prod"]
     },
     "strands-agent": {
-      "path": "services/strands-agent",
+      "path": "services/strands-agent", 
       "environments": ["dev", "staging", "prod"],
       "requiredSecrets": [
         "AWS_REGION",
-        "AWS_ACCESS_KEY_ID",
+        "AWS_ACCESS_KEY_ID", 
         "AWS_SECRET_ACCESS_KEY",
         "BEDROCK_MODEL_ID"
       ]
     },
     "genkit-service": {
       "path": "services/genkit-service",
-      "environments": ["dev", "staging", "prod"],
-      "requiredSecrets": ["GOOGLE_API_KEY", "GENKIT_ENV"]
+      "environments": ["dev", "staging", "prod"], 
+      "requiredSecrets": [
+        "GOOGLE_API_KEY",
+        "GENKIT_ENV"
+      ]
     }
   },
   "environments": {
@@ -36,13 +39,13 @@
       "railway": false
     },
     "staging": {
-      "description": "Staging environment on Railway",
+      "description": "Staging environment on Railway", 
       "railway": true,
       "railwayService": "proposal-prepper-staging"
     },
     "prod": {
       "description": "Production environment on Railway",
-      "railway": true,
+      "railway": true, 
       "railwayService": "proposal-prepper-prod"
     }
   },

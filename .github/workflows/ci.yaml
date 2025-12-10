@@ -12,10 +12,19 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: read
+      id-token: write # Required for Workload Identity Federation
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          token_format: 'access_token'
 
       - uses: pnpm/action-setup@v2
         with:
@@ -24,25 +33,40 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'pnpm'
 
       - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: |
+          cat <<EOF > .npmrc
+          registry=https://registry.npmjs.org/
+          @17sierra:registry=https://us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/
+          //us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/:_authToken=${{ steps.auth.outputs.access_token }}
+          EOF
+          rm pnpm-lock.yaml
+          pnpm install --no-frozen-lockfile
 
       - name: Lint
-        run: npx biome lint .
+        run: pnpm run lint
 
       - name: Typecheck
-        run: npx tsc --noEmit
+        run: pnpm run typecheck
 
   test:
     name: Test
     runs-on: ubuntu-22.04
     permissions:
       contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v4
       
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          token_format: 'access_token'
+
       - uses: pnpm/action-setup@v2
         with:
           version: '10.24.0'
@@ -50,22 +74,39 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'pnpm'
 
       - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: |
+          cat <<EOF > .npmrc
+          registry=https://registry.npmjs.org/
+          @17sierra:registry=https://us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/
+          //us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/:_authToken=${{ steps.auth.outputs.access_token }}
+          EOF
+          pnpm install --no-frozen-lockfile
+
+      - name: Build Packages
+        run: pnpm --filter "./packages/*" run build
 
       - name: Test
-        run: npx vitest run
+        run: pnpm run test
 
   build:
     name: Build Verification
     runs-on: ubuntu-22.04
     permissions:
       contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v4
       
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          token_format: 'access_token'
+
       - uses: pnpm/action-setup@v2
         with:
           version: '10.24.0'
@@ -73,22 +114,36 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'pnpm'
 
       - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: |
+          cat <<EOF > .npmrc
+          registry=https://registry.npmjs.org/
+          @17sierra:registry=https://us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/
+          //us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/:_authToken=${{ steps.auth.outputs.access_token }}
+          EOF
+          pnpm install --no-frozen-lockfile
 
       - name: Build
-        run: npx next build
+        run: pnpm run build
 
   unused-deps:
     name: Check Unused Deps
     runs-on: ubuntu-22.04
     permissions:
       contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v4
       
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          token_format: 'access_token'
+          
       - uses: pnpm/action-setup@v2
         with:
           version: '10.24.0'
@@ -96,23 +151,37 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'pnpm'
 
       - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: |
+          cat <<EOF > .npmrc
+          registry=https://registry.npmjs.org/
+          @17sierra:registry=https://us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/
+          //us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/:_authToken=${{ steps.auth.outputs.access_token }}
+          EOF
+          pnpm install --no-frozen-lockfile
 
       - name: Knip
-        run: npx knip
+        run: pnpm run unused
 
   commitlint:
     name: Commit Lint
     runs-on: ubuntu-22.04
     permissions:
       contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          token_format: 'access_token'
 
       - uses: pnpm/action-setup@v2
         with:
@@ -121,14 +190,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'pnpm'
 
       - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: |
+          cat <<EOF > .npmrc
+          registry=https://registry.npmjs.org/
+          @17sierra:registry=https://us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/
+          //us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/:_authToken=${{ steps.auth.outputs.access_token }}
+          EOF
+          pnpm install --no-frozen-lockfile
 
       - name: Validate Commit Messages
         if: github.event_name == 'pull_request'
-        run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+        run: pnpm exec commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
   dco-check:
     name: DCO Check
