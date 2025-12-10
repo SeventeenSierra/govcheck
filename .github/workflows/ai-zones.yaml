@@ -1,0 +1,96 @@
+# SPDX-License-Identifier: PolyForm-Strict-1.0.0
+# SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+
+name: AI Zone Validation
+
+on:
+  pull_request:
+    branches: [develop, main, 'release/*']
+
+jobs:
+  validate-zones:
+    name: Validate AI Zones
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Get changed files
+        id: files
+        uses: tj-actions/changed-files@v44
+        
+      - name: Check AI zones
+        id: zones
+        run: |
+          # Parse .ai-zones.yaml and validate
+          ACTOR="${{ github.actor }}"
+          IS_BOT=false
+          
+          # Detect if actor is a bot
+          if [[ "$ACTOR" == *"[bot]"* ]] || [[ "$ACTOR" == "renovate" ]] || [[ "$ACTOR" == "dependabot" ]]; then
+            IS_BOT=true
+          fi
+          
+          echo "is_bot=$IS_BOT" >> $GITHUB_OUTPUT
+          
+          # Check human-only files
+          HUMAN_ONLY_PATTERNS=(
+            "CODEOWNERS"
+            ".ai-zones.yaml"
+            "LICENSE"
+            "LICENSING.md"
+            "CLA.md"
+            "DCO.md"
+            "SECURITY.md"
+          )
+          
+          for file in ${{ steps.files.outputs.all_changed_files }}; do
+            for pattern in "${HUMAN_ONLY_PATTERNS[@]}"; do
+              if [[ "$file" == *"$pattern"* ]] && [[ "$IS_BOT" == "true" ]]; then
+                echo "::error::Bot cannot modify human-only file: $file"
+                exit 1
+              fi
+            done
+          done
+          
+          echo "✅ AI zone validation passed"
+
+      - name: Check commit trailers (AI commits)
+        if: steps.zones.outputs.is_bot == 'true'
+        run: |
+          # Verify AI commits have required trailers
+          COMMITS=$(git log --format="%B" origin/${{ github.base_ref }}..HEAD)
+          
+          if ! echo "$COMMITS" | grep -q "AI-Agent:"; then
+            echo "::warning::AI commits should include 'AI-Agent:' trailer"
+          fi
+          
+          if ! echo "$COMMITS" | grep -q "Human-Involvement:"; then
+            echo "::warning::AI commits should include 'Human-Involvement:' trailer"
+          fi
+
+      - name: Determine merge strategy
+        id: merge
+        run: |
+          # Based on zones, determine if auto-merge is allowed
+          IS_BOT="${{ steps.zones.outputs.is_bot }}"
+          
+          if [[ "$IS_BOT" == "true" ]]; then
+            # Check if all files are in full-autonomy zone
+            AUTO_MERGE=true
+            for file in ${{ steps.files.outputs.all_changed_files }}; do
+              # Lock files and changelogs are auto-merge
+              if [[ "$file" != *".lock"* ]] && [[ "$file" != *"CHANGELOG"* ]]; then
+                AUTO_MERGE=false
+              fi
+            done
+            
+            echo "auto_merge=$AUTO_MERGE" >> $GITHUB_OUTPUT
+          else
+            echo "auto_merge=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Enable auto-merge (Zone 0)
+        if: steps.merge.outputs.auto_merge == 'true'
+        run: |
+          echo "::notice::This PR is in Zone 0 (Full Autonomy) - auto-merge enabled"
+          # gh pr merge --auto --squash ${{ github.event.pull_request.number }}

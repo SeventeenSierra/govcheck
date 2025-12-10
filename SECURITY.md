@@ -2,42 +2,64 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in this application, please report it responsibly.
+**Please do not report security vulnerabilities through public GitHub issues.**
 
-**DO NOT** create a public GitHub issue for security vulnerabilities.
+Instead, please report them via email to:
 
-### How to Report
+📧 **security@seventeensierra.com**
 
-1. Email: security@seventeensierra.com
-2. Include:
-   - Description of the vulnerability
-   - Steps to reproduce
-   - Affected versions
-   - Potential impact
+Please include:
 
-### Response Timeline
+1. **Description** of the vulnerability
+2. **Steps to reproduce** (proof of concept if possible)
+3. **Impact assessment** (what could an attacker do?)
+4. **Affected versions** (if known)
+5. **Suggested fix** (if you have one)
 
-- **Initial Response**: Within 48 hours
-- **Status Update**: Within 7 days
-- **Resolution Target**: Within 30 days (critical) / 90 days (standard)
+## Response Timeline
+
+| Stage | Timeframe |
+|-------|-----------|
+| Initial response | Within 48 hours |
+| Triage & assessment | Within 7 days |
+| Fix development | Varies by severity |
+| Public disclosure | After fix is released |
 
 ## Supported Versions
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 0.1.x   | ✅ Current          |
+| Version | Supported |
+|---------|-----------|
+| Latest release | ✅ |
+| Previous minor | ✅ (security fixes only) |
+| Older versions | ❌ |
 
-## Security Best Practices
+## Security Measures
 
-This application follows:
-- OWASP Top 10 guidelines
-- Secure Development Lifecycle (SSDLC)
-- NIST SP 800-218 SSDF compliance
+This project implements comprehensive security for NSF PAPPG compliance validation:
 
-## Disclosure Policy
+- 🔒 Signed commits required (DCO compliance)
+- 🔍 Automated security scanning (Semgrep, Gitleaks, Trivy)
+- 📦 SBOM generation for supply chain transparency
+- 🔄 Automated dependency updates (Renovate)
+- 📋 License compliance checking
+- 🛡️ AWS Bedrock secure integration for AI processing
+- 🔐 Railway deployment with secrets management
+- 🎯 AI zones for controlled autonomous operations
+- 📋 Federal compliance documentation (NSF requirements)
 
-We practice coordinated disclosure:
-1. Reporter notifies us privately
-2. We investigate and develop a fix
-3. We release the fix
-4. We publicly acknowledge the reporter (if desired)
+## Responsible Disclosure
+
+We follow responsible disclosure practices:
+
+1. Report vulnerabilities privately
+2. We'll work with you to understand and fix the issue
+3. We'll credit you in the security advisory (unless you prefer anonymity)
+4. Public disclosure happens after a fix is available
+
+## Bug Bounty
+
+We do not currently have a formal bug bounty program, but we deeply appreciate security researchers who help keep our users safe.
+
+## Security-Related Configuration
+
+See [docs/runbooks/security-incident-response.md](./docs/runbooks/security-incident-response.md) for incident response procedures.

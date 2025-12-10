@@ -1,0 +1,5 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+  - "services/genkit-service"
+  # Note: strands-agent is Python-based, not included in pnpm workspace

@@ -1,59 +1,52 @@
-# Proposal: Gov-Check Monorepo Integration
+# Proposal: Proposal Prepper Development
 
-## Context
+## Project Proposal Summary
+This document outlines the development proposal for Proposal Prepper. For detailed information, see:
 
-**GovCheck AI** is a grant proposal compliance analyzer that helps users validate grant proposals against solicitation requirements (FAR/DFARS, NSF PAPPG, etc.). It's currently in `inbox/govcheck-1` — a standalone Next.js app built in Firebase Studio.
+- **Repository & Development Workflow**: [repository.md](./repository.md)
+- **Technical Infrastructure**: [infrastructure.md](./infrastructure.md)
+- **Application Specifications**: [app.md](./app.md)
 
-### Why This Matters
+## Executive Summary
+Proposal Prepper is a Next.js application designed to streamline grant proposal creation and management with AI-powered assistance. The application will help users create compliant, high-quality proposals more efficiently.
 
-- **GSA and AWS collaboration**: Partners need access to the codebase
-- **Firebase Studio limitation**: Full monorepo is too large for Firebase Studio
-- **First Copybara implementation**: Establishes the pattern for 19 more apps
+## Project Phases
 
-### Source Material
+### Phase 1: Foundation (Weeks 1-2)
+- Set up development environment and tooling
+- Implement basic application structure
+- Create core UI components and design system
 
-| Location | Description |
-|----------|-------------|
-| `inbox/govcheck-1` | Current standalone app (simpler, demo-focused) |
-| `inbox/17s-mono-attempt1` | Earlier monorepo attempt (more complete architecture) |
+### Phase 2: Core Features (Weeks 3-4)
+- Proposal creation and editing functionality
+- Template system implementation
+- Basic user authentication and data persistence
 
-## Goals
+### Phase 3: AI Integration (Weeks 5-6)
+- AI-powered content suggestions
+- Compliance checking features
+- Automated formatting and validation
 
-1. **Bootstrap shared npm packages** using GovCheck as seed content
-2. **Integrate gov-check into monorepo** at `apps/gov-check/`
-3. **Set up Copybara sync** to standalone `gov-check` repo
-4. **Enable GSA/AWS collaboration** via standalone repo
-5. **Establish patterns** for the remaining 19 apps
+### Phase 4: Collaboration (Weeks 7-8)
+- Real-time collaboration features
+- Version control and change tracking
+- User management and permissions
 
-## Non-Goals (This Session)
+### Phase 5: Optimization (Weeks 9-10)
+- Performance optimization
+- Accessibility improvements
+- Testing and quality assurance
 
-- Migrating all 20 apps (future sessions)
-- Full AI agent integration (depends on AWS Strands work)
-- Perfect/complete shared packages (iterate later)
+## Success Metrics
+- User adoption and engagement rates
+- Proposal creation time reduction
+- User satisfaction scores
+- Technical performance metrics (Core Web Vitals)
+- Accessibility compliance (WCAG 2.1 AA)
 
-## Success Criteria
-
-- [ ] `@17sierra/lib` published to npm (v0.1.0)
-- [ ] `@17sierra/ui` published to npm (v0.1.0)
-- [ ] `@17sierra/ai-flows` published to npm (v0.1.0, private)
-- [ ] Gov-check runs in monorepo (`pnpm --filter @17sierra/gov-check dev`)
-- [ ] **Standalone repo builds independently** (typecheck, lint, build pass)
-- [ ] Copybara config syncs bidirectionally
-- [ ] GSA/AWS can clone standalone repo and contribute
-- [ ] `.agent/workflows/` syncs with the app
-
-## Dependencies (Critical Path)
-
-1. **npm scope**: `@17s` registration (FIRST!)
-2. **Package repos**: `17s-ui`, `17s-lib`, `17s-ai-flows` on GitHub
-3. **Packages published to npm**: Before standalone can build!
-4. **ADR-0002**: Copybara Sync Architecture (✅ Created)
-5. **Standalone repo**: `github.com/SeventeenSierra/gov-check`
-
-## Key Insight
-
-> "The standalone repo needs `@17sierra/ui`, `@17sierra/lib`, and `@17sierra/ai-flows` to exist on npm.
-> These packages are **Phase 0**, not Phase 2."
-
-GovCheck's existing code becomes the seed for the shared packages.
+## Risk Mitigation
+- Regular user testing and feedback collection
+- Iterative development with frequent releases
+- Comprehensive testing strategy
+- Performance monitoring and optimization
 

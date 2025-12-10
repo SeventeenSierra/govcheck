@@ -1,0 +1,107 @@
+# SPDX-License-Identifier: PolyForm-Strict-1.0.0
+# SPDX-FileCopyrightText: 2025 Alyssa Feola
+
+# Pre-commit configuration for Proposal Prepper (Contract Checker)
+# Federated Mesh microservice architecture
+
+repos:
+  # Security scanning
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.21.2
+    hooks:
+      - id: gitleaks
+        name: Detect secrets and credentials
+        description: Scan for AWS Bedrock, Google Genkit, and other service credentials
+
+  # Code formatting and linting
+  - repo: https://github.com/biomejs/pre-commit
+    rev: v0.4.0
+    hooks:
+      - id: biome-check
+        name: Biome lint and format
+        description: Lint and format TypeScript, JavaScript, JSON, and CSS
+        additional_dependencies: ["@biomejs/biome@2.3.8"]
+        files: \.(js|jsx|ts|tsx|json|css)$
+
+  # Commit message validation
+  - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
+    rev: v9.18.0
+    hooks:
+      - id: commitlint
+        name: Validate commit messages
+        description: Ensure conventional commit format with AI agent trailers
+        stages: [commit-msg]
+        additional_dependencies: ["@commitlint/config-conventional"]
+
+  # AI Zones validation
+  - repo: local
+    hooks:
+      - id: ai-zones-check
+        name: AI Zones validation
+        description: Validate AI agent permissions and human involvement
+        entry: scripts/validate-ai-zones.sh
+        language: script
+        files: \.ai-zones\.yaml$
+        pass_filenames: false
+
+  # Docker and deployment validation
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.12.0
+    hooks:
+      - id: hadolint-docker
+        name: Dockerfile linting
+        description: Lint Dockerfiles for services
+        files: Dockerfile.*
+
+  # YAML validation
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-yaml
+        name: Validate YAML files
+        description: Check YAML syntax for configs and workflows
+        files: \.(yaml|yml)$
+      - id: check-json
+        name: Validate JSON files
+        description: Check JSON syntax for package.json and configs
+        files: \.json$
+      - id: end-of-file-fixer
+        name: Fix end of files
+        description: Ensure files end with newline
+      - id: trailing-whitespace
+        name: Remove trailing whitespace
+        description: Clean up trailing spaces
+
+  # Python service validation (for strands-agent)
+  - repo: https://github.com/psf/black
+    rev: 24.10.0
+    hooks:
+      - id: black
+        name: Format Python code
+        description: Format Python code in strands-agent service
+        files: ^services/strands-agent/.*\.py$
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.1.1
+    hooks:
+      - id: flake8
+        name: Lint Python code
+        description: Lint Python code in strands-agent service
+        files: ^services/strands-agent/.*\.py$
+
+# Configuration for specific environments
+ci:
+  autofix_commit_msg: |
+    chore(pre-commit): auto fixes from pre-commit hooks
+
+    AI-Agent: pre-commit
+    Human-Involvement: automated
+    Zone: 0
+  autofix_prs: true
+  autoupdate_branch: develop
+  autoupdate_commit_msg: |
+    chore(deps): update pre-commit hooks
+
+    AI-Agent: pre-commit
+    Human-Involvement: automated
+    Zone: 0

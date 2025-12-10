@@ -3,8 +3,8 @@
 
 "use client";
 
-import { Maximize2, Download, CheckCircle2 } from "lucide-react";
-import { Button, Badge } from "@17sierra/ui";
+import { Badge, Button } from "@17sierra/ui";
+import { CheckCircle2, Download, Maximize2 } from "lucide-react";
 
 type ReportPreviewProps = {
   isVisible: boolean;

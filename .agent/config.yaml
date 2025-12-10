@@ -1,0 +1,67 @@
+# AI Agent Configuration
+# This file configures the development environment for autonomous AI agents
+# like Google Jules, GitHub Copilot Workspace, Cursor, etc.
+
+environment:
+  # Skip pre-commit hooks - CI validates commits
+  HUSKY: "0"
+  
+  # Skip interactive prompts
+  CI: "true"
+  
+  # Use non-interactive git
+  GIT_TERMINAL_PROMPT: "0"
+
+git:
+  # Commit signing for AI agents (optional, configure per agent)
+  sign_commits: false
+  
+  # DCO sign-off
+  signoff: true
+  
+  # Commit message format
+  commit_template: |
+    <type>(<scope>): <description>
+    
+    Signed-off-by: {{ agent_name }} <{{ agent_email }}>
+
+workflows:
+  # Allowed operations
+  allowed:
+    - read_files
+    - write_files
+    - run_tests
+    - run_linter
+    - git_commit
+    - git_push
+  
+  # Require human approval for
+  require_approval:
+    - delete_files
+    - modify_security_config
+    - modify_ci_workflows
+    - push_to_main
+    - push_to_release
+
+testing:
+  # Run before committing
+  pre_commit:
+    - pnpm run lint
+    - pnpm run typecheck
+  
+  # Run before pushing
+  pre_push:
+    - pnpm run test
+
+branches:
+  # Agents can push to these branches
+  allowed:
+    - "feature/*"
+    - "fix/*"
+    - "chore/*"
+  
+  # Agents cannot push to these
+  protected:
+    - main
+    - develop
+    - "release/*"

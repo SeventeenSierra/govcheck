@@ -3,10 +3,10 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
-import TopBar from "@/components/layout/top-bar";
-import Sidebar from "@/components/layout/sidebar";
+import { useEffect, useState } from "react";
 import AgentInterface from "@/components/agent-interface";
+import Sidebar from "@/components/layout/sidebar";
+import TopBar from "@/components/layout/top-bar";
 import ReportPreview from "@/components/report-preview";
 
 export default function App() {
