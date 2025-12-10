@@ -1,6 +1,6 @@
-# Contributing to Seventeen Sierra
+# Contributing to Proposal Prepper
 
-Thank you for your interest in contributing! This document explains our contribution process.
+Thank you for your interest in contributing to the Proposal Prepper (Contract Checker) project! This document explains our contribution process for this NSF PAPPG compliance validation system.
 
 ## Quick Start
 
@@ -51,7 +51,7 @@ We use [Conventional Commits](https://www.conventionalcommits.org/):
 Signed-off-by: Name <email>
 ```
 
-### Types
+### Types & Scopes
 
 | Type | Description |
 |------|-------------|
@@ -63,12 +63,21 @@ Signed-off-by: Name <email>
 | `test` | Adding tests |
 | `chore` | Maintenance tasks |
 
+**Microservice Scopes:**
+- `web` - Next.js web app
+- `strands` - Python compliance service
+- `genkit` - Node.js AI orchestration
+- `ui`, `lib` - Shared packages
+- `compliance` - NSF PAPPG validation logic
+- `orchestration` - Federated mesh patterns
+
 ### Examples
 
 ```bash
-git commit -s -m "feat(auth): add OAuth2 support"
-git commit -s -m "fix(api): handle null response"
-git commit -s -m "docs: update README installation steps"
+git commit -s -m "feat(strands): add NSF PAPPG Section 2.B validation"
+git commit -s -m "fix(web): handle proposal upload timeout"
+git commit -s -m "feat(genkit): implement document processing workflow"
+git commit -s -m "docs(compliance): update validation rules documentation"
 ```
 
 ## Development Workflow
