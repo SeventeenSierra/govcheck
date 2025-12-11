@@ -2,98 +2,152 @@
 
 ## Introduction
 
-This document defines the requirements for setting up the infrastructure for the Proposal Prepper application focused on federal vendor proposal compliance using a Federated Mesh microservices architecture. The infrastructure will support FAR/DFARS compliance analysis with AWS-based AI integration, automated regulatory currency management, and government-grade security while providing unified orchestration and monitoring.
+This document defines the requirements for the Infrastructure component of the Proposal Prepper base application, establishing the foundational infrastructure patterns, containerization, and system architecture for the FAR compliance validation system. The infrastructure supports laptop deployment while maintaining patterns that can scale to cloud deployment.
 
 ## Glossary
 
-- **Federated_Mesh**: A microservices architecture pattern where services are independently deployable but work together through well-defined APIs
-- **Service_Orchestration**: The coordination and management of multiple microservices to work together as a unified application
-- **Container_Platform**: Docker-based containerization for consistent deployment across environments
-- **Development_Environment**: Local development setup using docker-compose for full-stack development
-- **Production_Deployment**: Railway.app deployment configuration for scalable cloud hosting
+- **Container_Infrastructure**: Docker-based containerization for application services and dependencies
+- **Service_Architecture**: Microservice architecture with web (Next.js) and strands (Python) services
+- **Database_Infrastructure**: Data storage and management infrastructure for proposals and validation results
+- **Network_Architecture**: Internal networking and communication patterns between services
+- **Storage_Management**: File storage and data persistence strategies
+- **Monitoring_Infrastructure**: System monitoring, logging, and observability capabilities
+- **Security_Infrastructure**: Infrastructure-level security controls and hardening
+
+## Requirements Classification
+
+### Threshold Requirements (Must-Have for Base App)
+- **Requirement 1**: Containerized infrastructure (essential deployment)
+- **Requirement 2**: Microservice architecture (essential architecture)
+- **Requirement 3**: Robust cloud data infrastructure (essential data layer)
+
+### Objective Requirements (Future Enhancement)
+- **Requirement 4**: Secure network architecture (enhanced networking)
+- **Requirement 5**: Comprehensive storage management (advanced storage)
+- **Requirement 6**: Monitoring infrastructure (operations)
+- **Requirement 7**: Infrastructure security controls (enhanced security)
+- **Requirement 8**: Infrastructure automation (automation and efficiency)
+- **Requirement 9**: Optimized infrastructure (performance)
+- **Requirement 10**: Infrastructure compliance capabilities (compliance and governance)
 
 ## Requirements
 
 ### Requirement 1
 
-**User Story:** As a developer, I want containerized microservices, so that I can deploy and scale services independently across different environments.
+**User Story:** As a system architect, I want containerized infrastructure, so that I can ensure consistent deployment and isolation of application services.
 
 #### Acceptance Criteria
 
-1. WHEN containerizing services, THE Container_Platform SHALL provide Dockerfile for each service (web, strands-agent, genkit-service)
-2. WHEN building containers, THE Container_Platform SHALL optimize for fast builds and small image sizes using multi-stage builds
-3. WHEN running containers, THE Container_Platform SHALL support environment-specific configuration through environment variables
-4. WHEN deploying containers, THE Container_Platform SHALL enable independent scaling of each service
-5. WHERE services need shared resources, THE Container_Platform SHALL provide proper volume mounting and network configuration
+1. WHEN containerizing services, THE Container_Infrastructure SHALL provide Docker containers for web, strands, and database services
+2. WHEN managing dependencies, THE Container_Infrastructure SHALL include all runtime dependencies within container images
+3. WHEN ensuring isolation, THE Container_Infrastructure SHALL provide proper service isolation and resource boundaries
+4. WHEN handling networking, THE Container_Infrastructure SHALL configure secure internal networking between containers
+5. WHERE persistence is needed, THE Container_Infrastructure SHALL provide persistent volumes for data storage
 
 ### Requirement 2
 
-**User Story:** As a developer, I want local development orchestration, so that I can run the entire application stack locally for development and testing.
+**User Story:** As a developer, I want microservice architecture, so that I can develop and deploy services independently while maintaining clear service boundaries.
 
 #### Acceptance Criteria
 
-1. WHEN starting local development, THE Development_Environment SHALL provide docker-compose configuration for all services
-2. WHEN developing locally, THE Development_Environment SHALL support hot reloading and live code changes
-3. WHEN debugging locally, THE Development_Environment SHALL provide proper port mapping and service discovery
-4. WHEN running tests locally, THE Development_Environment SHALL support isolated test environments
-5. WHERE services need to communicate, THE Development_Environment SHALL provide internal networking between containers
+1. WHEN designing services, THE Service_Architecture SHALL implement clear separation between web frontend and strands backend services
+2. WHEN handling communication, THE Service_Architecture SHALL provide well-defined APIs for inter-service communication
+3. WHEN managing state, THE Service_Architecture SHALL implement appropriate state management patterns for each service
+4. WHEN scaling services, THE Service_Architecture SHALL support independent scaling and deployment of services
+5. WHERE service discovery is needed, THE Service_Architecture SHALL provide service registration and discovery mechanisms
 
 ### Requirement 3
 
-**User Story:** As a developer, I want production deployment configuration, so that the application can be deployed to Railway.app with proper scaling and monitoring.
+**User Story:** As a data architect, I want robust cloud data infrastructure, so that I can store and manage proposal data, validation results, and compliance documents using scalable AWS services.
 
 #### Acceptance Criteria
 
-1. WHEN deploying to production, THE Production_Deployment SHALL provide railway.toml configuration for each service
-2. WHEN scaling in production, THE Production_Deployment SHALL support independent scaling policies for each service
-3. WHEN monitoring production, THE Production_Deployment SHALL provide health checks and logging for each service
-4. WHEN updating production, THE Production_Deployment SHALL support zero-downtime deployments
-5. WHERE services need secrets, THE Production_Deployment SHALL provide secure environment variable management
+1. WHEN storing documents, THE Cloud_Data_Infrastructure SHALL provide S3 buckets for proposal documents and compliance references
+2. WHEN enabling search, THE Cloud_Data_Infrastructure SHALL provide OpenSearch for vector storage and intelligent document retrieval
+3. WHEN processing data, THE Cloud_Data_Infrastructure SHALL use AWS Lambda for serverless document processing
+4. WHEN ensuring availability, THE Cloud_Data_Infrastructure SHALL leverage AWS managed services for high availability and durability
+5. WHERE structured data is needed, THE Cloud_Data_Infrastructure SHALL provide appropriate data storage solutions (DynamoDB, RDS as needed)
 
 ### Requirement 4
 
-**User Story:** As a developer, I want service communication infrastructure, so that microservices can communicate reliably and securely.
+**User Story:** As a network engineer, I want secure network architecture, so that I can ensure secure communication between services and external access control.
 
 #### Acceptance Criteria
 
-1. WHEN services communicate, THE Service_Orchestration SHALL provide HTTP-based API communication between services
-2. WHEN handling requests, THE Service_Orchestration SHALL implement proper error handling and retry logic
-3. WHEN routing requests, THE Service_Orchestration SHALL use the Next.js web app as the orchestration layer
-4. WHEN securing communication, THE Service_Orchestration SHALL implement proper authentication and authorization
-5. WHERE services fail, THE Service_Orchestration SHALL provide graceful degradation and fallback mechanisms
+1. WHEN configuring networking, THE Network_Architecture SHALL implement secure internal networking with proper firewall rules
+2. WHEN handling external access, THE Network_Architecture SHALL provide secure external access points with appropriate authentication
+3. WHEN managing traffic, THE Network_Architecture SHALL implement load balancing and traffic management capabilities
+4. WHEN ensuring security, THE Network_Architecture SHALL encrypt all network communication and implement access controls
+5. WHERE monitoring is needed, THE Network_Architecture SHALL provide network monitoring and intrusion detection capabilities
 
 ### Requirement 5
 
-**User Story:** As a developer, I want monitoring and observability, so that I can track service health and performance in production.
+**User Story:** As a storage administrator, I want comprehensive storage management, so that I can handle proposal documents, validation results, and system data efficiently.
 
 #### Acceptance Criteria
 
-1. WHEN monitoring services, THE Production_Deployment SHALL provide health check endpoints for each service
-2. WHEN tracking performance, THE Production_Deployment SHALL collect metrics on response times and error rates
-3. WHEN debugging issues, THE Production_Deployment SHALL provide centralized logging across all services
-4. WHEN services fail, THE Production_Deployment SHALL provide alerting and notification mechanisms
-5. WHERE performance degrades, THE Production_Deployment SHALL provide automatic scaling triggers
+1. WHEN storing files, THE Storage_Management SHALL provide secure file storage for proposal documents and attachments
+2. WHEN managing capacity, THE Storage_Management SHALL implement storage monitoring and capacity management
+3. WHEN ensuring durability, THE Storage_Management SHALL provide data replication and backup strategies
+4. WHEN handling cleanup, THE Storage_Management SHALL implement automated cleanup and retention policies
+5. WHERE performance is needed, THE Storage_Management SHALL optimize storage performance for common access patterns
 
 ### Requirement 6
 
-**User Story:** As a developer, I want AWS-based AI service integration infrastructure, so that multiple specialized compliance agents can be orchestrated through the Federated Mesh architecture with government-grade security.
+**User Story:** As a system administrator, I want monitoring infrastructure, so that I can observe system health, performance, and identify issues proactively.
 
 #### Acceptance Criteria
 
-1. WHEN integrating AI services, THE Service_Orchestration SHALL support AWS Bedrock with Claude 3.7 and Amazon Nova Pro models for FAR/DFARS compliance analysis
-2. WHEN routing AI requests, THE Service_Orchestration SHALL implement the Traffic Cop pattern coordinating FAR Agent, Executive Order Agent, and Technical Agent
-3. WHEN handling regulatory data, THE Service_Orchestration SHALL integrate with S3 buckets for FAR documents and Executive Orders with OpenSearch vector database for similarity search
-4. WHEN processing compliance analysis, THE Service_Orchestration SHALL support AWS Lambda functions for automated regulatory crawling and updates
-5. WHERE government security is required, THE Service_Orchestration SHALL implement AWS GovCloud compliance and proper audit trails for all AI processing
+1. WHEN monitoring systems, THE Monitoring_Infrastructure SHALL provide comprehensive system metrics and health monitoring
+2. WHEN collecting logs, THE Monitoring_Infrastructure SHALL centralize logging from all services with structured log formats
+3. WHEN detecting issues, THE Monitoring_Infrastructure SHALL implement alerting and notification systems
+4. WHEN analyzing performance, THE Monitoring_Infrastructure SHALL provide performance metrics and trend analysis
+5. WHERE troubleshooting is needed, THE Monitoring_Infrastructure SHALL provide diagnostic tools and trace capabilities
 
 ### Requirement 7
 
-**User Story:** As a developer, I want automated regulatory currency management, so that the compliance analysis stays current with evolving FAR/DFARS regulations and Executive Orders.
+**User Story:** As a security engineer, I want infrastructure security controls, so that I can ensure the infrastructure meets security requirements and protects sensitive data.
 
 #### Acceptance Criteria
 
-1. WHEN regulatory updates occur, THE Service_Orchestration SHALL implement automated monitoring of official government regulatory update systems (SAM.gov, Federal Register)
-2. WHEN crawling regulatory data, THE Service_Orchestration SHALL use AWS Lambda functions to gather latest FAR/DFARS updates and Executive Orders
-3. WHEN storing regulatory information, THE Service_Orchestration SHALL maintain version control with timestamps for all regulatory references
-4. WHEN displaying compliance results, THE Service_Orchestration SHALL include the "as-of" date for all regulatory citations
-5. WHERE regulatory interpretation changes, THE Service_Orchestration SHALL trigger re-analysis of affected proposals and notify users of potential impacts
+1. WHEN securing infrastructure, THE Security_Infrastructure SHALL implement defense-in-depth security controls
+2. WHEN managing secrets, THE Security_Infrastructure SHALL provide secure secret management and rotation
+3. WHEN controlling access, THE Security_Infrastructure SHALL implement role-based access controls and authentication
+4. WHEN auditing activity, THE Security_Infrastructure SHALL provide comprehensive audit logging and compliance reporting
+5. WHERE vulnerabilities exist, THE Security_Infrastructure SHALL implement vulnerability scanning and patch management
+
+### Requirement 8
+
+**User Story:** As a DevOps engineer, I want infrastructure automation, so that I can automate deployment, scaling, and maintenance operations.
+
+#### Acceptance Criteria
+
+1. WHEN automating deployment, THE Infrastructure SHALL provide infrastructure-as-code capabilities for reproducible deployments
+2. WHEN managing configuration, THE Infrastructure SHALL implement configuration management and version control
+3. WHEN handling updates, THE Infrastructure SHALL support automated updates and rollback capabilities
+4. WHEN scaling resources, THE Infrastructure SHALL provide automated scaling based on demand and resource usage
+5. WHERE maintenance is needed, THE Infrastructure SHALL automate routine maintenance tasks and health checks
+
+### Requirement 9
+
+**User Story:** As a performance engineer, I want optimized infrastructure, so that I can ensure efficient resource utilization and fast response times.
+
+#### Acceptance Criteria
+
+1. WHEN optimizing performance, THE Infrastructure SHALL implement caching strategies and performance optimization
+2. WHEN managing resources, THE Infrastructure SHALL provide resource monitoring and optimization recommendations
+3. WHEN handling load, THE Infrastructure SHALL implement load balancing and traffic distribution
+4. WHEN ensuring availability, THE Infrastructure SHALL provide high availability and fault tolerance capabilities
+5. WHERE bottlenecks exist, THE Infrastructure SHALL provide performance profiling and optimization tools
+
+### Requirement 10
+
+**User Story:** As a compliance officer, I want infrastructure compliance capabilities, so that I can ensure the infrastructure meets regulatory and security compliance requirements.
+
+#### Acceptance Criteria
+
+1. WHEN ensuring compliance, THE Infrastructure SHALL implement controls required for federal contractor environments
+2. WHEN auditing systems, THE Infrastructure SHALL provide compliance reporting and audit trail capabilities
+3. WHEN managing data, THE Infrastructure SHALL implement data protection and privacy controls
+4. WHEN handling incidents, THE Infrastructure SHALL provide incident response and forensic capabilities
+5. WHERE certification is needed, THE Infrastructure SHALL support security certification and accreditation processes

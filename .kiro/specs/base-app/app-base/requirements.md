@@ -14,23 +14,43 @@ This document defines the requirements for the Proposal Prepper (Contract Checke
 - **Compliance_Analysis**: Automated validation of vendor proposals against FAR/DFARS requirements and Executive Orders with evidence-based results
 - **Multi_Agent_Architecture**: Specialized AI agents including FAR Agent, Executive Order Agent, and Technical Agent
 
+## Requirements Classification
+
+### Threshold Requirements (Must-Have for Base App)
+- **Requirement 1**: Upload and analyze proposals (core functionality)
+- **Requirement 2**: Interactive AI assistant (core user interface)
+- **Requirement 3**: Detailed compliance reports (core output)
+- **Requirement 5**: Responsive and accessible interface (essential UX)
+
+### Objective Requirements (Future Enhancement)
+- **Requirement 4**: Transparent AI analysis with regulatory currency tracking (advanced features)
+- **Requirement 6**: Component-based architecture (development efficiency)
+- **Requirement 7**: Testing and development tools (development quality)
+- **Requirement 8**: Confidence scoring and validation (advanced analytics)
+
 ## Requirements
 
-### Requirement 1
+### Requirement 1 (Threshold)
 
-**User Story:** As a federal vendor, I want to upload and analyze my proposal against FAR/DFARS requirements, so that I can identify compliance issues and receive actionable recommendations before submission.
+**User Story:** As a Federal Contractor, I want to upload and analyze my proposal against FAR/DFARS requirements, so that I can identify compliance issues and receive actionable recommendations before submission.
 
 #### Acceptance Criteria
 
-1. WHEN uploading a proposal document, THE Proposal_Prepper SHALL accept PDF and text formats for federal procurement proposal analysis
-2. WHEN analyzing a federal proposal, THE Compliance_Analysis SHALL validate against current FAR/DFARS requirements and applicable Executive Orders
-3. WHEN displaying results, THE Compliance_Analysis SHALL show evidence-based findings with exact regulatory citations, proposal quotes, and reasoning
-4. WHEN identifying critical issues, THE Compliance_Analysis SHALL flag non-waivable requirements that create immediate rejection risk
-5. WHERE compliance gaps exist, THE Compliance_Analysis SHALL provide prioritized remediation steps with specific timelines
+**Threshold (Minimum Acceptable):**
+1. WHEN uploading a proposal document, THE Proposal_Prepper SHALL accept PDF formats for federal procurement proposal analysis
+2. WHEN analyzing a federal proposal, THE Compliance_Analysis SHALL validate against basic FAR/DFARS requirements
+3. WHEN displaying results, THE Compliance_Analysis SHALL show basic findings with regulatory citations
+
+**Objective (Desired Performance):**
+4. WHEN uploading a proposal document, THE Proposal_Prepper SHALL accept both PDF and text formats
+5. WHEN analyzing a federal proposal, THE Compliance_Analysis SHALL validate against current FAR/DFARS requirements and applicable Executive Orders
+6. WHEN displaying results, THE Compliance_Analysis SHALL show evidence-based findings with exact regulatory citations, proposal quotes, and reasoning
+7. WHEN identifying critical issues, THE Compliance_Analysis SHALL flag non-waivable requirements that create immediate rejection risk
+8. WHERE compliance gaps exist, THE Compliance_Analysis SHALL provide prioritized remediation steps with specific timelines
 
 ### Requirement 2
 
-**User Story:** As a federal vendor, I want an interactive AI assistant with specialized compliance agents, so that I can get expert guidance on FAR/DFARS requirements and Executive Orders during proposal development.
+**User Story:** As a Federal Contractor, I want an interactive AI assistant with specialized compliance agents, so that I can get expert guidance on FAR/DFARS requirements and Executive Orders during proposal development.
 
 #### Acceptance Criteria
 
@@ -42,7 +62,7 @@ This document defines the requirements for the Proposal Prepper (Contract Checke
 
 ### Requirement 3
 
-**User Story:** As a federal vendor, I want to see detailed compliance reports with dual-analysis validation, so that I can understand exactly what needs to be fixed in my proposal with confidence in the assessment.
+**User Story:** As a Federal Contractor, I want to see detailed compliance reports with dual-analysis validation, so that I can understand exactly what needs to be fixed in my proposal with confidence in the assessment.
 
 #### Acceptance Criteria
 
@@ -54,7 +74,7 @@ This document defines the requirements for the Proposal Prepper (Contract Checke
 
 ### Requirement 4
 
-**User Story:** As a federal vendor, I want transparent AI analysis with regulatory currency tracking, so that I can understand how different AI agents contribute to compliance checking and trust the assessment currency.
+**User Story:** As a Federal Contractor, I want transparent AI analysis with regulatory currency tracking, so that I can understand how different AI agents contribute to compliance checking and trust the assessment currency.
 
 #### Acceptance Criteria
 
@@ -66,7 +86,7 @@ This document defines the requirements for the Proposal Prepper (Contract Checke
 
 ### Requirement 5
 
-**User Story:** As a grant writer, I want a responsive and accessible interface, so that I can use the application effectively across different devices and accessibility needs.
+**User Story:** As a Federal Contractor, I want a responsive and accessible interface, so that I can use the application effectively across different devices and accessibility needs.
 
 #### Acceptance Criteria
 
@@ -126,7 +146,7 @@ This document defines the requirements for the Proposal Prepper (Contract Checke
 
 ### Requirement 8
 
-**User Story:** As a federal vendor, I want confidence scoring and validation capabilities, so that I can trust the automated compliance analysis and understand assessment reliability.
+**User Story:** As a Federal Contractor, I want confidence scoring and validation capabilities, so that I can trust the automated compliance analysis and understand assessment reliability.
 
 #### Acceptance Criteria
 
