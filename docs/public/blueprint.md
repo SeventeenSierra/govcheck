@@ -1,3 +1,6 @@
+<!-- SPDX-License-Identifier: LicenseRef-AllRightsReserved -->
+<!-- SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC -->
+
 # **App Name**: GovCheck AI
 
 ## Core Features:

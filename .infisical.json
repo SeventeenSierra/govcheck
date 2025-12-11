@@ -1,4 +1,6 @@
 {
+  "_comment": "SPDX-License-Identifier: AGPL-3.0-or-later",
+  "_copyright": "SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC",
   "$schema": "https://infisical.com/schemas/infisical.json",
   "workspaceId": "",
   "defaultEnvironment": "dev",

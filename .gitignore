@@ -1,3 +1,27 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+
+# =============================================================================
+# BRANCH-SPECIFIC GITIGNORE STRATEGY
+# =============================================================================
+# 
+# This .gitignore supports branch-specific content management:
+#
+# AI-SSDF-NONOPEN BRANCH:
+#   - All content is tracked and committed (exclusions are commented out)
+#   - Contains full licensing work, private docs, proprietary content
+#
+# OTHER BRANCHES (main, develop):
+#   - Uncomment the "AI-SSDF-NONOPEN SPECIFIC EXCLUSIONS" section
+#   - This will exclude proprietary content when merging/cherry-picking
+#
+# USAGE:
+#   1. On ai-ssdf-nonopen: Keep exclusions commented (track everything)
+#   2. When merging to other branches: Uncomment exclusions as needed
+#   3. Use selective git add/commit for fine-grained control
+#
+# =============================================================================
+
 # dependencies
 /node_modules
 /.pnp
@@ -38,3 +62,80 @@ dev_output.log
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# =============================================================================
+# BRANCH-SPECIFIC CONTENT EXCLUSIONS
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# AI-SSDF-NONOPEN BRANCH SPECIFIC EXCLUSIONS
+# -----------------------------------------------------------------------------
+# Comment out this entire section when merging ai-ssdf-nonopen content to other branches
+# Uncomment when you want to exclude this content from commits
+
+# Proprietary Applications & Services (All Rights Reserved - UNLICENSED)
+# /apps/
+# /services/
+# /packages/
+
+# Private AI Flows Package (mentioned in session context)
+# /.private/
+
+# Enterprise/Commercial Features (future)
+# /ee/
+# /enterprise/
+
+# Internal Tools & Utilities (PolyForm Perimeter - not open source)
+# /scripts/
+# /python/
+# /tools/
+
+# Development & Configuration (PolyForm Perimeter - not open source)
+# /.agent/
+# /.kiro/
+# /.github/
+# /.husky/
+# /.storybook/
+# /.vscode/
+
+# Private Documentation (All Rights Reserved)
+# /docs/private/
+
+# Signatures and Legal
+# /signatures/
+
+# Any future proprietary directories
+# /proprietary/
+# /commercial/
+# /internal/
+
+# -----------------------------------------------------------------------------
+# END AI-SSDF-NONOPEN SPECIFIC EXCLUSIONS
+# -----------------------------------------------------------------------------
+
+# =============================================================================
+# UNIVERSAL EXCLUSIONS (ALWAYS IGNORED)
+# =============================================================================
+
+# Vendor Code (Various licenses - preserve originals)
+/vendor/
+
+# Root Configuration Files (tracked but can be selectively excluded)
+# Uncomment individual lines below to exclude specific config files:
+# /commitlint.config.mjs
+# /.gitleaks.toml
+# /biome.json
+# /next.config.ts
+# /tailwind.config.ts
+# /tsconfig.json
+# /vitest.config.ts
+# /playwright.config.ts
+# /postcss.config.mjs
+# /knip.json
+# /renovate.json
+# /pnpm-workspace.yaml
+# /docker-compose.yml
+# /flake.nix
+# /flake.lock
+
+# NOTE: flake.lock must be pure JSON (no SPDX headers allowed)

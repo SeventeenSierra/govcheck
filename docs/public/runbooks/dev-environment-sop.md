@@ -1,3 +1,6 @@
+<!-- SPDX-License-Identifier: LicenseRef-AllRightsReserved -->
+<!-- SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC -->
+
 # Development Environment SOP
 
 **Standard Operating Procedure for Maintainers**

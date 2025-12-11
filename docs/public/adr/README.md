@@ -1,3 +1,6 @@
+<!-- SPDX-License-Identifier: LicenseRef-AllRightsReserved -->
+<!-- SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC -->
+
 # Architecture Decision Records
 
 This directory contains Architecture Decision Records (ADRs) for the 17s monorepo.
