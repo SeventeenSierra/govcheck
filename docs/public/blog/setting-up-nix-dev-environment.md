@@ -1,4 +1,4 @@
-<!-- SPDX-License-Identifier: LicenseRef-AllRightsReserved -->
+<!-- SPDX-License-Identifier: CC-BY-SA-4.0 -->
 <!-- SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC -->
 
 # Setting Up a Nix Dev Environment with Biome for a TypeScript Monorepo

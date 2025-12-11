@@ -1,5 +1,5 @@
 #!/bin/bash
-# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-License-Identifier: PolyForm-Perimeter-1.0.0
 # SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
 
 # Toggle .gitignore for branch-specific content management

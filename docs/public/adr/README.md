@@ -1,4 +1,4 @@
-<!-- SPDX-License-Identifier: LicenseRef-AllRightsReserved -->
+<!-- SPDX-License-Identifier: CC-BY-SA-4.0 -->
 <!-- SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC -->
 
 # Architecture Decision Records
@@ -14,7 +14,6 @@ An Architecture Decision Record captures an important architectural decision alo
 | Number | Title | Status | Date |
 |--------|-------|--------|------|
 | [0001](./0001-nix-dev-environment-with-biome.md) | Nix Dev Environment with Biome | Accepted | 2024-12-04 |
-| [0002](./0002-copybara-sync-and-npm-scope.md) | Copybara Sync and NPM Scope Strategy | Proposed | 2024-12-05 |
 
 ## ADR Template
 
