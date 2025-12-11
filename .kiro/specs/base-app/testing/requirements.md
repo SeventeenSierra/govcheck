@@ -1,3 +1,8 @@
+<!--
+SPDX-License-Identifier: PolyForm-Perimeter-1.0.0
+SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+-->
+
 # Requirements Document
 
 ## Introduction
@@ -20,8 +25,12 @@ This document defines the requirements for the Testing component of the Proposal
 - **Requirement 1**: Comprehensive unit testing (essential code quality)
 - **Requirement 2**: End-to-end testing (essential user workflow validation)
 - **Requirement 3**: Component testing (essential UI component validation)
+- **Requirement 7**: Security testing (essential for OpenSSF Baseline SAST and vulnerability scanning)
 
 ### Objective Requirements (Future Enhancement)
+- **Requirement 1**: Comprehensive unit testing (essential code quality)
+- **Requirement 2**: End-to-end testing (essential user workflow validation)
+- **Requirement 3**: Component testing (essential UI component validation)
 - **Requirement 4**: Integration testing (advanced service integration validation)
 - **Requirement 5**: Performance testing (performance validation)
 - **Requirement 6**: Compliance testing (compliance validation accuracy)

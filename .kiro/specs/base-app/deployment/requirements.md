@@ -1,3 +1,8 @@
+<!--
+SPDX-License-Identifier: PolyForm-Perimeter-1.0.0
+SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+-->
+
 # Requirements Document
 
 ## Introduction
@@ -20,9 +25,13 @@ This document defines the requirements for the Deployment component of the Propo
 - **Requirement 1**: Hybrid deployment architecture (local frontend, cloud backend)
 - **Requirement 2**: Local frontend deployment (Next.js web application)
 - **Requirement 3**: Cloud backend deployment (AWS services integration)
+- **Requirement 4**: Local development environment (essential for Strands agents local development)
 
 ### Objective Requirements (Future Enhancement)
-- **Requirement 3**: Local development environment (developer experience)
+- **Requirement 1**: Hybrid deployment architecture (local frontend, cloud backend)
+- **Requirement 2**: Local frontend deployment (Next.js web application)
+- **Requirement 3**: Cloud backend deployment (AWS services integration)
+- **Requirement 4**: Local development environment (developer experience)
 - **Requirement 5**: Environment configuration options (customization)
 - **Requirement 6**: Resource optimization (performance)
 - **Requirement 7**: Backup and recovery procedures (advanced ops)

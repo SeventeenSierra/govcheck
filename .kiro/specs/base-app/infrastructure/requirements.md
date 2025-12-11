@@ -1,3 +1,8 @@
+<!--
+SPDX-License-Identifier: PolyForm-Perimeter-1.0.0
+SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+-->
+
 # Requirements Document
 
 ## Introduction
@@ -17,11 +22,15 @@ This document defines the requirements for the Infrastructure component of the P
 ## Requirements Classification
 
 ### Threshold Requirements (Must-Have for Base App)
+- **Requirement 1**: Containerized infrastructure (essential for local Strands agents development)
+- **Requirement 2**: Microservice architecture (essential architecture)
+- **Requirement 3**: Robust cloud data infrastructure (essential data layer)
+- **Requirement 7**: Infrastructure security controls (essential for OpenSSF Baseline security infrastructure)
+
+### Objective Requirements (Future Enhancement)
 - **Requirement 1**: Containerized infrastructure (essential deployment)
 - **Requirement 2**: Microservice architecture (essential architecture)
 - **Requirement 3**: Robust cloud data infrastructure (essential data layer)
-
-### Objective Requirements (Future Enhancement)
 - **Requirement 4**: Secure network architecture (enhanced networking)
 - **Requirement 5**: Comprehensive storage management (advanced storage)
 - **Requirement 6**: Monitoring infrastructure (operations)
@@ -151,3 +160,23 @@ This document defines the requirements for the Infrastructure component of the P
 3. WHEN managing data, THE Infrastructure SHALL implement data protection and privacy controls
 4. WHEN handling incidents, THE Infrastructure SHALL provide incident response and forensic capabilities
 5. WHERE certification is needed, THE Infrastructure SHALL support security certification and accreditation processes
+
+### Requirement 1 (Threshold)
+
+**User Story:** As a developer, I want containerized local development infrastructure, so that I can run Strands agents locally with all necessary supporting services.
+
+#### Acceptance Criteria
+
+##### Threshold (Must-Have)
+1. WHEN setting up local development, THE Container_Infrastructure SHALL provide Docker Compose configuration for local Strands agents development
+2. WHEN providing local storage, THE Container_Infrastructure SHALL include MinIO container for S3-compatible local storage
+3. WHEN enabling local AI, THE Container_Infrastructure SHALL support local LLM services or API key configuration for development
+4. WHEN managing local data, THE Container_Infrastructure SHALL provide local database containers (PostgreSQL/SQLite) for agent state
+5. WHERE message queuing is needed, THE Container_Infrastructure SHALL provide local message queue services for agent orchestration
+
+##### Objective (Desired)
+1. WHEN optimizing development, THE Container_Infrastructure SHOULD provide development-specific configurations with hot reload
+2. WHEN debugging services, THE Container_Infrastructure SHOULD include debugging tools and service monitoring
+3. WHEN managing resources, THE Container_Infrastructure SHOULD optimize resource usage for laptop development
+4. WHEN ensuring consistency, THE Container_Infrastructure SHOULD maintain parity between local and cloud environments
+5. WHERE performance matters, THE Container_Infrastructure SHOULD provide performance monitoring for local development

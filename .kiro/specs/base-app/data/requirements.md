@@ -1,3 +1,8 @@
+<!--
+SPDX-License-Identifier: PolyForm-Perimeter-1.0.0
+SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+-->
+
 # Requirements Document
 
 ## Introduction
@@ -17,14 +22,17 @@ This document defines the requirements for the Data component of the Proposal Pr
 ## Requirements Classification
 
 ### Threshold Requirements (Must-Have for Base App)
+- **Requirement 1**: Well-defined data models (essential architecture including SBOM data structures)
+- **Requirement 6**: Comprehensive data security (essential for OpenSSF Baseline secret management and SBOM)
+- **Requirement 9**: Data migration and seeding capabilities (essential for local development with MinIO and local databases)
+
+### Objective Requirements (Future Enhancement)
 - **Requirement 1**: Well-defined data models (essential architecture)
 - **Requirement 2**: Secure document storage (core functionality)
 - **Requirement 3**: Structured validation results storage (core output)
-- **Requirement 6**: Comprehensive data security (security requirement)
-
-### Objective Requirements (Future Enhancement)
 - **Requirement 4**: User data management (user experience)
 - **Requirement 5**: Analytics data collection (metrics and insights)
+- **Requirement 6**: Comprehensive data security (security requirement)
 - **Requirement 7**: Backup and recovery capabilities (data protection)
 - **Requirement 8**: Optimized data access patterns (performance)
 - **Requirement 9**: Data migration and seeding capabilities (development tools)

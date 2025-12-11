@@ -1,3 +1,8 @@
+<!--
+SPDX-License-Identifier: PolyForm-Perimeter-1.0.0
+SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+-->
+
 # Requirements Document
 
 ## Introduction
@@ -17,13 +22,14 @@ This document defines the requirements for the Proposal Prepper (Contract Checke
 ## Requirements Classification
 
 ### Threshold Requirements (Must-Have for Base App)
+- **Requirement 1**: Upload and analyze proposals (minimal viable application for security baseline)
+
+### Objective Requirements (Future Enhancement)
 - **Requirement 1**: Upload and analyze proposals (core functionality)
 - **Requirement 2**: Interactive AI assistant (core user interface)
 - **Requirement 3**: Detailed compliance reports (core output)
-- **Requirement 5**: Responsive and accessible interface (essential UX)
-
-### Objective Requirements (Future Enhancement)
 - **Requirement 4**: Transparent AI analysis with regulatory currency tracking (advanced features)
+- **Requirement 5**: Responsive and accessible interface (essential UX)
 - **Requirement 6**: Component-based architecture (development efficiency)
 - **Requirement 7**: Testing and development tools (development quality)
 - **Requirement 8**: Confidence scoring and validation (advanced analytics)

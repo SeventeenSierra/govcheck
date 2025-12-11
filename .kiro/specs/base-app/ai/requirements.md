@@ -1,3 +1,8 @@
+<!--
+SPDX-License-Identifier: PolyForm-Perimeter-1.0.0
+SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+-->
+
 # Requirements Document
 
 ## Introduction
@@ -17,16 +22,17 @@ This document defines the requirements for the AI component of the Proposal Prep
 ## Requirements Classification
 
 ### Threshold Requirements (Must-Have for Base App)
+- **Requirement 3**: AWS Bedrock integration (essential for both cloud deployment and local development with API keys)
+
+### Objective Requirements (Future Enhancement)
 - **Requirement 1**: AI-powered document analysis (core functionality)
 - **Requirement 2**: Intelligent requirement interpretation (core compliance validation)
 - **Requirement 3**: AWS Bedrock integration (essential infrastructure)
-- **Requirement 8**: Secure AI processing (security requirement)
-
-### Objective Requirements (Future Enhancement)
 - **Requirement 4**: Internal orchestration capabilities (advanced workflow)
 - **Requirement 5**: Confidence scoring and validation (advanced analytics)
 - **Requirement 6**: Efficient AI processing (performance optimization)
 - **Requirement 7**: AI learning and improvement (machine learning features)
+- **Requirement 8**: Secure AI processing (security requirement)
 - **Requirement 9**: AI service monitoring and management (advanced ops)
 - **Requirement 10**: AI service APIs (integration capabilities)
 

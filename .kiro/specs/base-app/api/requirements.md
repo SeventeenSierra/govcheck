@@ -1,3 +1,8 @@
+<!--
+SPDX-License-Identifier: PolyForm-Perimeter-1.0.0
+SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+-->
+
 # Requirements Document
 
 ## Introduction
@@ -17,12 +22,13 @@ This document defines the requirements for the API component of the Proposal Pre
 ## Requirements Classification
 
 ### Threshold Requirements (Must-Have for Base App)
-- **Requirement 1**: REST API endpoints for proposal operations (core functionality)
-- **Requirement 3**: Service integration patterns (essential architecture)
-- **Requirement 4**: API security controls (security requirement)
+- None (all API requirements are objective enhancements)
 
 ### Objective Requirements (Future Enhancement)
+- **Requirement 1**: REST API endpoints for proposal operations (core functionality)
 - **Requirement 2**: GraphQL API for complex queries (advanced querying)
+- **Requirement 3**: Service integration patterns (essential architecture)
+- **Requirement 4**: API security controls (security requirement)
 - **Requirement 5**: API documentation (developer experience)
 - **Requirement 6**: API monitoring and management (operations)
 - **Requirement 7**: Consistent error handling (quality improvement)

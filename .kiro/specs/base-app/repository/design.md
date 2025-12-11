@@ -1,319 +1,490 @@
-# Design Document
+<!--
+SPDX-License-Identifier: PolyForm-Perimeter-1.0.0
+SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+-->
+
+# Repository Component Design Document
 
 ## Overview
 
-The repository restructure transforms the current standalone Next.js application into a Federated Mesh microservices architecture. This restructuring enables the dual-service architecture supporting both FAR/DFARS compliance (Phase 1) and NSF PAPPG compliance (Phase 2) while maintaining independent development, deployment, and scaling capabilities.
-
-The restructure moves from a simple `src/` directory structure to a comprehensive workspace organization with `apps/`, `services/`, and `packages/` directories. This enables the Contract Checker application to orchestrate multiple specialized AI services while maintaining clear service boundaries and shared component libraries.
+The Repository component establishes version control, code management, and CI/CD automation patterns for the Proposal Prepper base application. It provides automated security scanning, SBOM generation, and collaborative development workflows that support OpenSSF Baseline Level 1 compliance while enabling multi-stakeholder collaboration between vendors, consultants, and government personnel.
 
 ## Architecture
 
-### Current Structure (Before Restructure)
-```
-obi-one/
-├── src/
-│   ├── app/
-│   ├── components/
-│   └── lib/
-├── package.json
-├── next.config.ts
-└── other config files
-```
+### Repository Architecture
 
-### Target Structure (After Restructure)
-```
-obi-one/
-├── apps/
-│   └── web/                    # Next.js Web App (Port 3000) - FAR Compliance
-│       ├── src/
-│       │   ├── app/            # Next.js App Router
-│       │   │   ├── api/        # API routes
-│       │   │   │   ├── analyze/    # Main compliance analysis endpoint
-│       │   │   │   ├── upload/     # Document upload endpoints
-│       │   │   │   └── agents/     # Agent interaction endpoints
-│       │   │   ├── layout.tsx
-│       │   │   └── page.tsx        # Main FAR compliance interface
-│       │   ├── components/         # React Components
-│       │   │   ├── upload/         # Document upload components
-│       │   │   ├── analysis/       # Analysis display components
-│       │   │   ├── agents/         # Agent interface components
-│       │   │   └── shared/         # Reusable UI components
-│       │   ├── services/           # Service layer
-│       │   │   ├── DocumentService.ts
-│       │   │   ├── AnalysisService.ts
-│       │   │   └── AgentService.ts
-│       │   └── lib/
-│       │       ├── types.ts        # TypeScript types
-│       │       ├── utils.ts        # Utility functions
-│       │       └── constants.ts    # Application constants
-│       ├── .storybook/
-│       ├── e2e/
-│       ├── next.config.ts
-│       └── package.json
-│
-├── services/
-│   └── strands-agent/          # Python/FastAPI Service (Port 8080)
-│       ├── app/
-│       │   ├── main.py         # FastAPI application
-│       │   ├── models.py       # Pydantic models
-│       │   ├── config.py       # Configuration management
-│       │   └── routes/
-│       │       ├── health.py       # Health check endpoints
-│       │       ├── analyze.py      # Analysis endpoints
-│       │       └── agents.py       # Agent coordination
-│       ├── sops/               # Standard Operating Procedures
-│       │   ├── far_agent.sop.md         # FAR Agent instructions
-│       │   ├── executive_order_agent.sop.md
-│       │   └── technical_agent.sop.md   # Technical agent instructions
-│       ├── tests/              # Python tests
-│       ├── Dockerfile
-│       └── requirements.txt
-│
-├── packages/                   # Shared packages (future-ready)
-│   ├── ui/                     # @obi-one/ui - Shared components
-│   │   ├── src/
-│   │   │   ├── components/     # Reusable UI components
-│   │   │   ├── hooks/          # Custom React hooks
-│   │   │   └── utils/          # UI utilities
-│   │   └── package.json
-│   └── lib/                    # @obi-one/lib - Shared utilities
-│       ├── src/
-│       │   ├── types/          # Shared TypeScript types
-│       │   ├── utils/          # Utility functions
-│       │   └── constants/      # Shared constants
-│       └── package.json
-│
-├── data/
-│   └── seed/                   # Seed data
-│       └── far/                # Federal procurement proposals
-│           ├── README.md       # Dataset documentation
-│           ├── proposal-1/     # Sample proposal set
-│           └── proposal-2/     # Sample proposal set
-│
-├── docker-compose.yml          # Local development orchestration
-├── railway.toml               # Railway.app deployment config
-└── pnpm-workspace.yaml        # Workspace configuration
-```
-
-### Future NSF Extension Structure (Phase 2)
-When NSF support is added, the structure will extend to:
-```
-├── apps/
-│   ├── web/                    # FAR Compliance (existing)
-│   └── nsf-web/               # NSF Grant Compliance (future)
-├── services/
-│   ├── strands-agent/         # FAR compliance (existing)
-│   └── genkit-service/        # NSF compliance (future)
-├── data/seed/
-│   ├── far/                   # Federal proposals (existing)
-│   └── nsf/                   # NSF proposals (future)
+```mermaid
+graph TB
+    subgraph "Version Control"
+        Git[Git Repository]
+        Branches[Branch Strategy]
+        PRs[Pull Requests]
+        Reviews[Code Reviews]
+    end
+    
+    subgraph "CI/CD Pipeline"
+        GHA[GitHub Actions]
+        Build[Build & Test]
+        SAST[Security Analysis]
+        SBOM[SBOM Generation]
+        Deploy[Deployment]
+    end
+    
+    subgraph "Security Automation"
+        SecretScan[Secret Scanning]
+        DepScan[Dependency Scanning]
+        VulnScan[Vulnerability Scanning]
+        Compliance[Compliance Checks]
+    end
+    
+    subgraph "Collaboration"
+        Access[Access Controls]
+        Workflows[Contribution Workflows]
+        Documentation[Documentation]
+        Governance[Project Governance]
+    end
+    
+    Git --> GHA
+    PRs --> Build
+    Build --> SAST
+    SAST --> SBOM
+    SBOM --> Deploy
+    
+    GHA --> SecretScan
+    GHA --> DepScan
+    GHA --> VulnScan
+    GHA --> Compliance
+    
+    Access --> Workflows
+    Workflows --> Documentation
+    Documentation --> Governance
 ```
 
 ## Components and Interfaces
 
-### Workspace Configuration
+### CI/CD Automation
 
-#### pnpm-workspace.yaml
+#### GitHub Actions Workflow
 ```yaml
-packages:
-  - "apps/*"
-  - "services/*"
-  - "packages/*"
+# .github/workflows/ci.yml
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run Secret Scanning
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Run SAST with Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/secrets
+            p/owasp-top-ten
+      
+      - name: Dependency Vulnerability Scan
+        run: |
+          npm audit --audit-level=moderate
+          npm audit fix --dry-run
+  
+  build-and-test:
+    runs-on: ubuntu-latest
+    needs: security-scan
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run tests
+        run: npm test -- --coverage
+      
+      - name: Run E2E tests
+        run: npm run test:e2e
+  
+  generate-sbom:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          format: spdx-json
+          output-file: sbom.spdx.json
+      
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom.spdx.json
 ```
 
-#### Root package.json Scripts
-```json
-{
-  "scripts": {
-    "dev": "concurrently \"pnpm --filter=web dev\" \"pnpm --filter=strands-agent dev\"",
-    "build": "pnpm --filter=web build && pnpm --filter=strands-agent build",
-    "test": "pnpm --recursive test",
-    "test:web": "pnpm --filter=web test",
-    "test:strands": "pnpm --filter=strands-agent test",
-    "lint": "pnpm --recursive lint",
-    "format": "pnpm --recursive format",
-    "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down",
-    "docker:logs": "docker-compose logs -f",
-    "clean": "pnpm --recursive clean",
-    "typecheck": "pnpm --recursive typecheck"
-  }
+#### Security Automation
+```typescript
+interface SecurityAutomation {
+  scanSecrets(): Promise<SecretScanResult>;
+  scanDependencies(): Promise<DependencyScanResult>;
+  generateSBOM(): Promise<SBOM>;
+  validateCompliance(): Promise<ComplianceResult>;
+}
+
+interface SecretScanResult {
+  scanDate: Date;
+  secretsFound: SecretFinding[];
+  riskLevel: 'low' | 'medium' | 'high' | 'critical';
+  recommendations: string[];
+}
+
+interface SecretFinding {
+  file: string;
+  line: number;
+  type: string; // e.g., "AWS Access Key", "API Key"
+  entropy: number;
+  confidence: number;
+}
+
+interface DependencyScanResult {
+  scanDate: Date;
+  totalDependencies: number;
+  vulnerabilities: DependencyVulnerability[];
+  outdatedPackages: OutdatedPackage[];
+  licenseIssues: LicenseIssue[];
+}
+
+interface DependencyVulnerability {
+  package: string;
+  version: string;
+  cve: string;
+  severity: 'low' | 'moderate' | 'high' | 'critical';
+  description: string;
+  fixedVersion?: string;
+  patchAvailable: boolean;
 }
 ```
 
-### Service Dependencies
+### Code Quality and Standards
 
-#### Web App Dependencies (apps/web/package.json)
-```json
-{
-  "dependencies": {
-    "@aatb/ui": "workspace:*",
-    "@aatb/lib": "workspace:*",
-    "next": "^15.0.0",
-    "react": "^19.0.0"
-  }
+#### Code Quality Enforcement
+```typescript
+interface CodeQualityConfig {
+  linting: {
+    eslint: ESLintConfig;
+    prettier: PrettierConfig;
+    typescript: TypeScriptConfig;
+  };
+  testing: {
+    coverage: {
+      threshold: number; // percentage
+      statements: number;
+      branches: number;
+      functions: number;
+      lines: number;
+    };
+    frameworks: string[]; // ['vitest', 'playwright']
+  };
+  security: {
+    sast: SASTConfig;
+    secrets: SecretScanConfig;
+    dependencies: DependencyScanConfig;
+  };
+}
+
+interface ESLintConfig {
+  extends: string[];
+  rules: Record<string, any>;
+  plugins: string[];
+  env: Record<string, boolean>;
+}
+
+interface SASTConfig {
+  tools: string[]; // ['semgrep', 'codeql']
+  rulesets: string[];
+  severity: 'error' | 'warning' | 'info';
+  failOnFindings: boolean;
 }
 ```
 
-#### Strands Service Dependencies (services/strands-agent/requirements.txt)
-```txt
-fastapi==0.104.1
-uvicorn==0.24.0
-boto3==1.34.0
-pydantic==2.5.0
-python-multipart==0.0.6
-opensearch-py==2.4.0
-pytest==7.4.3
-pytest-asyncio==0.21.1
-```
+### Collaboration Workflows
 
-### Docker Compose Configuration
+#### Multi-Stakeholder Access Control
+```typescript
+interface AccessControlConfig {
+  roles: Role[];
+  permissions: Permission[];
+  workflows: CollaborationWorkflow[];
+  auditLogging: AuditConfig;
+}
 
-```yaml
-version: '3.8'
-services:
-  web:
-    build:
-      context: .
-      dockerfile: apps/web/Dockerfile.dev
-    ports:
-      - "3000:3000"
-    environment:
-      - STRANDS_AGENT_URL=http://strands-service:8080
-      - NODE_ENV=development
-    volumes:
-      - ./apps/web:/app/apps/web
-      - ./packages:/app/packages
-    depends_on:
-      - strands-service
-    networks:
-      - far-compliance
+interface Role {
+  name: string;
+  description: string;
+  permissions: string[];
+  organizationType: 'vendor' | 'consultant' | 'government' | 'contractor';
+  clearanceLevel?: 'public' | 'confidential' | 'secret';
+}
 
-  strands-service:
-    build:
-      context: ./services/strands-agent
-    ports:
-      - "8080:8080"
-    environment:
-      - AWS_REGION=${AWS_REGION:-us-east-1}
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - BEDROCK_MODEL_ID_CLAUDE=${BEDROCK_MODEL_ID_CLAUDE:-anthropic.claude-3-5-sonnet-20241022-v2:0}
-      - BEDROCK_MODEL_ID_NOVA=${BEDROCK_MODEL_ID_NOVA:-amazon.nova-pro-v1:0}
-    volumes:
-      - ./services/strands-agent/app:/code/app
-      - ./services/strands-agent/sops:/code/sops
-      - ./services/strands-agent/tests:/code/tests
-    networks:
-      - far-compliance
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+interface Permission {
+  name: string;
+  resource: string;
+  actions: string[]; // ['read', 'write', 'delete', 'admin']
+  conditions?: AccessCondition[];
+}
 
-networks:
-  far-compliance:
-    driver: bridge
+interface CollaborationWorkflow {
+  name: string;
+  triggerEvent: string;
+  steps: WorkflowStep[];
+  approvers: ApprovalConfig[];
+  notifications: NotificationConfig[];
+}
+
+interface ApprovalConfig {
+  role: string;
+  required: boolean;
+  timeout?: number; // hours
+  escalation?: string;
+}
 ```
 
 ## Data Models
 
-### Workspace Package
+### Repository Management Models
+
 ```typescript
-interface WorkspacePackage {
-  name: string
-  path: string
-  type: 'app' | 'service' | 'package'
-  dependencies: string[]
-  scripts: Record<string, string>
+interface RepositoryConfig {
+  name: string;
+  description: string;
+  visibility: 'public' | 'private' | 'internal';
+  defaultBranch: string;
+  branchProtection: BranchProtectionConfig;
+  collaborators: Collaborator[];
+  integrations: Integration[];
+  settings: RepositorySettings;
+}
+
+interface BranchProtectionConfig {
+  branch: string;
+  requiredReviews: {
+    count: number;
+    dismissStaleReviews: boolean;
+    requireCodeOwnerReviews: boolean;
+    restrictPushes: boolean;
+  };
+  requiredStatusChecks: string[];
+  enforceAdmins: boolean;
+  allowForcePushes: boolean;
+  allowDeletions: boolean;
+}
+
+interface Collaborator {
+  username: string;
+  role: 'read' | 'triage' | 'write' | 'maintain' | 'admin';
+  organization?: string;
+  clearanceLevel?: string;
+  accessExpiry?: Date;
+}
+
+interface Integration {
+  name: string;
+  type: 'ci_cd' | 'security' | 'quality' | 'deployment';
+  config: Record<string, any>;
+  enabled: boolean;
 }
 ```
 
-### Service Configuration
+### CI/CD Pipeline Models
+
 ```typescript
-interface ServiceConfig {
-  name: string
-  port: number
-  dockerfile: string
-  environmentVariables: Record<string, string>
-  healthCheckPath: string
-  dependencies: string[]
+interface PipelineExecution {
+  id: string;
+  trigger: 'push' | 'pull_request' | 'schedule' | 'manual';
+  branch: string;
+  commit: string;
+  status: 'pending' | 'running' | 'success' | 'failure' | 'cancelled';
+  startTime: Date;
+  endTime?: Date;
+  jobs: JobExecution[];
+  artifacts: Artifact[];
+}
+
+interface JobExecution {
+  name: string;
+  status: 'pending' | 'running' | 'success' | 'failure' | 'skipped';
+  startTime: Date;
+  endTime?: Date;
+  logs: string[];
+  artifacts: string[];
+}
+
+interface Artifact {
+  name: string;
+  type: 'sbom' | 'test_results' | 'coverage' | 'security_report';
+  path: string;
+  size: number;
+  checksum: string;
+  expiryDate: Date;
 }
 ```
 
 ## Correctness Properties
 
-*A property is a characteristic or behavior that should hold true across all valid executions of a system—essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
+### Acceptance Criteria Testing Prework
 
-Property 1: Directory structure organization
-*For any* restructured repository, the root directory should contain apps/, services/, and packages/ directories with appropriate contents
-**Validates: Requirements 1.1**
+8.1 CI/CD automation for OpenSSF Baseline SAST and security scanning
+  Thoughts: This is about the CI/CD pipeline executing correctly and performing all required security checks. We can test pipeline execution and security tool integration.
+  Testable: yes - property
 
-Property 2: Configuration file path updates
-*For any* configuration file in the restructured repository, it should not contain references to the old src/ directory structure
-**Validates: Requirements 1.5**
+### Correctness Properties
 
-Property 3: Workspace dependency protocol
-*For any* package.json file in the workspace, cross-package dependencies should use the "workspace:" protocol
-**Validates: Requirements 2.1**
+**Property 1: CI/CD pipeline reliability**
+*For any* code change, the CI/CD pipeline should execute all security scans (SAST, secret scanning, dependency scanning) and generate SBOM successfully
+**Validates: Requirements 8.1**
 
-Property 4: Service independence
-*For any* service in the workspace, it should be able to start and run without requiring other services to be running
-**Validates: Requirements 4.2**
+**Property 2: Security automation completeness**
+*For any* security scan execution, the system should detect known vulnerabilities, secrets, and compliance violations with appropriate reporting
+**Validates: Requirements 8.1**
 
-Property 5: API contract consistency
-*For any* service API, it should follow consistent patterns for endpoint structure, error handling, and response formats
-**Validates: Requirements 4.4**
-
-Property 6: Shared code organization
-*For any* code shared between services, it should be located in the packages/ directory rather than imported directly from other services
-**Validates: Requirements 4.5**
+**Property 3: SBOM generation consistency**
+*For any* project state, the CI/CD pipeline should generate complete and accurate SBOM in SPDX format with all dependencies tracked
+**Validates: Requirements 8.1**
 
 ## Error Handling
 
-### Migration Errors
-- **File conflicts**: Detect existing files in target locations and provide resolution options
-- **Dependency resolution**: Handle cases where workspace dependencies cannot be resolved
-- **Configuration validation**: Validate all configuration files after migration
-- **Service startup**: Ensure all services can start after restructuring
+### Repository Error Categories
 
-### Build System Errors
-- **Missing dependencies**: Clear error messages when workspace dependencies are not found
-- **Circular dependencies**: Detection and prevention of circular dependencies between packages
-- **Build failures**: Service-specific build error reporting and resolution guidance
+1. **CI/CD Pipeline Errors**
+   - Build failures
+   - Test execution errors
+   - Security scan failures
+   - Deployment issues
+
+2. **Security Automation Errors**
+   - Secret detection failures
+   - Vulnerability scan errors
+   - SBOM generation failures
+   - Compliance check errors
+
+3. **Collaboration Errors**
+   - Access control violations
+   - Workflow approval failures
+   - Notification delivery issues
+   - Audit logging failures
 
 ## Testing Strategy
 
-### Unit Testing
-Unit tests will verify individual migration functions and configuration validation:
-- Directory creation and file movement operations
-- Package.json dependency updates
-- Configuration file path replacements
-- Workspace dependency resolution logic
-
 ### Property-Based Testing
-Property-based tests will verify universal properties across the restructured workspace using **fast-check**. Each test will run a minimum of 100 iterations.
-
-Tests will cover:
-- Directory structure consistency across different workspace configurations
-- Dependency resolution correctness for various package combinations
-- Configuration file path updates across different file types
-- Service independence verification across different service combinations
-
-Each property-based test will be tagged with: `**Feature: repository-restructure, Property {number}: {property_text}**`
+- Test CI/CD pipeline execution across different code changes
+- Validate security automation with various vulnerability scenarios
+- Test SBOM generation with different dependency configurations
+- Minimum 100 iterations per property test
 
 ### Integration Testing
-Integration tests will verify the complete restructuring workflow:
-- End-to-end migration from old to new structure
-- Workspace build and dependency resolution
-- Service startup and communication
-- Docker compose orchestration
+- Test complete CI/CD workflow from commit to deployment
+- Validate security tool integration and reporting
+- Test collaboration workflows and access controls
+- Validate artifact generation and storage
 
-### End-to-End Testing
-E2E tests will verify the complete development workflow:
-- Clone repository and run migration
-- Install dependencies with single pnpm install
-- Start all services with docker-compose
-- Verify service communication and API contracts
-- Run tests across all packages and services
+## Security Implementation
+
+### OpenSSF Baseline Level 1 Implementation
+
+#### Automated Security Scanning
+```bash
+#!/bin/bash
+# Security scanning script
+
+echo "Running security scans..."
+
+# Secret scanning with gitleaks
+echo "Scanning for secrets..."
+gitleaks detect --source . --verbose --report-format json --report-path gitleaks-report.json
+
+# SAST with Semgrep
+echo "Running SAST analysis..."
+semgrep --config=p/security-audit --config=p/secrets --json --output semgrep-report.json .
+
+# Dependency scanning
+echo "Scanning dependencies..."
+npm audit --json > npm-audit-report.json
+
+# SBOM generation
+echo "Generating SBOM..."
+syft packages . -o spdx-json > sbom.spdx.json
+
+echo "Security scans completed"
+```
+
+#### Compliance Validation
+```typescript
+interface ComplianceValidator {
+  validateOpenSSFBaseline(): Promise<ComplianceResult>;
+  checkSecurityControls(): Promise<SecurityControlResult[]>;
+  validateSBOM(sbom: SBOM): Promise<SBOMValidationResult>;
+  generateComplianceReport(): Promise<ComplianceReport>;
+}
+
+interface ComplianceResult {
+  framework: 'openssf-baseline-l1';
+  status: 'compliant' | 'non-compliant' | 'partial';
+  score: number; // 0-100
+  requirements: RequirementResult[];
+  recommendations: string[];
+  lastAssessed: Date;
+}
+
+interface RequirementResult {
+  id: string;
+  title: string;
+  status: 'met' | 'not-met' | 'partial' | 'not-applicable';
+  evidence: string[];
+  automatedCheck: boolean;
+}
+```
+
+## Performance Considerations
+
+### CI/CD Optimization
+- Parallel job execution for faster builds
+- Caching strategies for dependencies and build artifacts
+- Incremental testing and analysis
+- Resource optimization for pipeline efficiency
+
+### Security Scan Optimization
+- Incremental security scanning for changed files
+- Cached vulnerability databases
+- Parallel security tool execution
+- Smart scheduling based on change impact
+
+## Monitoring and Reporting
+
+### Pipeline Monitoring
+- Build success/failure rates
+- Security scan results and trends
+- Performance metrics and optimization
+- Compliance status tracking
+
+### Security Reporting
+- Vulnerability trend analysis
+- SBOM completeness metrics
+- Compliance dashboard
+- Security incident tracking

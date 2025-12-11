@@ -1,3 +1,8 @@
+<!--
+SPDX-License-Identifier: PolyForm-Perimeter-1.0.0
+SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+-->
+
 # Requirements Document
 
 ## Introduction
@@ -17,9 +22,10 @@ This document defines the requirements for the Design System component of the Pr
 ## Requirements Classification
 
 ### Threshold Requirements (Must-Have for Base App)
-- **Requirement 1**: @17sierra/ui component library integration (essential UI foundation)
+- None (all design system requirements are objective enhancements)
 
 ### Objective Requirements (Future Enhancement)
+- **Requirement 1**: @17sierra/ui component library integration (essential UI foundation)
 - **Requirement 2**: Design tokens and theming (visual consistency)
 - **Requirement 3**: Comprehensive accessibility support (accessibility enhancement)
 - **Requirement 4**: Professional styling (enhanced visual appeal)
