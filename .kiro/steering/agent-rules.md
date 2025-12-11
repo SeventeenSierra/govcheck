@@ -28,7 +28,7 @@ Use these scopes in ALL commits:
 
 **Services:** web, strands, genkit
 **Packages:** ui, lib
-**Infrastructure:** docker, railway, ci, deps
+**Infrastructure:** docker, ci, deps
 **Areas:** compliance, orchestration, api, components, docs, config, security, tests, seed, schemas
 
 ### 5. Required Trailers

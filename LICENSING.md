@@ -15,6 +15,11 @@ The Proposal Prepper (Contract Checker) project uses a **multi-license strategy*
 | `/scripts/` | PolyForm Perimeter 1.0.0 | `PolyForm-Perimeter-1.0.0` |
 | `/.agent/` | PolyForm Perimeter 1.0.0 | `PolyForm-Perimeter-1.0.0` |
 | `/.kiro/` | PolyForm Perimeter 1.0.0 | `PolyForm-Perimeter-1.0.0` |
+| `/.agent/` | PolyForm Perimeter 1.0.0 | `PolyForm-Perimeter-1.0.0` |
+| `/.github/` | PolyForm Perimeter 1.0.0 | `PolyForm-Perimeter-1.0.0` |
+| `/.husky/` | PolyForm Perimeter 1.0.0 | `PolyForm-Perimeter-1.0.0` |
+| `/.storybook/` | PolyForm Perimeter 1.0.0 | `PolyForm-Perimeter-1.0.0` |
+| `/.vscode/` | PolyForm Perimeter 1.0.0 | `PolyForm-Perimeter-1.0.0` |
 | `/docs/*` | CC-BY-SA-4.0 | `CC-BY-SA-4.0` |
 | `/vendor/*` | Various (see directory) | Original licenses preserved |
 
@@ -46,11 +51,24 @@ Contact licensing@seventeensierra.com for licensing inquiries.
 
 ### Tools & Utilities: PolyForm Perimeter
 
-### Tools & Utilities (Scripts & Agent): PolyForm Perimeter
-
 Internal tools in `/scripts/` and `/.agent/` use [PolyForm Perimeter 1.0.0](https://polyformproject.org/licenses/perimeter/1.0.0/):
 - Use internally however you want
 - Do not expose to external users or offer as a service
+
+### Development Tools & Configuration: PolyForm Perimeter
+
+Development and configuration files in dot directories use [PolyForm Perimeter 1.0.0](https://polyformproject.org/licenses/perimeter/1.0.0/):
+- `/.kiro/` - Kiro IDE specifications and tooling
+- `/.agent/` - AI agent rules and session management
+- `/.github/` - GitHub Actions workflows and templates
+- `/.husky/` - Git hooks and pre-commit automation
+- `/.storybook/` - Storybook configuration and stories
+- `/.vscode/` - VS Code workspace settings and extensions
+
+**Usage Rights:**
+- Use internally however you want
+- Do not expose to external users or offer as a service
+- Supports internal development workflows and team collaboration
 
 ### Documentation: Creative Commons
 
@@ -65,9 +83,24 @@ Code in `/vendor/` retains its original license. See `vendor/*/LICENSE` files.
 
 All source files include SPDX license identifiers:
 
+**Source Code:**
 ```typescript
-// SPDX-License-Identifier: AGPL-3.0-or-later
+// SPDX-License-Identifier: PolyForm-Strict-1.0.0
 // SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+```
+
+**Development Tools & Configuration:**
+```html
+<!--
+SPDX-License-Identifier: PolyForm-Perimeter-1.0.0
+SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+-->
+```
+
+**Documentation:**
+```markdown
+<!-- SPDX-License-Identifier: CC-BY-SA-4.0 -->
+<!-- SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC -->
 ```
 
 ## Contributing

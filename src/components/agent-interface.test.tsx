@@ -4,12 +4,24 @@ import AgentInterface from "./agent-interface";
 
 // Mock the UI components used in AgentInterface
 vi.mock("@17sierra/ui", () => ({
-  Button: ({ children, onClick, disabled, className, ...props }: any) => (
+  Button: ({
+    children,
+    onClick,
+    disabled,
+    className,
+    ...props
+  }: React.ComponentProps<"button">) => (
     <button onClick={onClick} disabled={disabled} className={className} {...props}>
       {children}
     </button>
   ),
-  Textarea: ({ value, onChange, placeholder, className, ...props }: any) => (
+  Textarea: ({
+    value,
+    onChange,
+    placeholder,
+    className,
+    ...props
+  }: React.ComponentProps<"textarea">) => (
     <textarea
       value={value}
       onChange={onChange}
@@ -38,7 +50,9 @@ describe("AgentInterface", () => {
 
     const button = screen.getByText("Analyze Proposal Compliance").closest("button");
     expect(button).not.toBeNull();
-    fireEvent.click(button!);
+    if (button) {
+      fireEvent.click(button);
+    }
 
     expect(startDemo).toHaveBeenCalledTimes(1);
   });
