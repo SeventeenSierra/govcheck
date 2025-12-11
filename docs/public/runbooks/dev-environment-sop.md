@@ -1,17 +1,17 @@
-<!-- SPDX-License-Identifier: LicenseRef-AllRightsReserved -->
+<!-- SPDX-License-Identifier: CC-BY-SA-4.0 -->
 <!-- SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC -->
 
 # Development Environment SOP
 
-**Standard Operating Procedure for Maintainers**
+**Standard Operating Procedure for Development Environment Management**
 
-*Last Updated: December 4, 2024*
+*Last Updated: December 11, 2025*
 
 ---
 
 ## Purpose
 
-This document provides standard procedures for maintaining and troubleshooting the development environment for the 17s monorepo.
+This document provides standard procedures for maintaining and troubleshooting the development environment for the 17s monorepo. This covers local development setup, dependency management, and tooling that is typically managed on the `develop` branch.
 
 ## Table of Contents
 
@@ -20,8 +20,7 @@ This document provides standard procedures for maintaining and troubleshooting t
 3. [Upgrading Biome](#upgrading-biome)
 4. [Updating Nix Flake](#updating-nix-flake)
 5. [Adding New Packages to Monorepo](#adding-new-packages-to-monorepo)
-6. [CI/CD Considerations](#cicd-considerations)
-7. [Incident Response](#incident-response)
+6. [Development Incident Response](#development-incident-response)
 
 ---
 
@@ -68,14 +67,16 @@ pnpm add <package> --filter @repo/ui
 
 ### Prerequisites Checklist
 
-- [ ] All tests passing on main branch
+- [ ] All tests passing on develop branch
 - [ ] Clean working directory
 - [ ] Inside Nix shell (`nix develop`)
 
 ### Procedure
 
-1. **Create a branch:**
+1. **Create a branch from develop:**
    ```bash
+   git checkout develop
+   git pull origin develop
    git checkout -b chore/update-dependencies
    ```
 
@@ -89,7 +90,6 @@ pnpm add <package> --filter @repo/ui
    pnpm run lint
    pnpm run typecheck
    pnpm run build
-   pnpm run e2e
    ```
 
 4. **Review changes:**
@@ -104,12 +104,14 @@ pnpm add <package> --filter @repo/ui
    git push origin chore/update-dependencies
    ```
 
+6. **Create PR to develop branch**
+
 ### Rollback Procedure
 
 If issues arise after updating:
 
 ```bash
-git checkout main -- pnpm-lock.yaml
+git checkout develop -- pnpm-lock.yaml
 pnpm install
 ```
 
@@ -250,34 +252,7 @@ biome --version
 
 ---
 
-## CI/CD Considerations
-
-### Required Environment in CI
-
-CI runners need Nix installed. Example GitHub Actions setup:
-
-```yaml
-- name: Install Nix
-  uses: cachix/install-nix-action@v24
-  with:
-    nix_path: nixpkgs=channel:nixos-unstable
-
-- name: Run checks
-  run: |
-    nix develop --command bash -c "pnpm install && pnpm run lint && pnpm run typecheck"
-```
-
-### Caching
-
-Cache these directories for faster CI:
-
-- `~/.cache/nix` — Nix store cache
-- `node_modules` — pnpm dependencies
-- `.turbo` — Turborepo cache
-
----
-
-## Incident Response
+## Development Incident Response
 
 ### Lint Failing After Dependency Update
 
@@ -317,12 +292,32 @@ Cache these directories for faster CI:
 2. Verify `moduleResolution` is set correctly
 3. Run `pnpm install` to ensure types are installed
 
+### Node Version Mismatch
+
+If you see Node version conflicts:
+
+1. Exit and re-enter Nix shell:
+   ```bash
+   exit
+   nix develop
+   ```
+
+2. Clear pnpm cache if needed:
+   ```bash
+   pnpm store prune
+   ```
+
+3. Reinstall dependencies:
+   ```bash
+   pnpm install
+   ```
+
 ---
 
 ## Contacts
 
-- **Primary Maintainer**: [Add name]
-- **Escalation Path**: [Add details]
+- **Development Environment**: See [Knowledge Base](../knowledge-base/nix-biome-troubleshooting.md)
+- **CI/CD Issues**: See [CI/CD Operations SOP](./cicd-operations-sop.md)
 
 ---
 

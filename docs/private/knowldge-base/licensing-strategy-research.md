@@ -3,7 +3,7 @@
 
 # Licensing Strategy Research
 
-> **Date**: December 2024  
+> **Date**: December 2025  
 > **Status**: Approved  
 > **Author**: Internal research session
 

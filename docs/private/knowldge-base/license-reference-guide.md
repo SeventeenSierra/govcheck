@@ -3,7 +3,7 @@
 
 # Open Source License Landscape Reference
 
-> **Last Updated**: December 2024  
+> **Last Updated**: December 2025  
 > **Purpose**: Quick reference for license selection and comparison
 
 ---

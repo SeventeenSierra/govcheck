@@ -1,11 +1,11 @@
-<!-- SPDX-License-Identifier: LicenseRef-AllRightsReserved -->
+<!-- SPDX-License-Identifier: CC-BY-SA-4.0 -->
 <!-- SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC -->
 
 # ADR-0001: Nix Dev Environment with Biome
 
 ## Status
 
-**Accepted** — December 4, 2024
+**Accepted** — December 4, 2025
 
 ## Context
 
