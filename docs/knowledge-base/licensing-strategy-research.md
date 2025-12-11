@@ -1,6 +1,3 @@
-<!-- SPDX-License-Identifier: LicenseRef-AllRightsReserved -->
-<!-- SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC -->
-
 # Licensing Strategy Research
 
 > **Date**: December 2024  

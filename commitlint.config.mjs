@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
-// SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+// SPDX-License-Identifier: PolyForm-Strict-1.0.0
+// SPDX-FileCopyrightText: 2025 Alyssa Feola
 
 // Commitlint configuration for Proposal Prepper (Contract Checker)
 // Supports conventional commits with AI agent trailers

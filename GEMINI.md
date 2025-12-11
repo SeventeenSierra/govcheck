@@ -1,6 +1,3 @@
-<!-- SPDX-License-Identifier: PolyForm-Strict-1.0.0 -->
-<!-- SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC -->
-
 # AI Agent Integration Guide
 
 This document outlines the patterns and best practices for integrating AI agents in the Proposal Prepper (Contract Checker) project, including Kiro, Antigravity, Cline, and other approved agents for NSF PAPPG compliance validation.

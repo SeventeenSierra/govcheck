@@ -1,8 +1,3 @@
-<!--
-SPDX-License-Identifier: PolyForm-Perimeter-1.0.0
-SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
--->
-
 ---
 description: How to create and maintain session records for microservice development
 ---

@@ -1,6 +1,3 @@
-<!-- SPDX-License-Identifier: CC-BY-SA-4.0 -->
-<!-- SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC -->
-
 # Contributor Covenant Code of Conduct
 
 ## Our Pledge

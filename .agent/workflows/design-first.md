@@ -1,8 +1,3 @@
-<!--
-SPDX-License-Identifier: PolyForm-Perimeter-1.0.0
-SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
--->
-
 ---
 description: Design-first development workflow with three stages for Proposal Prepper microservices
 ---

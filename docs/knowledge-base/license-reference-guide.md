@@ -1,6 +1,3 @@
-<!-- SPDX-License-Identifier: LicenseRef-AllRightsReserved -->
-<!-- SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC -->
-
 # Open Source License Landscape Reference
 
 > **Last Updated**: December 2024  

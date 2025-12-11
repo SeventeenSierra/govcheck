@@ -1,6 +1,3 @@
-<!-- SPDX-License-Identifier: LicenseRef-AllRightsReserved -->
-<!-- SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC -->
-
 # Getting Started
 
 Welcome to the 17s monorepo! This guide will help you set up your development environment.

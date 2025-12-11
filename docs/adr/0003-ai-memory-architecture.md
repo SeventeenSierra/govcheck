@@ -1,6 +1,3 @@
-<!-- SPDX-License-Identifier: LicenseRef-AllRightsReserved -->
-<!-- SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC -->
-
 # ADR-0003: AI Memory Architecture (The "Hippocampus" Protocol)
 
 ## Context

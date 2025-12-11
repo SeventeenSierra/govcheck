@@ -1,6 +1,3 @@
-<!-- SPDX-License-Identifier: CC-BY-SA-4.0 -->
-<!-- SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC -->
-
 # Dependency Management
 
 Guidelines for managing dependencies across the Proposal Prepper microservice architecture.

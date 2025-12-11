@@ -1,6 +1,3 @@
-<!-- SPDX-License-Identifier: LicenseRef-AllRightsReserved -->
-<!-- SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC -->
-
 # Nix & Biome Troubleshooting Guide
 
 *A collection of issues we've encountered and how to solve them.*

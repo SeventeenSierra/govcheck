@@ -1,6 +1,3 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
-# SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
-
 {
   description = "Proposal Prepper (Contract Checker) - NSF PAPPG Compliance Validation";
 

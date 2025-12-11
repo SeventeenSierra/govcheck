@@ -1,6 +1,3 @@
-<!-- SPDX-License-Identifier: LicenseRef-AllRightsReserved -->
-<!-- SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC -->
-
 # 17s Monorepo Documentation
 
 Welcome to the documentation hub for the 17s monorepo. This documentation is organized by audience and purpose.
