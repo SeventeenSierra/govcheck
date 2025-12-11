@@ -9,7 +9,7 @@
   "scripts": {
     "prepare": "husky",
     "dev": "next dev",
-    "dev:local": "docker-compose up --build",
+    "dev:local": "cd containers && docker-compose up --build",
     "dev:strands": "cd services/strands-agent && python -m uvicorn app.main:app --reload --port 8080",
     "dev:genkit": "cd services/genkit-service && pnpm dev",
     "build": "next build",

@@ -1,0 +1,46 @@
+<!--
+SPDX-License-Identifier: PolyForm-Perimeter-1.0.0
+SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+-->
+
+# Development-specific Docker Compose overrides
+version: '3.8'
+
+services:
+  web:
+    # Enable hot reload for development
+    volumes:
+      - ..:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
+    stdin_open: true
+    tty: true
+
+  strands:
+    # Enable hot reload for Python development
+    volumes:
+      - ../services/strands:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+      - WATCHFILES_FORCE_POLLING=true
+    stdin_open: true
+    tty: true
+
+  postgres:
+    # Expose additional debugging options
+    environment:
+      - POSTGRES_LOG_STATEMENT=all
+      - POSTGRES_LOG_MIN_DURATION_STATEMENT=0
+    # Add development-specific volume for easier database inspection
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../database/init.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+      - ../database/seed-dev.sql:/docker-entrypoint-initdb.d/dev-data.sql:ro
+
+  minio:
+    # Add development console access
+    environment:
+      - MINIO_BROWSER_REDIRECT_URL=http://localhost:9001
