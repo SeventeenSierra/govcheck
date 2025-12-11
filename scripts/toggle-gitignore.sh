@@ -37,29 +37,73 @@ enable_exclusions() {
     echo "Enabling exclusions (hiding proprietary content)..."
     cp "$GITIGNORE_FILE" "$BACKUP_FILE"
     
-    # Uncomment the exclusion lines
-    sed -i.tmp 's/^# \/apps\//\/apps\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^# \/services\//\/services\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^# \/packages\//\/packages\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^# \/\.private\//\/\.private\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^# \/ee\//\/ee\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^# \/enterprise\//\/enterprise\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^# \/scripts\//\/scripts\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^# \/python\//\/python\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^# \/tools\//\/tools\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^# \/\.agent\//\/\.agent\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^# \/\.kiro\//\/\.kiro\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^# \/\.github\//\/\.github\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^# \/\.husky\//\/\.husky\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^# \/\.storybook\//\/\.storybook\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^# \/\.vscode\//\/\.vscode\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^# \/docs\/private\//\/docs\/private\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^# \/signatures\//\/signatures\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^# \/proprietary\//\/proprietary\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^# \/commercial\//\/commercial\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^# \/internal\//\/internal\//' "$GITIGNORE_FILE"
+    # Create a develop-compatible gitignore with exclusions
+    # Start with develop branch base and add exclusions
+    cat > "$GITIGNORE_FILE" << 'EOF'
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+/test-results/
+/playwright-report/
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# storybook
+/storybook-static/
+
+# misc
+.DS_Store
+*.pem
+/inbox/
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dev_output.log
+
+# local env files
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# Branch-specific exclusions (ai-ssdf-nonopen content)
+/apps/
+/services/
+/packages/
+/.private/
+/ee/
+/enterprise/
+/scripts/
+/python/
+/tools/
+/.agent/
+/.kiro/
+/.github/
+/.husky/
+/.storybook/
+/.vscode/
+/docs/private/
+/signatures/
+/proprietary/
+/commercial/
+/internal/
+EOF
     
-    rm -f "$GITIGNORE_FILE.tmp"
     echo "Exclusions enabled. Backup saved as $BACKUP_FILE"
 }
 
@@ -67,29 +111,151 @@ disable_exclusions() {
     echo "Disabling exclusions (tracking all content)..."
     cp "$GITIGNORE_FILE" "$BACKUP_FILE"
     
-    # Comment out the exclusion lines
-    sed -i.tmp 's/^\/apps\/$/# \/apps\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^\/services\/$/# \/services\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^\/packages\/$/# \/packages\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^\/\.private\/$/# \/\.private\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^\/ee\/$/# \/ee\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^\/enterprise\/$/# \/enterprise\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^\/scripts\/$/# \/scripts\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^\/python\/$/# \/python\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^\/tools\/$/# \/tools\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^\/\.agent\/$/# \/\.agent\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^\/\.kiro\/$/# \/\.kiro\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^\/\.github\/$/# \/\.github\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^\/\.husky\/$/# \/\.husky\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^\/\.storybook\/$/# \/\.storybook\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^\/\.vscode\/$/# \/\.vscode\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^\/docs\/private\/$/# \/docs\/private\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^\/signatures\/$/# \/signatures\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^\/proprietary\/$/# \/proprietary\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^\/commercial\/$/# \/commercial\//' "$GITIGNORE_FILE"
-    sed -i.tmp 's/^\/internal\/$/# \/internal\//' "$GITIGNORE_FILE"
+    # Restore the full branch-specific strategy gitignore
+    cat > "$GITIGNORE_FILE" << 'EOF'
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+
+# =============================================================================
+# BRANCH-SPECIFIC GITIGNORE STRATEGY
+# =============================================================================
+# 
+# This .gitignore supports branch-specific content management:
+#
+# AI-SSDF-NONOPEN BRANCH:
+#   - All content is tracked and committed (exclusions are commented out)
+#   - Contains full licensing work, private docs, proprietary content
+#
+# OTHER BRANCHES (main, develop):
+#   - Uncomment the "AI-SSDF-NONOPEN SPECIFIC EXCLUSIONS" section
+#   - This will exclude proprietary content when merging/cherry-picking
+#
+# USAGE:
+#   1. On ai-ssdf-nonopen: Keep exclusions commented (track everything)
+#   2. When merging to other branches: Uncomment exclusions as needed
+#   3. Use selective git add/commit for fine-grained control
+#
+# =============================================================================
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+/test-results/
+/playwright-report/
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# storybook
+/storybook-static/
+
+# misc
+.DS_Store
+*.pem
+/inbox/
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dev_output.log
+
+# local env files
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# =============================================================================
+# BRANCH-SPECIFIC CONTENT EXCLUSIONS
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# AI-SSDF-NONOPEN BRANCH SPECIFIC EXCLUSIONS
+# -----------------------------------------------------------------------------
+# Comment out this entire section when merging ai-ssdf-nonopen content to other branches
+# Uncomment when you want to exclude this content from commits
+
+# Proprietary Applications & Services (All Rights Reserved - UNLICENSED)
+# /apps/
+# /services/
+# /packages/
+
+# Private AI Flows Package (mentioned in session context)
+# /.private/
+
+# Enterprise/Commercial Features (future)
+# /ee/
+# /enterprise/
+
+# Internal Tools & Utilities (PolyForm Perimeter - not open source)
+# /scripts/
+# /python/
+# /tools/
+
+# Development & Configuration (PolyForm Perimeter - not open source)
+# /.agent/
+# /.kiro/
+# /.github/
+# /.husky/
+# /.storybook/
+# /.vscode/
+
+# Private Documentation (All Rights Reserved)
+# /docs/private/
+
+# Signatures and Legal
+# /signatures/
+
+# Any future proprietary directories
+# /proprietary/
+# /commercial/
+# /internal/
+
+# -----------------------------------------------------------------------------
+# END AI-SSDF-NONOPEN SPECIFIC EXCLUSIONS
+# -----------------------------------------------------------------------------
+
+# =============================================================================
+# UNIVERSAL EXCLUSIONS (ALWAYS IGNORED)
+# =============================================================================
+
+# Vendor Code (Various licenses - preserve originals)
+/vendor/
+
+# Root Configuration Files (tracked but can be selectively excluded)
+# Uncomment individual lines below to exclude specific config files:
+# /commitlint.config.mjs
+# /.gitleaks.toml
+# /biome.json
+# /next.config.ts
+# /tailwind.config.ts
+# /tsconfig.json
+# /vitest.config.ts
+# /playwright.config.ts
+# /postcss.config.mjs
+# /knip.json
+# /renovate.json
+# /pnpm-workspace.yaml
+# /docker-compose.yml
+# /flake.nix
+# /flake.lock
+
+# NOTE: flake.lock must be pure JSON (no SPDX headers allowed)
+EOF
     
-    rm -f "$GITIGNORE_FILE.tmp"
     echo "Exclusions disabled. Backup saved as $BACKUP_FILE"
 }
 
