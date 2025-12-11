@@ -1,0 +1,102 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+
+# Gitleaks configuration for Proposal Prepper (Contract Checker)
+# Federated Mesh microservice architecture with AWS Bedrock, Google Genkit
+
+[extend]
+useDefault = true
+
+# AWS Bedrock / Strands Service secrets
+[[rules]]
+id = "aws-access-key-id"
+description = "AWS Access Key ID for Bedrock service"
+regex = '''AKIA[0-9A-Z]{16}'''
+tags = ["aws", "bedrock", "strands"]
+
+[[rules]]
+id = "aws-secret-access-key"
+description = "AWS Secret Access Key"
+regex = '''[A-Za-z0-9/+=]{40}'''
+tags = ["aws", "bedrock", "strands"]
+
+[[rules]]
+id = "aws-session-token"
+description = "AWS Session Token"
+regex = '''[A-Za-z0-9/+=]{100,}'''
+tags = ["aws", "bedrock", "strands"]
+
+# Google Genkit / AI service secrets
+[[rules]]
+id = "google-api-key"
+description = "Google API Key for Genkit service"
+regex = '''AIza[0-9A-Za-z_-]{35}'''
+tags = ["google", "genkit", "ai"]
+
+[[rules]]
+id = "google-service-account"
+description = "Google Service Account Key"
+regex = '''"type"\s*:\s*"service_account"'''
+tags = ["google", "genkit", "gcp"]
+
+# Railway deployment secrets
+[[rules]]
+id = "railway-token"
+description = "Railway deployment token"
+regex = '''railway_[a-zA-Z0-9]{32,}'''
+tags = ["railway", "deployment"]
+
+# Database and service URLs
+[[rules]]
+id = "database-url"
+description = "Database connection string"
+regex = '''(postgres|mysql|mongodb)://[^\s]+'''
+tags = ["database", "connection"]
+
+[[rules]]
+id = "service-url-with-auth"
+description = "Service URL with embedded credentials"
+regex = '''https?://[^:]+:[^@]+@[^\s]+'''
+tags = ["service", "auth", "url"]
+
+# NSF PAPPG / Compliance specific
+[[rules]]
+id = "nsf-api-key"
+description = "NSF or government API keys"
+regex = '''nsf[_-]?api[_-]?key[_-]?[a-zA-Z0-9]{20,}'''
+tags = ["nsf", "government", "compliance"]
+
+# File-based secrets
+[[rules]]
+id = "service-account-file"
+description = "Service Account JSON files"
+path = '''(serviceAccountKey|service-account|gcp-key)\.json'''
+tags = ["gcp", "service-account", "file"]
+
+[[rules]]
+id = "env-files"
+description = "Environment files with secrets"
+path = '''\.(env|environment)(\.(local|prod|staging|dev))?$'''
+tags = ["env", "secrets", "config"]
+
+[[rules]]
+id = "docker-secrets"
+description = "Docker secrets and compose files with credentials"
+path = '''docker-compose\.(prod|production|staging)\.ya?ml'''
+tags = ["docker", "secrets", "deployment"]
+
+# Allowlist for safe files
+[allowlist]
+description = "Safe files and patterns"
+paths = [
+  ".env.example",
+  ".env.template", 
+  "**/*.md",
+  "**/package.json",
+  "**/pnpm-lock.yaml",
+  "data/seed/**/*.json"  # Seed data is safe
+]
+
+commits = [
+  # Add specific commit hashes that are known safe
+]

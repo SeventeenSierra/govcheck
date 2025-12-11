@@ -1,4 +1,6 @@
 {
+  "_comment": "SPDX-License-Identifier: AGPL-3.0-or-later",
+  "_copyright": "SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC",
   "name": "proposal-prepper",
   "version": "0.1.0",
   "private": true,

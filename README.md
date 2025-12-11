@@ -1,6 +1,6 @@
 # Proposal Prepper (Contract Checker) - Phase 1
 
-> SPDX-License-Identifier: PolyForm-Strict-1.0.0
+> SPDX-License-Identifier: AGPL-3.0-or-later
 
 ## Overview
 
