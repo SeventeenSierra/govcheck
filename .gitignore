@@ -38,3 +38,64 @@ dev_output.log
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# =============================================================================
+# NON-OPEN SOURCE CONTENT EXCLUSIONS
+# =============================================================================
+# Based on LICENSING.md multi-license strategy
+# Excludes content that doesn't have open source licenses
+
+# Proprietary Applications & Services (All Rights Reserved - UNLICENSED)
+/apps/
+/services/
+/packages/
+
+# Private AI Flows Package (mentioned in session context)
+/.private/
+
+# Enterprise/Commercial Features (future)
+/ee/
+/enterprise/
+
+# Internal Tools & Utilities (PolyForm Perimeter - not open source)
+/scripts/
+/python/
+/tools/
+
+# Development & Configuration (PolyForm Perimeter - not open source)
+/.agent/
+/.kiro/
+/.github/
+/.husky/
+/.storybook/
+/.vscode/
+
+# Vendor Code (Various licenses - preserve originals)
+/vendor/
+
+# Root Configuration Files (PolyForm Strict - not open source)
+# Note: These are tracked but not open source licensed
+# Uncomment if you want to exclude them entirely:
+# /commitlint.config.mjs
+# /.gitleaks.toml
+# /biome.json
+# /next.config.ts
+# /tailwind.config.ts
+# /tsconfig.json
+# /vitest.config.ts
+# /playwright.config.ts
+# /postcss.config.mjs
+# /knip.json
+# /renovate.json
+# /pnpm-workspace.yaml
+# /docker-compose.yml
+# /flake.nix
+# /flake.lock
+
+# Signatures and Legal
+/signatures/
+
+# Any future proprietary directories
+/proprietary/
+/commercial/
+/internal/

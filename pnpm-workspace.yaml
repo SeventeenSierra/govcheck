@@ -1,6 +1,0 @@
-packages:
-  - "packages/*"
-  - "services/genkit-service"
-  # Note: We don't have apps/ in our standalone structure
-  # Note: strands-agent is Python-based, not included in pnpm workspace
-  # Note: inbox/ is excluded to prevent workspace conflicts
