@@ -1,0 +1,328 @@
+# SPDX-License-Identifier: PolyForm-Perimeter-1.0.0
+# SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+
+name: CI
+
+on:
+  push:
+    branches: [main, develop, 'feature/**', 'release/**', 'hotfix/**']
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  lint-and-typecheck:
+    name: Lint & Typecheck
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      id-token: write # Required for Workload Identity Federation
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          token_format: 'access_token'
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: '10.24.0'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Dependencies
+        run: |
+          cat <<EOF > .npmrc
+          registry=https://registry.npmjs.org/
+          @17sierra:registry=https://us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/
+          //us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/:_authToken=${{ steps.auth.outputs.access_token }}
+          EOF
+          rm pnpm-lock.yaml
+          pnpm install --no-frozen-lockfile
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Typecheck
+        run: pnpm run typecheck
+
+  test:
+    name: Test
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          token_format: 'access_token'
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: '10.24.0'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Dependencies
+        run: |
+          cat <<EOF > .npmrc
+          registry=https://registry.npmjs.org/
+          @17sierra:registry=https://us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/
+          //us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/:_authToken=${{ steps.auth.outputs.access_token }}
+          EOF
+          pnpm install --no-frozen-lockfile
+
+      - name: Build Packages
+        run: pnpm --filter "./packages/*" run build
+
+      - name: Test
+        run: pnpm run test
+
+  build:
+    name: Build Verification
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          token_format: 'access_token'
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: '10.24.0'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Dependencies
+        run: |
+          cat <<EOF > .npmrc
+          registry=https://registry.npmjs.org/
+          @17sierra:registry=https://us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/
+          //us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/:_authToken=${{ steps.auth.outputs.access_token }}
+          EOF
+          pnpm install --no-frozen-lockfile
+
+      - name: Build
+        run: pnpm run build
+
+  unused-deps:
+    name: Check Unused Deps
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          token_format: 'access_token'
+          
+      - uses: pnpm/action-setup@v2
+        with:
+          version: '10.24.0'
+          
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Dependencies
+        run: |
+          cat <<EOF > .npmrc
+          registry=https://registry.npmjs.org/
+          @17sierra:registry=https://us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/
+          //us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/:_authToken=${{ steps.auth.outputs.access_token }}
+          EOF
+          pnpm install --no-frozen-lockfile
+
+      - name: Knip
+        run: pnpm run unused
+
+  commitlint:
+    name: Commit Lint
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          token_format: 'access_token'
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: '10.24.0'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Dependencies
+        run: |
+          cat <<EOF > .npmrc
+          registry=https://registry.npmjs.org/
+          @17sierra:registry=https://us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/
+          //us-east1-npm.pkg.dev/dev-tools-475316/seventeensierra-npm/:_authToken=${{ steps.auth.outputs.access_token }}
+          EOF
+          pnpm install --no-frozen-lockfile
+
+      - name: Validate Commit Messages
+        if: github.event_name == 'pull_request'
+        run: pnpm exec commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+
+  dco-check:
+    name: DCO Check
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: DCO Check
+        uses: dcoapp/dco-check-action@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Validate Sign-off Against GitHub
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "Validating commits have proper Signed-off-by with GitHub-verified email..."
+          
+          # Get PR author's GitHub username
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+          echo "PR Author: $PR_AUTHOR"
+          
+          # Get all commits in the PR
+          commits=$(git rev-list ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }})
+          
+          for commit in $commits; do
+            echo "Checking commit: $commit"
+            
+            # Get commit author email
+            commit_author_email=$(git show --format="%ae" -s $commit)
+            commit_author_name=$(git show --format="%an" -s $commit)
+            echo "Commit author: $commit_author_name <$commit_author_email>"
+            
+            # Check if commit has Signed-off-by line
+            if ! git show --format="%B" -s $commit | grep -q "^Signed-off-by: "; then
+              echo "❌ Commit $commit missing Signed-off-by line"
+              exit 1
+            fi
+            
+            # Extract the Signed-off-by line
+            signoff=$(git show --format="%B" -s $commit | grep "^Signed-off-by: " | head -1)
+            echo "Found: $signoff"
+            
+            # Validate email format
+            if ! echo "$signoff" | grep -E "Signed-off-by: .+ <.+@.+\..+>$"; then
+              echo "❌ Invalid Signed-off-by format in commit $commit"
+              echo "Expected: Signed-off-by: Full Name <email@domain.com>"
+              echo "Found: $signoff"
+              exit 1
+            fi
+            
+            # Extract email from sign-off line
+            signoff_email=$(echo "$signoff" | sed -n 's/.*<\(.*\)>.*/\1/p')
+            echo "Sign-off email: $signoff_email"
+            
+            # Get GitHub user's public email and verified emails via API
+            echo "Fetching GitHub emails for user: $PR_AUTHOR"
+            
+            # Get public profile email (if set)
+            github_public_email=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/users/$PR_AUTHOR" | jq -r '.email // empty')
+            
+            # For the PR author, we can get their verified emails
+            if [ "$PR_AUTHOR" = "${{ github.actor }}" ]; then
+              # Get verified emails for the authenticated user (PR author)
+              github_emails=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                "https://api.github.com/user/emails" | jq -r '.[] | select(.verified == true) | .email')
+            else
+              # For other contributors, we can only check public email and commit email
+              github_emails="$github_public_email"
+            fi
+            
+            # Also check if the commit email matches the commit author (GitHub's noreply email pattern)
+            noreply_pattern="${PR_AUTHOR}@users.noreply.github.com"
+            
+            echo "Checking against GitHub emails..."
+            email_valid=false
+            
+            # Check against verified GitHub emails
+            if echo "$github_emails" | grep -q "^$signoff_email$"; then
+              echo "✅ Sign-off email matches GitHub verified email"
+              email_valid=true
+            fi
+            
+            # Check against GitHub public email
+            if [ "$signoff_email" = "$github_public_email" ] && [ -n "$github_public_email" ]; then
+              echo "✅ Sign-off email matches GitHub public email"
+              email_valid=true
+            fi
+            
+            # Check against GitHub noreply email
+            if [ "$signoff_email" = "$noreply_pattern" ]; then
+              echo "✅ Sign-off email matches GitHub noreply pattern"
+              email_valid=true
+            fi
+            
+            # Check if commit author email matches sign-off email (same person)
+            if [ "$commit_author_email" = "$signoff_email" ]; then
+              echo "✅ Sign-off email matches commit author email"
+              # Still need to verify it's a GitHub-associated email, but this is good
+            fi
+            
+            if [ "$email_valid" = false ]; then
+              echo "❌ Sign-off email not associated with GitHub user $PR_AUTHOR"
+              echo "Please use one of your GitHub-verified emails:"
+              echo "- Your GitHub public email (if set)"
+              echo "- A verified email from your GitHub account"
+              echo "- GitHub noreply email: $noreply_pattern"
+              echo ""
+              echo "To see your GitHub emails: https://github.com/settings/emails"
+              exit 1
+            fi
+            
+            echo "✅ Commit $commit has valid GitHub-verified DCO sign-off"
+          done
+          
+          echo "✅ All commits have valid DCO sign-off with GitHub-verified emails"

@@ -1,3 +1,6 @@
+<!-- SPDX-License-Identifier: CC-BY-SA-4.0 -->
+<!-- SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC -->
+
 # Licensing
 
 The Proposal Prepper (Contract Checker) project uses a **multi-license strategy** to balance open source principles with commercial viability for NSF PAPPG compliance validation.
