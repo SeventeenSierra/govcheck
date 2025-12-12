@@ -118,9 +118,9 @@ const AgentInterface = ({ activeProject, startDemo }: AgentInterfaceProps) => {
                 </div>
               </button>
 
-              <button
-                type="button"
-                className="text-left border border-gray-200 rounded-xl p-5 hover:border-primary/50 hover:shadow-md hover:bg-primary/5 transition-all group bg-white"
+              <a
+                href="/threshold"
+                className="text-left border border-gray-200 rounded-xl p-5 hover:border-primary/50 hover:shadow-md hover:bg-primary/5 transition-all group bg-white block"
               >
                 <div className="flex items-start gap-4">
                   <div className="p-3 bg-teal-50 text-teal-600 rounded-lg group-hover:bg-teal-100 transition-colors">
@@ -128,14 +128,14 @@ const AgentInterface = ({ activeProject, startDemo }: AgentInterfaceProps) => {
                   </div>
                   <div>
                     <div className="font-semibold text-slate-800 text-base">
-                      Update Regulatory Knowledge
+                      Threshold Interface
                     </div>
                     <p className="text-sm text-gray-500 mt-1 leading-relaxed">
-                      Agent autonomously scrapes latest Executive Orders and policy updates.
+                      Access the functional compliance analysis interface with upload workflow.
                     </p>
                   </div>
                 </div>
-              </button>
+              </a>
             </div>
           )}
 
