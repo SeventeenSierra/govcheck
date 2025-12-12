@@ -589,6 +589,28 @@ export class StrandsApiClient {
 }
 
 /**
- * Default Strands API client instance
+ * Smart API client factory that switches between real and mock APIs
+ * Now uses framework-independent configuration
  */
-export const strandsApiClient = new StrandsApiClient();
+function createStrandsApiClient() {
+  // Import configuration dynamically to avoid circular dependencies
+  let config;
+  try {
+    const configModule = require('../config/api-config');
+    config = configModule.apiConfiguration;
+  } catch (error) {
+    // Fallback configuration if api-config is not available
+    config = {
+      baseUrl: apiConfig.useMockApis ? 'http://localhost:3000' : apiConfig.strandsBaseUrl,
+      useMock: apiConfig.useMockApis
+    };
+  }
+
+  return new StrandsApiClient(config.baseUrl);
+}
+
+/**
+ * Default Strands API client instance
+ * Automatically switches between real and mock APIs based on environment
+ */
+export const strandsApiClient = createStrandsApiClient();
