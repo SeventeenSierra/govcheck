@@ -7,10 +7,7 @@ const nextConfig: NextConfig = {
   output: 'standalone', // For container support
   transpilePackages: ['@17sierra/ui', '@17sierra/lib', '@17sierra/ai-flows'],
   serverExternalPackages: ['genkit', '@genkit-ai/googleai', 'express'],
-  eslint: {
-    // Disable ESLint during builds since we use Biome
-    ignoreDuringBuilds: true,
-  },
+  // ESLint configuration removed in Next.js 16 - use Biome instead
   // NOTE: No ignoreBuildErrors - must fix actual TS errors
   // NOTE: No external image hosts - use local assets only
 };

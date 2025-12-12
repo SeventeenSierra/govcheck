@@ -30,6 +30,9 @@
       "suspicious": {
         "noExplicitAny": "warn",
         "noUnknownAtRules": "off"
+      },
+      "a11y": {
+        "useSemanticElements": "warn"
       }
     }
   },
@@ -49,7 +52,8 @@
   "css": {
     "parser": {
       "allowWrongLineComments": true,
-      "cssModules": false
+      "cssModules": false,
+      "tailwindDirectives": true
     },
     "linter": {
       "enabled": false
