@@ -13,6 +13,7 @@ import type React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { UploadStatus } from '@/types/app';
 import { UploadManager } from './upload-manager';
+import { strandsApiClient } from '@/services';
 
 // Mock the config imports
 vi.mock('@/config/app', () => ({
@@ -41,6 +42,14 @@ vi.mock('@/config/app', () => ({
       VALIDATION_FAILED: 'VALIDATION_001',
       UPLOAD_FAILED: 'UPLOAD_001',
     },
+  },
+}));
+
+// Mock the strands API client
+vi.mock('@/services', () => ({
+  strandsApiClient: {
+    uploadDocument: vi.fn(),
+    getUploadStatus: vi.fn(),
   },
 }));
 
@@ -86,6 +95,33 @@ describe('Upload Confirmation and Error Handling', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    
+    // Setup successful upload mocks by default
+    (strandsApiClient.uploadDocument as any).mockResolvedValue({
+      success: true,
+      data: {
+        id: 'upload-123',
+        filename: 'test.pdf',
+        fileSize: 2048,
+        mimeType: 'application/pdf',
+        status: 'completed',
+        progress: 100,
+        startedAt: new Date().toISOString(),
+      },
+    });
+    
+    (strandsApiClient.getUploadStatus as any).mockResolvedValue({
+      success: true,
+      data: {
+        id: 'upload-123',
+        filename: 'test.pdf',
+        fileSize: 2048,
+        mimeType: 'application/pdf',
+        status: 'completed',
+        progress: 100,
+        startedAt: new Date().toISOString(),
+      },
+    });
   });
 
   describe('Upload Confirmation (Requirement 1.3)', () => {

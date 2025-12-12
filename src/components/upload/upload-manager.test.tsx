@@ -13,6 +13,7 @@ import type React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { UploadStatus } from '@/types/app';
 import { UploadManager } from './upload-manager';
+import { strandsApiClient } from '@/services';
 
 // Mock the config imports
 vi.mock('@/config/app', () => ({
@@ -41,6 +42,14 @@ vi.mock('@/config/app', () => ({
       VALIDATION_FAILED: 'VALIDATION_001',
       UPLOAD_FAILED: 'UPLOAD_001',
     },
+  },
+}));
+
+// Mock the strands API client
+vi.mock('@/services', () => ({
+  strandsApiClient: {
+    uploadDocument: vi.fn(),
+    getUploadStatus: vi.fn(),
   },
 }));
 
@@ -90,6 +99,33 @@ describe('UploadManager', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    
+    // Setup successful upload mocks by default
+    (strandsApiClient.uploadDocument as any).mockResolvedValue({
+      success: true,
+      data: {
+        id: 'upload-123',
+        filename: 'test.pdf',
+        fileSize: 2048,
+        mimeType: 'application/pdf',
+        status: 'completed',
+        progress: 100,
+        startedAt: new Date().toISOString(),
+      },
+    });
+    
+    (strandsApiClient.getUploadStatus as any).mockResolvedValue({
+      success: true,
+      data: {
+        id: 'upload-123',
+        filename: 'test.pdf',
+        fileSize: 2048,
+        mimeType: 'application/pdf',
+        status: 'completed',
+        progress: 100,
+        startedAt: new Date().toISOString(),
+      },
+    });
   });
 
   describe('Initial State', () => {
@@ -203,6 +239,33 @@ describe('UploadManager', () => {
 
   describe('Upload Progress', () => {
     it('should show progress during upload', async () => {
+      // Mock a slower upload with progress callbacks
+      (strandsApiClient.uploadDocument as any).mockImplementation(
+        (file: File, progressCallback?: (progress: number) => void) => {
+          return new Promise((resolve) => {
+            // Simulate progress updates
+            setTimeout(() => progressCallback?.(25), 10);
+            setTimeout(() => progressCallback?.(50), 20);
+            setTimeout(() => progressCallback?.(75), 30);
+            setTimeout(() => {
+              progressCallback?.(100);
+              resolve({
+                success: true,
+                data: {
+                  id: 'upload-123',
+                  filename: 'test.pdf',
+                  fileSize: 2048,
+                  mimeType: 'application/pdf',
+                  status: 'completed',
+                  progress: 100,
+                  startedAt: new Date().toISOString(),
+                },
+              });
+            }, 40);
+          });
+        }
+      );
+
       render(
         <UploadManager
           onUploadProgress={mockOnUploadProgress}
@@ -228,7 +291,9 @@ describe('UploadManager', () => {
       });
 
       // Should show progress bar
-      expect(document.querySelector('.bg-blue-600')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(document.querySelector('.bg-blue-600')).toBeInTheDocument();
+      });
     });
   });
 
