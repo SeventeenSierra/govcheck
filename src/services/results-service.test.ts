@@ -11,6 +11,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ComplianceStatus, IssueSeverity } from '../components/results/types';
 import { ResultsService } from './results-service';
+import type { StrandsApiClient } from './strands-api-client';
 import * as strandsApiModule from './strands-api-client';
 
 // Mock the Strands API client
@@ -23,7 +24,7 @@ vi.mock('./strands-api-client', () => ({
 
 describe('ResultsService', () => {
   let resultsService: ResultsService;
-  let mockStrandsApi: any;
+  let mockStrandsApi: Partial<StrandsApiClient>;
 
   beforeEach(() => {
     resultsService = new ResultsService();

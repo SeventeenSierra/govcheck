@@ -9,7 +9,8 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { UploadStatus } from '../types/app';
+import { type UploadSession, UploadStatus } from '../types/app';
+import type { StrandsApiClient } from './strands-api-client';
 import * as strandsApiModule from './strands-api-client';
 import { UploadService } from './upload-service';
 
@@ -26,7 +27,7 @@ vi.mock('./strands-api-client', () => ({
 
 describe('UploadService', () => {
   let uploadService: UploadService;
-  let mockStrandsApi: any;
+  let mockStrandsApi: Partial<StrandsApiClient>;
 
   beforeEach(() => {
     uploadService = new UploadService();
@@ -272,8 +273,26 @@ describe('UploadService', () => {
     });
 
     it('should clear all sessions', () => {
-      uploadService.activeSessions.set('session1', {} as any);
-      uploadService.activeSessions.set('session2', {} as any);
+      const mockSession1: UploadSession = {
+        id: 'session1',
+        filename: 'test1.pdf',
+        fileSize: 1024,
+        mimeType: 'application/pdf',
+        status: UploadStatus.UPLOADING,
+        progress: 50,
+        startedAt: new Date(),
+      };
+      const mockSession2: UploadSession = {
+        id: 'session2',
+        filename: 'test2.pdf',
+        fileSize: 2048,
+        mimeType: 'application/pdf',
+        status: UploadStatus.UPLOADING,
+        progress: 30,
+        startedAt: new Date(),
+      };
+      uploadService.activeSessions.set('session1', mockSession1);
+      uploadService.activeSessions.set('session2', mockSession2);
 
       uploadService.clearAllSessions();
 

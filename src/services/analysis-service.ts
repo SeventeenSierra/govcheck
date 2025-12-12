@@ -237,16 +237,18 @@ export class AnalysisService {
         const sessionId = message.sessionId;
         const session = this.activeSessions.get(sessionId);
 
-        if (session && message.data.progress !== undefined) {
+        // Type guard for progress data
+        const data = message.data as { progress?: number; currentStep?: string };
+        if (session && typeof data.progress === 'number') {
           const updatedSession = {
             ...session,
-            progress: message.data.progress,
-            currentStep: message.data.currentStep || session.currentStep,
+            progress: data.progress,
+            currentStep: data.currentStep || session.currentStep,
           };
           this.activeSessions.set(sessionId, updatedSession);
           this.eventHandlers.onProgress?.(
             sessionId,
-            message.data.progress,
+            data.progress,
             updatedSession.currentStep
           );
         }
@@ -273,10 +275,12 @@ export class AnalysisService {
         const session = this.activeSessions.get(sessionId);
 
         if (session) {
+          // Type guard for error data
+          const data = message.data as { error?: string };
           const failedSession = {
             ...session,
             status: AnalysisStatus.FAILED,
-            errorMessage: message.data.error || 'Analysis failed',
+            errorMessage: data.error || 'Analysis failed',
           };
           this.activeSessions.set(sessionId, failedSession);
           this.eventHandlers.onError?.(sessionId, failedSession.errorMessage);

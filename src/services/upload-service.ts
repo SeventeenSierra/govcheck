@@ -191,7 +191,9 @@ export class UploadService {
    */
   validateFile(file: File): { isValid: boolean; error?: string; errorCode?: string } {
     // Check file type (requirement 1.1: PDF format only)
-    if (!uploadConfig.acceptedTypes.includes(file.type as any)) {
+    if (
+      !uploadConfig.acceptedTypes.includes(file.type as (typeof uploadConfig.acceptedTypes)[number])
+    ) {
       return {
         isValid: false,
         error: 'Only PDF files are accepted for upload.',
@@ -277,10 +279,12 @@ export class UploadService {
         const sessionId = message.sessionId;
         const session = this.activeSessions.get(sessionId);
 
-        if (session && message.data.progress !== undefined) {
-          const updatedSession = { ...session, progress: message.data.progress };
+        // Type guard for progress data
+        const data = message.data as { progress?: number };
+        if (session && typeof data.progress === 'number') {
+          const updatedSession = { ...session, progress: data.progress };
           this.activeSessions.set(sessionId, updatedSession);
-          this.eventHandlers.onProgress?.(sessionId, message.data.progress);
+          this.eventHandlers.onProgress?.(sessionId, data.progress);
         }
       });
     } catch (error) {

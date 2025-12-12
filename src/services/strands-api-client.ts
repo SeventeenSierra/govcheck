@@ -93,7 +93,7 @@ export interface ComplianceIssue {
 export interface WebSocketMessage {
   type: 'upload_progress' | 'analysis_progress' | 'analysis_complete' | 'error';
   sessionId: string;
-  data: any;
+  data: unknown;
 }
 
 /**
@@ -193,7 +193,7 @@ class HttpClient {
   /**
    * POST request
    */
-  async post<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  async post<T>(endpoint: string, data?: unknown): Promise<ApiResponse<T>> {
     return this.makeRequest<T>(endpoint, {
       method: 'POST',
       body: data ? JSON.stringify(data) : undefined,
@@ -203,7 +203,7 @@ class HttpClient {
   /**
    * PUT request
    */
-  async put<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  async put<T>(endpoint: string, data?: unknown): Promise<ApiResponse<T>> {
     return this.makeRequest<T>(endpoint, {
       method: 'PUT',
       body: data ? JSON.stringify(data) : undefined,
@@ -381,7 +381,7 @@ class WebSocketClient {
   /**
    * Send message through WebSocket
    */
-  send(message: any) {
+  send(message: unknown) {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(message));
     }

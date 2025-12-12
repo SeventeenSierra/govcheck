@@ -294,79 +294,81 @@ export function UploadManager({
   return (
     <div className={`upload-manager ${className}`}>
       {/* Upload Area */}
-      <div
+      <section
         className={`
-          border-2 border-dashed rounded-lg p-8 text-center transition-colors
+          border-2 border-dashed rounded-lg transition-colors
           ${dragActive ? 'border-blue-400 bg-blue-50' : 'border-gray-300'}
-          ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-gray-400'}
+          ${disabled ? 'opacity-50' : ''}
           ${isUploading ? 'border-blue-400 bg-blue-50' : ''}
         `}
-        role="button"
-        tabIndex={0}
+        aria-label="File drop zone"
         onDragEnter={handleDragIn}
         onDragLeave={handleDragOut}
         onDragOver={handleDrag}
         onDrop={handleDrop}
-        onClick={handleClick}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            handleClick();
-          }
-        }}
       >
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".pdf,application/pdf"
-          onChange={handleFileInputChange}
-          className="hidden"
+        <button
+          type="button"
+          className={`w-full p-8 text-center transition-colors ${
+            disabled ? 'cursor-not-allowed' : 'cursor-pointer hover:bg-gray-50'
+          }`}
+          onClick={handleClick}
           disabled={disabled}
-          data-testid="file-input"
-        />
+          aria-label="Upload area - drag and drop files or click to browse"
+        >
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".pdf,application/pdf"
+            onChange={handleFileInputChange}
+            className="hidden"
+            disabled={disabled}
+            data-testid="file-input"
+          />
 
-        <div className="mb-4" data-testid="upload-icon">
-          {isUploading ? (
-            <Upload className="mx-auto h-12 w-12 text-blue-500 animate-pulse" />
-          ) : hasCompleted ? (
-            <CheckCircle className="mx-auto h-12 w-12 text-green-500" />
-          ) : hasFailed ? (
-            <AlertCircle className="mx-auto h-12 w-12 text-red-500" />
-          ) : (
-            <FileText className="mx-auto h-12 w-12 text-gray-400" />
+          <div className="mb-4" data-testid="upload-icon">
+            {isUploading ? (
+              <Upload className="mx-auto h-12 w-12 text-blue-500 animate-pulse" />
+            ) : hasCompleted ? (
+              <CheckCircle className="mx-auto h-12 w-12 text-green-500" />
+            ) : hasFailed ? (
+              <AlertCircle className="mx-auto h-12 w-12 text-red-500" />
+            ) : (
+              <FileText className="mx-auto h-12 w-12 text-gray-400" />
+            )}
+          </div>
+
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            {isUploading
+              ? 'Uploading...'
+              : hasCompleted
+                ? 'Upload Complete'
+                : hasFailed
+                  ? 'Upload Failed'
+                  : 'Upload your proposal document'}
+          </h3>
+
+          <p className="text-sm text-gray-600 mb-4">
+            {isUploading
+              ? `Uploading ${currentUpload?.filename}`
+              : hasCompleted
+                ? `Successfully uploaded ${currentUpload?.filename}`
+                : hasFailed
+                  ? currentUpload?.errorMessage
+                  : 'Drag and drop your PDF file here, or click to browse'}
+          </p>
+
+          {!isUploading && !hasCompleted && (
+            <Button variant="outline" disabled={disabled}>
+              Select PDF File
+            </Button>
           )}
-        </div>
 
-        <h3 className="text-lg font-medium text-gray-900 mb-2">
-          {isUploading
-            ? 'Uploading...'
-            : hasCompleted
-              ? 'Upload Complete'
-              : hasFailed
-                ? 'Upload Failed'
-                : 'Upload your proposal document'}
-        </h3>
-
-        <p className="text-sm text-gray-600 mb-4">
-          {isUploading
-            ? `Uploading ${currentUpload?.filename}`
-            : hasCompleted
-              ? `Successfully uploaded ${currentUpload?.filename}`
-              : hasFailed
-                ? currentUpload?.errorMessage
-                : 'Drag and drop your PDF file here, or click to browse'}
-        </p>
-
-        {!isUploading && !hasCompleted && (
-          <Button variant="outline" disabled={disabled}>
-            Select PDF File
-          </Button>
-        )}
-
-        <p className="text-xs text-gray-500 mt-2">
-          Maximum file size: {Math.round(uploadConfig.maxFileSize / (1024 * 1024))}MB
-        </p>
-      </div>
+          <p className="text-xs text-gray-500 mt-2">
+            Maximum file size: {Math.round(uploadConfig.maxFileSize / (1024 * 1024))}MB
+          </p>
+        </button>
+      </section>
 
       {/* Progress Bar */}
       {isUploading && currentUpload && (

@@ -44,7 +44,7 @@ class MockWebSocket {
   }
 }
 
-global.WebSocket = MockWebSocket as any;
+global.WebSocket = MockWebSocket as typeof WebSocket;
 
 describe('StrandsApiClient', () => {
   let client: StrandsApiClient;
@@ -84,7 +84,7 @@ describe('StrandsApiClient', () => {
         };
 
         const originalXHR = global.XMLHttpRequest;
-        global.XMLHttpRequest = (() => mockXHR) as any;
+        global.XMLHttpRequest = (() => mockXHR) as typeof XMLHttpRequest;
 
         // Simulate successful upload
         setTimeout(() => {
@@ -121,7 +121,7 @@ describe('StrandsApiClient', () => {
         };
 
         const originalXHR = global.XMLHttpRequest;
-        global.XMLHttpRequest = (() => mockXHR) as any;
+        global.XMLHttpRequest = (() => mockXHR) as typeof XMLHttpRequest;
 
         // Simulate progress events
         setTimeout(() => {
@@ -340,7 +340,7 @@ describe('StrandsApiClient', () => {
       };
 
       // Access the WebSocket instance and trigger onmessage
-      const wsInstance = (client as any).wsClient.ws;
+      const wsInstance = (client as { wsClient: { ws: WebSocket } }).wsClient.ws;
       if (wsInstance?.onmessage) {
         wsInstance.onmessage({
           data: JSON.stringify(mockMessage),
@@ -377,7 +377,7 @@ describe('StrandsApiClient', () => {
         data: { progress: 75 },
       };
 
-      const wsInstance = (client as any).wsClient.ws;
+      const wsInstance = (client as { wsClient: { ws: WebSocket } }).wsClient.ws;
       if (wsInstance?.onmessage) {
         wsInstance.onmessage({
           data: JSON.stringify(mockMessage),
