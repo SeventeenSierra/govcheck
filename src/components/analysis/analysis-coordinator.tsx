@@ -213,7 +213,7 @@ export const AnalysisCoordinator: React.FC<AnalysisCoordinatorProps> = ({
    * Implements Requirements 2.1, 2.2, 2.4: Analysis orchestration
    */
   const startAnalysis = useCallback(async () => {
-    if (!proposalId || isAnalyzing) return;
+    if (!proposalId || !_fileContent || isAnalyzing) return;
 
     setIsAnalyzing(true);
     setResult(null);
@@ -313,6 +313,7 @@ export const AnalysisCoordinator: React.FC<AnalysisCoordinatorProps> = ({
     }
   }, [
     proposalId,
+    _fileContent,
     isAnalyzing,
     session,
     generateSessionId,
@@ -353,10 +354,10 @@ export const AnalysisCoordinator: React.FC<AnalysisCoordinatorProps> = ({
    * Auto-start analysis when proposalId is provided
    */
   useEffect(() => {
-    if (autoStart && proposalId && !session && !isAnalyzing) {
+    if (autoStart && proposalId && _fileContent && !session && !isAnalyzing) {
       startAnalysis();
     }
-  }, [autoStart, proposalId, session, isAnalyzing, startAnalysis]);
+  }, [autoStart, proposalId, _fileContent, session, isAnalyzing, startAnalysis]);
 
   /**
    * Render analysis status and controls
@@ -417,7 +418,7 @@ export const AnalysisCoordinator: React.FC<AnalysisCoordinatorProps> = ({
           <button
             type="button"
             onClick={session?.status === AnalysisStatus.FAILED ? retryAnalysis : startAnalysis}
-            disabled={!proposalId || isAnalyzing}
+            disabled={!proposalId || !_fileContent || isAnalyzing}
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             {session?.status === AnalysisStatus.FAILED ? 'Retry Analysis' : 'Start Analysis'}

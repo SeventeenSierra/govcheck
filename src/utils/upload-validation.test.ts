@@ -51,7 +51,14 @@ describe('Upload Validation', () => {
   describe('validateFileSize', () => {
     it('should accept files within size limits', () => {
       const validSize = 50 * 1024 * 1024; // 50MB
-      const file = new File(['x'.repeat(validSize)], 'test.pdf', { type: 'application/pdf' });
+      const file = new File(['test content'], 'test.pdf', { type: 'application/pdf' });
+
+      // Mock the size property to simulate a valid sized file
+      Object.defineProperty(file, 'size', {
+        value: validSize,
+        writable: false,
+      });
+
       const result = validateFileSize(file);
 
       expect(result.isValid).toBe(true);

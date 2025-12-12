@@ -405,8 +405,12 @@ describe('StrandsApiClient', () => {
     it('should handle JSON parsing errors', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
+        status: 200,
+        statusText: 'OK',
+        headers: new Headers(),
         json: () => Promise.reject(new Error('Invalid JSON')),
-      });
+        text: () => Promise.resolve('invalid json response'),
+      } as Response);
 
       const result = await client.healthCheck();
 

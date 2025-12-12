@@ -62,9 +62,15 @@ describe('UploadService', () => {
     });
 
     it('should reject files that are too large', () => {
-      // Create a file larger than the max size (100MB)
-      const largeFile = new File(['x'.repeat(101 * 1024 * 1024)], 'large.pdf', {
+      // Create a mock file with large size without actually creating the content
+      const largeFile = new File(['test content'], 'large.pdf', {
         type: 'application/pdf',
+      });
+
+      // Mock the size property to simulate a large file
+      Object.defineProperty(largeFile, 'size', {
+        value: 101 * 1024 * 1024, // 101MB
+        writable: false,
       });
 
       const result = uploadService.validateFile(largeFile);
@@ -185,6 +191,9 @@ describe('UploadService', () => {
 
   describe('Session Management', () => {
     it('should track active sessions', async () => {
+      // Ensure clean state for this test
+      uploadService.clearAllSessions();
+
       const content = 'x'.repeat(2048); // Ensure file is large enough
       const file = new File([content], 'test.pdf', { type: 'application/pdf' });
 
