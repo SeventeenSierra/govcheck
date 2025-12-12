@@ -5,6 +5,8 @@
 
 // Analysis components
 export * from './analysis';
+// Navigation components
+export * from './navigation';
 // Proposal components
 export * from './proposal';
 // Results components
