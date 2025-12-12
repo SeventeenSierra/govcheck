@@ -4,9 +4,9 @@
  */
 
 export { AnalysisCoordinator } from './analysis-coordinator';
-export type { 
-  AnalysisSession, 
-  AnalysisStatus, 
+export type {
+  AnalysisResult,
+  AnalysisSession,
+  AnalysisStatus,
   ComplianceIssue,
-  AnalysisResult 
 } from './types';

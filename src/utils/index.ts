@@ -3,41 +3,39 @@
 
 /**
  * Utilities
- * 
+ *
  * Shared utility functions and helpers for the Proposal Prepper
  * threshold functionality. Includes validation, formatting, and
  * common operations used across components.
  */
 
-// Upload validation utilities
-export {
-  validateFile,
-  validateFileType,
-  validateFileSize,
-  validateFilename,
-  validatePDFContent,
-  formatFileSize,
-  generateSessionId,
-  type FileValidationResult,
-} from './upload-validation';
-
 // Analysis validation utilities
 export {
-  validateFARDFARS,
-  calculateComplianceScore,
-  hasBasicComplianceElements,
-  extractRegulatoryReferences,
   CORE_VALIDATION_RULES,
+  calculateComplianceScore,
+  extractRegulatoryReferences,
+  hasBasicComplianceElements,
   type ValidationRule,
+  validateFARDFARS,
 } from './analysis-validation';
-
 // Compliance detection utilities
 export {
+  analyzeDocumentStructure,
+  CRITICAL_VIOLATION_PATTERNS,
   detectCriticalViolations,
   detectWarningIssues,
-  generateComplianceStatus,
-  analyzeDocumentStructure,
   findIssueLocations,
-  CRITICAL_VIOLATION_PATTERNS,
+  generateComplianceStatus,
   WARNING_VIOLATION_PATTERNS,
 } from './compliance-detection';
+// Upload validation utilities
+export {
+  type FileValidationResult,
+  formatFileSize,
+  generateSessionId,
+  validateFile,
+  validateFilename,
+  validateFileSize,
+  validateFileType,
+  validatePDFContent,
+} from './upload-validation';

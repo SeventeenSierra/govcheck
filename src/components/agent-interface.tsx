@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
 
-"use client";
+'use client';
 
-import { Button, Textarea } from "@17sierra/ui";
-import { Bot, CheckCircle2, ChevronRight, FileCheck, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Button, Textarea } from '@17sierra/ui';
+import { Bot, CheckCircle2, ChevronRight, FileCheck, Loader2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 type AnalysisStep = {
   id: number;
   title: string;
   description: string;
-  status: "pending" | "loading" | "complete";
+  status: 'pending' | 'loading' | 'complete';
 };
 
 type AgentInterfaceProps = {
@@ -20,68 +20,68 @@ type AgentInterfaceProps = {
 };
 
 const AgentInterface = ({ activeProject, startDemo }: AgentInterfaceProps) => {
-  const [inputValue, setInputValue] = useState("");
-  const [activeTab, setActiveTab] = useState<"results" | "steps">("results");
+  const [inputValue, setInputValue] = useState('');
+  const [activeTab, setActiveTab] = useState<'results' | 'steps'>('results');
   const [steps, setSteps] = useState<AnalysisStep[]>([
     {
       id: 1,
-      title: "Document Parsing",
-      description: "Extracting text and tables from Proposal_v1.docx",
-      status: "pending",
+      title: 'Document Parsing',
+      description: 'Extracting text and tables from Proposal_v1.docx',
+      status: 'pending',
     },
     {
       id: 2,
-      title: "Regulatory Scan (FAR/DFARS)",
-      description: "Checking against latest regulations (Jan 2025)",
-      status: "pending",
+      title: 'Regulatory Scan (FAR/DFARS)',
+      description: 'Checking against latest regulations (Jan 2025)',
+      status: 'pending',
     },
     {
       id: 3,
-      title: "Biosketch Validation",
-      description: "Verifying SciENcv formatting compliance",
-      status: "pending",
+      title: 'Biosketch Validation',
+      description: 'Verifying SciENcv formatting compliance',
+      status: 'pending',
     },
     {
       id: 4,
-      title: "Budget Analysis",
-      description: "Ensuring justification page limits and cost realism",
-      status: "pending",
+      title: 'Budget Analysis',
+      description: 'Ensuring justification page limits and cost realism',
+      status: 'pending',
     },
     {
       id: 5,
-      title: "Report Generation",
-      description: "Compiling findings into final compliance matrix",
-      status: "pending",
+      title: 'Report Generation',
+      description: 'Compiling findings into final compliance matrix',
+      status: 'pending',
     },
   ]);
 
-  const isAnalysisComplete = steps[steps.length - 1].status === "complete";
+  const isAnalysisComplete = steps[steps.length - 1].status === 'complete';
 
   useEffect(() => {
-    if (activeProject === "demo-running") {
-      setActiveTab("steps");
+    if (activeProject === 'demo-running') {
+      setActiveTab('steps');
 
       const runSteps = async () => {
-        setSteps((s) => s.map((step) => ({ ...step, status: "pending" })));
+        setSteps((s) => s.map((step) => ({ ...step, status: 'pending' })));
 
         for (let i = 0; i < steps.length; i++) {
-          setSteps((prev) => prev.map((s, idx) => (idx === i ? { ...s, status: "loading" } : s)));
+          setSteps((prev) => prev.map((s, idx) => (idx === i ? { ...s, status: 'loading' } : s)));
           await new Promise((r) => setTimeout(r, 1500));
-          setSteps((prev) => prev.map((s, idx) => (idx === i ? { ...s, status: "complete" } : s)));
+          setSteps((prev) => prev.map((s, idx) => (idx === i ? { ...s, status: 'complete' } : s)));
         }
       };
 
       runSteps();
     } else if (activeProject) {
-      setSteps((s) => s.map((step) => ({ ...step, status: "complete" })));
-      setActiveTab("results");
+      setSteps((s) => s.map((step) => ({ ...step, status: 'complete' })));
+      setActiveTab('results');
     }
   }, [activeProject, steps.length]);
 
   return (
     <div
       className={`bg-white flex flex-col h-full relative transition-all duration-500 ${
-        activeProject ? "w-full md:w-1/2 border-r border-gray-200" : "w-full"
+        activeProject ? 'w-full md:w-1/2 border-r border-gray-200' : 'w-full'
       }`}
     >
       <div className="flex-1 overflow-y-auto p-4 md:p-8 pb-32">
@@ -91,7 +91,7 @@ const AgentInterface = ({ activeProject, startDemo }: AgentInterfaceProps) => {
             <p className="text-gray-500 text-sm">
               {activeProject
                 ? 'Analyzing "Proposal_v1.docx" against current FAR/DFARS standards.'
-                : "Autonomous agent for federal procurement compliance."}
+                : 'Autonomous agent for federal procurement compliance.'}
             </p>
           </div>
 
@@ -144,47 +144,47 @@ const AgentInterface = ({ activeProject, startDemo }: AgentInterfaceProps) => {
               <div className="flex border-b border-gray-200 mb-6">
                 <button
                   type="button"
-                  onClick={() => setActiveTab("results")}
+                  onClick={() => setActiveTab('results')}
                   className={`pb-2 px-1 text-sm font-medium mr-6 transition-colors ${
-                    activeTab === "results"
-                      ? "text-primary border-b-2 border-primary"
-                      : "text-gray-500 hover:text-slate-800"
+                    activeTab === 'results'
+                      ? 'text-primary border-b-2 border-primary'
+                      : 'text-gray-500 hover:text-slate-800'
                   }`}
                 >
                   Results
                 </button>
                 <button
                   type="button"
-                  onClick={() => setActiveTab("steps")}
+                  onClick={() => setActiveTab('steps')}
                   className={`pb-2 px-1 text-sm font-medium transition-colors ${
-                    activeTab === "steps"
-                      ? "text-primary border-b-2 border-primary"
-                      : "text-gray-500 hover:text-slate-800"
+                    activeTab === 'steps'
+                      ? 'text-primary border-b-2 border-primary'
+                      : 'text-gray-500 hover:text-slate-800'
                   }`}
                 >
                   Analysis steps
                 </button>
               </div>
 
-              {activeTab === "steps" && (
+              {activeTab === 'steps' && (
                 <div className="space-y-4 animate-in fade-in duration-300">
                   {steps.map((step) => (
                     <div key={step.id} className="flex gap-3">
                       <div className="mt-1 shrink-0">
-                        {step.status === "complete" && (
+                        {step.status === 'complete' && (
                           <CheckCircle2 size={18} className="text-green-600" />
                         )}
-                        {step.status === "loading" && (
+                        {step.status === 'loading' && (
                           <Loader2 size={18} className="text-primary animate-spin" />
                         )}
-                        {step.status === "pending" && (
+                        {step.status === 'pending' && (
                           <div className="w-[18px] h-[18px] rounded-full border-2 border-gray-300" />
                         )}
                       </div>
                       <div>
                         <div
                           className={`text-sm font-medium ${
-                            step.status === "pending" ? "text-gray-400" : "text-slate-800"
+                            step.status === 'pending' ? 'text-gray-400' : 'text-slate-800'
                           }`}
                         >
                           {step.title}
@@ -201,7 +201,7 @@ const AgentInterface = ({ activeProject, startDemo }: AgentInterfaceProps) => {
                 </div>
               )}
 
-              {activeTab === "results" && (
+              {activeTab === 'results' && (
                 <div className="space-y-6 animate-in fade-in duration-300">
                   <div className="flex gap-4">
                     <div className="w-8 h-8 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center shrink-0 p-1">

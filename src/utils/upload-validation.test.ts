@@ -3,29 +3,29 @@
 
 /**
  * Upload Validation Tests
- * 
+ *
  * Unit tests for upload validation utilities.
  * Tests specific examples and edge cases for file validation logic.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
+import { uploadConfig } from '@/config/app';
 import {
-  validateFile,
-  validateFileType,
-  validateFileSize,
-  validateFilename,
-  validatePDFContent,
   formatFileSize,
   generateSessionId,
+  validateFile,
+  validateFilename,
+  validateFileSize,
+  validateFileType,
+  validatePDFContent,
 } from './upload-validation';
-import { uploadConfig } from '@/config/app';
 
 describe('Upload Validation', () => {
   describe('validateFileType', () => {
     it('should accept valid PDF files', () => {
       const pdfFile = new File(['test'], 'test.pdf', { type: 'application/pdf' });
       const result = validateFileType(pdfFile);
-      
+
       expect(result.isValid).toBe(true);
       expect(result.details?.fileType).toBe('application/pdf');
     });
@@ -33,7 +33,7 @@ describe('Upload Validation', () => {
     it('should reject non-PDF files', () => {
       const textFile = new File(['test'], 'test.txt', { type: 'text/plain' });
       const result = validateFileType(textFile);
-      
+
       expect(result.isValid).toBe(false);
       expect(result.error).toContain('Only PDF files are accepted');
       expect(result.errorCode).toBeDefined();
@@ -42,7 +42,7 @@ describe('Upload Validation', () => {
     it('should handle files with no MIME type', () => {
       const unknownFile = new File(['test'], 'test.unknown', { type: '' });
       const result = validateFileType(unknownFile);
-      
+
       expect(result.isValid).toBe(false);
       expect(result.error).toContain('unknown');
     });
@@ -53,24 +53,24 @@ describe('Upload Validation', () => {
       const validSize = 50 * 1024 * 1024; // 50MB
       const file = new File(['x'.repeat(validSize)], 'test.pdf', { type: 'application/pdf' });
       const result = validateFileSize(file);
-      
+
       expect(result.isValid).toBe(true);
       expect(result.details?.fileSize).toBe(validSize);
     });
 
     it('should reject files that are too large', () => {
-      const oversizedFile = new File(['x'.repeat(1000)], 'large.pdf', { 
-        type: 'application/pdf' 
+      const oversizedFile = new File(['x'.repeat(1000)], 'large.pdf', {
+        type: 'application/pdf',
       });
-      
+
       // Mock the file size to be larger than the limit
       Object.defineProperty(oversizedFile, 'size', {
         value: uploadConfig.maxFileSize + 1,
         writable: false,
       });
-      
+
       const result = validateFileSize(oversizedFile);
-      
+
       expect(result.isValid).toBe(false);
       expect(result.error).toContain('exceeds the maximum limit');
       expect(result.errorCode).toBeDefined();
@@ -79,7 +79,7 @@ describe('Upload Validation', () => {
     it('should reject files that are too small', () => {
       const tinyFile = new File(['x'], 'tiny.pdf', { type: 'application/pdf' });
       const result = validateFileSize(tinyFile);
-      
+
       expect(result.isValid).toBe(false);
       expect(result.error).toContain('below the minimum requirement');
       expect(result.errorCode).toBeDefined();
@@ -95,7 +95,7 @@ describe('Upload Validation', () => {
         'file.with.dots.pdf',
       ];
 
-      validNames.forEach(filename => {
+      validNames.forEach((filename) => {
         const result = validateFilename(filename);
         expect(result.isValid).toBe(true);
         expect(result.details?.filename).toBe(filename);
@@ -110,7 +110,7 @@ describe('Upload Validation', () => {
         'file|with|pipes.pdf',
       ];
 
-      invalidNames.forEach(filename => {
+      invalidNames.forEach((filename) => {
         const result = validateFilename(filename);
         expect(result.isValid).toBe(false);
         expect(result.error).toContain('invalid characters');
@@ -118,9 +118,9 @@ describe('Upload Validation', () => {
     });
 
     it('should reject filenames that are too long', () => {
-      const longFilename = 'x'.repeat(300) + '.pdf';
+      const longFilename = `${'x'.repeat(300)}.pdf`;
       const result = validateFilename(longFilename);
-      
+
       expect(result.isValid).toBe(false);
       expect(result.error).toContain('too long');
       expect(result.errorCode).toBeDefined();
@@ -131,11 +131,11 @@ describe('Upload Validation', () => {
     it('should pass comprehensive validation for valid PDF files', () => {
       // Create a file with sufficient size to pass minimum size validation
       const content = 'x'.repeat(2048); // 2KB content
-      const validFile = new File([content], 'valid-document.pdf', { 
-        type: 'application/pdf' 
+      const validFile = new File([content], 'valid-document.pdf', {
+        type: 'application/pdf',
       });
       const result = validateFile(validFile);
-      
+
       expect(result.isValid).toBe(true);
       expect(result.details?.fileType).toBe('application/pdf');
       expect(result.details?.filename).toBe('valid-document.pdf');
@@ -143,11 +143,11 @@ describe('Upload Validation', () => {
     });
 
     it('should fail if any validation check fails', () => {
-      const invalidFile = new File(['test'], 'invalid file.txt', { 
-        type: 'text/plain' 
+      const invalidFile = new File(['test'], 'invalid file.txt', {
+        type: 'text/plain',
       });
       const result = validateFile(invalidFile);
-      
+
       expect(result.isValid).toBe(false);
       expect(result.error).toBeDefined();
       expect(result.errorCode).toBeDefined();
@@ -159,7 +159,7 @@ describe('Upload Validation', () => {
       // Note: In a real browser environment, this would validate the actual PDF signature
       // For unit tests, we're testing the error handling path
       const textFile = new File(['This is not a PDF'], 'fake.pdf', { type: 'application/pdf' });
-      
+
       const result = await validatePDFContent(textFile);
       expect(result.isValid).toBe(false);
       expect(result.error).toBeDefined();
@@ -169,7 +169,7 @@ describe('Upload Validation', () => {
     it('should handle validation errors gracefully', async () => {
       // Test with empty file
       const emptyFile = new File([], 'empty.pdf', { type: 'application/pdf' });
-      
+
       const result = await validatePDFContent(emptyFile);
       expect(result.isValid).toBe(false);
       expect(result.error).toBeDefined();
@@ -190,7 +190,7 @@ describe('Upload Validation', () => {
     it('should generate unique session IDs', () => {
       const id1 = generateSessionId();
       const id2 = generateSessionId();
-      
+
       expect(id1).not.toBe(id2);
       expect(id1).toMatch(/^upload-[a-z0-9]+-[a-z0-9]+$/);
       expect(id2).toMatch(/^upload-[a-z0-9]+-[a-z0-9]+$/);
@@ -198,7 +198,7 @@ describe('Upload Validation', () => {
 
     it('should generate IDs with consistent format', () => {
       const sessionId = generateSessionId();
-      
+
       expect(sessionId).toMatch(/^upload-/);
       expect(sessionId.split('-')).toHaveLength(3);
     });

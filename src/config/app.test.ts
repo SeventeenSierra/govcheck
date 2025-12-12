@@ -3,13 +3,13 @@
 
 import { describe, expect, it } from 'vitest';
 import {
-  uploadConfig,
   analysisConfig,
-  uiConfig,
   apiConfig,
-  validationConfig,
   errorConfig,
   featureFlags,
+  uiConfig,
+  uploadConfig,
+  validationConfig,
 } from './app';
 
 describe('Application Configuration', () => {

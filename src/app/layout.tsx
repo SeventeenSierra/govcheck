@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
 
-import type { Metadata } from "next";
-import "./globals.css";
-import { Toaster } from "@17sierra/ui";
+import type { Metadata } from 'next';
+import './globals.css';
+import { Toaster } from '@17sierra/ui';
 
 export const metadata: Metadata = {
-  title: "GovCheck AI",
-  description: "Autonomous agent for federal procurement compliance.",
+  title: 'GovCheck AI',
+  description: 'Autonomous agent for federal procurement compliance.',
 };
 
 export default function RootLayout({

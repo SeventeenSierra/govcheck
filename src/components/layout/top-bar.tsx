@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
 
-"use client";
+'use client';
 
-import { Avatar, AvatarFallback, Button } from "@17sierra/ui";
-import { Bot, PanelLeftClose, PanelLeftOpen, Settings } from "lucide-react";
+import { Avatar, AvatarFallback, Button } from '@17sierra/ui';
+import { Bot, PanelLeftClose, PanelLeftOpen, Settings } from 'lucide-react';
 
 type TopBarProps = {
   toggleSidebar: () => void;
@@ -20,7 +20,7 @@ const TopBar = ({ toggleSidebar, isSidebarOpen }: TopBarProps) => {
           size="icon"
           onClick={toggleSidebar}
           className="h-8 w-8 text-slate-500 hover:text-primary"
-          title={isSidebarOpen ? "Close Sidebar" : "Open Sidebar"}
+          title={isSidebarOpen ? 'Close Sidebar' : 'Open Sidebar'}
         >
           {isSidebarOpen ? <PanelLeftClose size={20} /> : <PanelLeftOpen size={20} />}
         </Button>

@@ -3,7 +3,7 @@
 
 /**
  * Proposal Processing Components
- * 
+ *
  * Core components for proposal upload, analysis, and results presentation.
  * These components provide the functionality for document processing,
  * compliance analysis, and results display.

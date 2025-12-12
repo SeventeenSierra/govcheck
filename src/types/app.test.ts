@@ -3,13 +3,13 @@
 
 import { describe, expect, it } from 'vitest';
 import {
-  UploadStatus,
-  AnalysisStatus,
-  ViewType,
-  NotificationType,
-  type UploadSession,
   type AnalysisSession,
+  AnalysisStatus,
+  NotificationType,
   type UIState,
+  type UploadSession,
+  UploadStatus,
+  ViewType,
 } from './app';
 
 describe('Application Types', () => {

@@ -1,21 +1,21 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
 
-import type { Meta, StoryObj } from "@storybook/react";
-import Sidebar from "./sidebar";
+import type { Meta, StoryObj } from '@storybook/react';
+import Sidebar from './sidebar';
 
 const meta: Meta<typeof Sidebar> = {
-  title: "App/Layout/Sidebar",
+  title: 'App/Layout/Sidebar',
   component: Sidebar,
   parameters: {
-    layout: "fullscreen",
+    layout: 'fullscreen',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
-    activeProject: { control: "text" },
-    isOpen: { control: "boolean" },
-    setActiveProject: { action: "setActiveProject" },
-    resetDemo: { action: "resetDemo" },
+    activeProject: { control: 'text' },
+    isOpen: { control: 'boolean' },
+    setActiveProject: { action: 'setActiveProject' },
+    resetDemo: { action: 'resetDemo' },
   },
 };
 
@@ -43,7 +43,7 @@ export const Closed: Story = {
 export const WithActiveProject: Story = {
   args: {
     isOpen: true,
-    activeProject: "proj-1",
+    activeProject: 'proj-1',
     setActiveProject: () => {},
     resetDemo: () => {},
   },

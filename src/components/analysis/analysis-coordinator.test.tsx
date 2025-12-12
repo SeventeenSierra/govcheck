@@ -3,9 +3,8 @@
  * SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
  */
 
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AnalysisCoordinator } from './analysis-coordinator';
 import { AnalysisStatus } from './types';
 
@@ -13,20 +12,22 @@ import { AnalysisStatus } from './types';
 const createMockFile = (content: string, name = 'test-proposal.pdf'): File => {
   const blob = new Blob([content], { type: 'application/pdf' });
   const file = new File([blob], name, { type: 'application/pdf' });
-  
+
   // Mock the text() method for testing
   Object.defineProperty(file, 'text', {
     value: vi.fn().mockResolvedValue(content),
-    writable: true
+    writable: true,
   });
-  
+
   return file;
 };
 
 describe('AnalysisCoordinator', () => {
   const defaultProps = {
     proposalId: 'test-proposal-123',
-    fileContent: createMockFile('Test proposal content with basic safeguarding and cybersecurity measures'),
+    fileContent: createMockFile(
+      'Test proposal content with basic safeguarding and cybersecurity measures'
+    ),
   };
 
   beforeEach(() => {
@@ -36,7 +37,7 @@ describe('AnalysisCoordinator', () => {
   describe('Component Rendering', () => {
     it('should render analysis coordinator with start button', () => {
       render(<AnalysisCoordinator {...defaultProps} />);
-      
+
       expect(screen.getByText('Start Analysis')).toBeInTheDocument();
     });
 
@@ -44,13 +45,13 @@ describe('AnalysisCoordinator', () => {
       const { container } = render(
         <AnalysisCoordinator {...defaultProps} className="custom-class" />
       );
-      
+
       expect(container.firstChild).toHaveClass('analysis-coordinator', 'custom-class');
     });
 
     it('should disable start button when no file content provided', () => {
       render(<AnalysisCoordinator proposalId="test" />);
-      
+
       const startButton = screen.getByText('Start Analysis');
       expect(startButton).toBeDisabled();
     });
@@ -59,22 +60,17 @@ describe('AnalysisCoordinator', () => {
   describe('Analysis Process (Requirements 2.1, 2.2, 2.4)', () => {
     it('should start analysis when start button is clicked', async () => {
       const onAnalysisStart = vi.fn();
-      render(
-        <AnalysisCoordinator 
-          {...defaultProps} 
-          onAnalysisStart={onAnalysisStart}
-        />
-      );
-      
+      render(<AnalysisCoordinator {...defaultProps} onAnalysisStart={onAnalysisStart} />);
+
       const startButton = screen.getByText('Start Analysis');
       fireEvent.click(startButton);
-      
+
       await waitFor(() => {
         expect(onAnalysisStart).toHaveBeenCalledWith(
           expect.objectContaining({
             proposalId: 'test-proposal-123',
             status: AnalysisStatus.QUEUED,
-            progress: 0
+            progress: 0,
           })
         );
       });
@@ -82,40 +78,38 @@ describe('AnalysisCoordinator', () => {
 
     it('should show progress during analysis', async () => {
       render(<AnalysisCoordinator {...defaultProps} />);
-      
+
       const startButton = screen.getByText('Start Analysis');
       fireEvent.click(startButton);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Analysis Status')).toBeInTheDocument();
       });
-      
+
       // Should show progress bar
       expect(screen.getByText(/\d+%/)).toBeInTheDocument();
     });
 
     it('should complete analysis and show results', async () => {
       const onAnalysisComplete = vi.fn();
-      render(
-        <AnalysisCoordinator 
-          {...defaultProps} 
-          onAnalysisComplete={onAnalysisComplete}
-        />
-      );
-      
+      render(<AnalysisCoordinator {...defaultProps} onAnalysisComplete={onAnalysisComplete} />);
+
       const startButton = screen.getByText('Start Analysis');
       fireEvent.click(startButton);
-      
-      await waitFor(() => {
-        expect(screen.getByText('COMPLETED')).toBeInTheDocument();
-      }, { timeout: 3000 });
-      
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('COMPLETED')).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
+
       expect(onAnalysisComplete).toHaveBeenCalledWith(
         expect.objectContaining({
           proposalId: 'test-proposal-123',
           status: expect.stringMatching(/pass|fail|warning/),
           overallScore: expect.any(Number),
-          issues: expect.any(Array)
+          issues: expect.any(Array),
         })
       );
     });
@@ -123,13 +117,9 @@ describe('AnalysisCoordinator', () => {
     it('should auto-start analysis when autoStart is true', async () => {
       const onAnalysisStart = vi.fn();
       render(
-        <AnalysisCoordinator 
-          {...defaultProps} 
-          autoStart={true}
-          onAnalysisStart={onAnalysisStart}
-        />
+        <AnalysisCoordinator {...defaultProps} autoStart={true} onAnalysisStart={onAnalysisStart} />
       );
-      
+
       await waitFor(() => {
         expect(onAnalysisStart).toHaveBeenCalled();
       });
@@ -139,14 +129,8 @@ describe('AnalysisCoordinator', () => {
   describe('Text Extraction (Requirement 2.2)', () => {
     it('should extract text from file content', async () => {
       const fileContent = createMockFile('Sample proposal text for extraction testing');
-      render(
-        <AnalysisCoordinator 
-          proposalId="test" 
-          fileContent={fileContent}
-          autoStart={true}
-        />
-      );
-      
+      render(<AnalysisCoordinator proposalId="test" fileContent={fileContent} autoStart={true} />);
+
       await waitFor(() => {
         expect(screen.getByText(/Extracting text content/)).toBeInTheDocument();
       });
@@ -155,13 +139,9 @@ describe('AnalysisCoordinator', () => {
     it('should handle string content for text extraction', async () => {
       const stringContent = 'Direct string content for analysis';
       render(
-        <AnalysisCoordinator 
-          proposalId="test" 
-          fileContent={stringContent}
-          autoStart={true}
-        />
+        <AnalysisCoordinator proposalId="test" fileContent={stringContent} autoStart={true} />
       );
-      
+
       await waitFor(() => {
         expect(screen.getByText(/Extracting text content/)).toBeInTheDocument();
       });
@@ -177,39 +157,34 @@ describe('AnalysisCoordinator', () => {
         We have implemented anti-trafficking policies and training programs for all personnel.
         Our organization maintains comprehensive compliance programs for all regulatory requirements.
       `);
-      
+
       render(
-        <AnalysisCoordinator 
-          proposalId="test" 
-          fileContent={compliantContent}
-          autoStart={true}
-        />
+        <AnalysisCoordinator proposalId="test" fileContent={compliantContent} autoStart={true} />
       );
-      
+
       // Should complete analysis successfully
       await waitFor(() => {
         expect(screen.getByText('COMPLETED')).toBeInTheDocument();
       });
-      
+
       // Should show results (may be PASS, WARNING, or FAIL depending on detection)
       expect(screen.getByText(/PASS|WARNING|FAIL/)).toBeInTheDocument();
     });
 
     it('should flag missing compliance requirements', async () => {
       const nonCompliantContent = createMockFile('Basic proposal without compliance information');
-      
+
       render(
-        <AnalysisCoordinator 
-          proposalId="test" 
-          fileContent={nonCompliantContent}
-          autoStart={true}
-        />
+        <AnalysisCoordinator proposalId="test" fileContent={nonCompliantContent} autoStart={true} />
       );
-      
-      await waitFor(() => {
-        expect(screen.getByText('COMPLETED')).toBeInTheDocument();
-      }, { timeout: 3000 });
-      
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('COMPLETED')).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
+
       // Should show issues found
       await waitFor(() => {
         const issuesText = screen.getByText(/Issues Found:/);
@@ -221,26 +196,29 @@ describe('AnalysisCoordinator', () => {
   describe('Error Handling (Requirement 2.5)', () => {
     it('should handle analysis errors gracefully', async () => {
       const onAnalysisError = vi.fn();
-      
+
       // Create invalid file content that will cause extraction to fail
       const invalidFile = new File([''], 'empty.pdf', { type: 'application/pdf' });
       Object.defineProperty(invalidFile, 'text', {
-        value: vi.fn().mockRejectedValue(new Error('File read error'))
+        value: vi.fn().mockRejectedValue(new Error('File read error')),
       });
-      
+
       render(
-        <AnalysisCoordinator 
-          proposalId="test" 
+        <AnalysisCoordinator
+          proposalId="test"
           fileContent={invalidFile}
           onAnalysisError={onAnalysisError}
           autoStart={true}
         />
       );
-      
-      await waitFor(() => {
-        expect(screen.getByText('FAILED')).toBeInTheDocument();
-      }, { timeout: 3000 });
-      
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('FAILED')).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
+
       expect(onAnalysisError).toHaveBeenCalledWith(
         expect.stringContaining('error'),
         expect.any(Object)
@@ -250,41 +228,35 @@ describe('AnalysisCoordinator', () => {
     it('should show retry button after failure', async () => {
       const invalidFile = new File([''], 'empty.pdf', { type: 'application/pdf' });
       Object.defineProperty(invalidFile, 'text', {
-        value: vi.fn().mockRejectedValue(new Error('File read error'))
+        value: vi.fn().mockRejectedValue(new Error('File read error')),
       });
-      
-      render(
-        <AnalysisCoordinator 
-          proposalId="test" 
-          fileContent={invalidFile}
-          autoStart={true}
-        />
+
+      render(<AnalysisCoordinator proposalId="test" fileContent={invalidFile} autoStart={true} />);
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('FAILED')).toBeInTheDocument();
+        },
+        { timeout: 3000 }
       );
-      
-      await waitFor(() => {
-        expect(screen.getByText('FAILED')).toBeInTheDocument();
-      }, { timeout: 3000 });
-      
+
       expect(screen.getByText('Retry Analysis')).toBeInTheDocument();
     });
 
     it('should display error messages clearly', async () => {
       const invalidFile = new File([''], 'empty.pdf', { type: 'application/pdf' });
       Object.defineProperty(invalidFile, 'text', {
-        value: vi.fn().mockRejectedValue(new Error('Custom error message'))
+        value: vi.fn().mockRejectedValue(new Error('Custom error message')),
       });
-      
-      render(
-        <AnalysisCoordinator 
-          proposalId="test" 
-          fileContent={invalidFile}
-          autoStart={true}
-        />
+
+      render(<AnalysisCoordinator proposalId="test" fileContent={invalidFile} autoStart={true} />);
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('Custom error message')).toBeInTheDocument();
+        },
+        { timeout: 3000 }
       );
-      
-      await waitFor(() => {
-        expect(screen.getByText('Custom error message')).toBeInTheDocument();
-      }, { timeout: 3000 });
     });
   });
 
@@ -292,18 +264,18 @@ describe('AnalysisCoordinator', () => {
     it('should call onProgressUpdate during analysis', async () => {
       const onProgressUpdate = vi.fn();
       render(
-        <AnalysisCoordinator 
-          {...defaultProps} 
+        <AnalysisCoordinator
+          {...defaultProps}
           onProgressUpdate={onProgressUpdate}
           autoStart={true}
         />
       );
-      
+
       await waitFor(() => {
         expect(onProgressUpdate).toHaveBeenCalledWith(
           expect.objectContaining({
             progress: expect.any(Number),
-            currentStep: expect.any(String)
+            currentStep: expect.any(String),
           })
         );
       });
@@ -311,17 +283,19 @@ describe('AnalysisCoordinator', () => {
 
     it('should show current analysis step', async () => {
       render(<AnalysisCoordinator {...defaultProps} autoStart={true} />);
-      
+
       await waitFor(() => {
         expect(
-          screen.getByText(/Initializing analysis|Extracting text content|Analyzing FAR\/DFARS compliance/)
+          screen.getByText(
+            /Initializing analysis|Extracting text content|Analyzing FAR\/DFARS compliance/
+          )
         ).toBeInTheDocument();
       });
     });
 
     it('should update progress percentage', async () => {
       render(<AnalysisCoordinator {...defaultProps} autoStart={true} />);
-      
+
       await waitFor(() => {
         expect(screen.getByText(/\d+%/)).toBeInTheDocument();
       });
@@ -331,11 +305,14 @@ describe('AnalysisCoordinator', () => {
   describe('Results Display', () => {
     it('should display analysis results after completion', async () => {
       render(<AnalysisCoordinator {...defaultProps} autoStart={true} />);
-      
-      await waitFor(() => {
-        expect(screen.getByText('COMPLETED')).toBeInTheDocument();
-      }, { timeout: 3000 });
-      
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('COMPLETED')).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
+
       await waitFor(() => {
         expect(screen.getByText('Analysis Results')).toBeInTheDocument();
         expect(screen.getByText(/Status:/)).toBeInTheDocument();
@@ -347,11 +324,14 @@ describe('AnalysisCoordinator', () => {
 
     it('should show compliance score', async () => {
       render(<AnalysisCoordinator {...defaultProps} autoStart={true} />);
-      
-      await waitFor(() => {
-        expect(screen.getByText('COMPLETED')).toBeInTheDocument();
-      }, { timeout: 3000 });
-      
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('COMPLETED')).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
+
       await waitFor(() => {
         expect(screen.getByText(/\d+\/100/)).toBeInTheDocument();
       });

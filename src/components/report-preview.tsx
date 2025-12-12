@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
 
-"use client";
+'use client';
 
-import { Badge, Button } from "@17sierra/ui";
-import { CheckCircle2, Download, Maximize2 } from "lucide-react";
+import { Badge, Button } from '@17sierra/ui';
+import { CheckCircle2, Download, Maximize2 } from 'lucide-react';
 
 type ReportPreviewProps = {
   isVisible: boolean;
@@ -52,7 +52,7 @@ const ReportPreview = ({ isVisible }: ReportPreviewProps) => {
             <p className="text-sm text-gray-600 leading-relaxed mb-4">
               The submitted proposal "Cloud Modernization Initiative" has been analyzed against the
               current Federal Acquisition Regulation (FAR) and Defense Federal Acquisition
-              Regulation Supplement (DFARS). The document scored a{" "}
+              Regulation Supplement (DFARS). The document scored a{' '}
               <strong>92% compliance rating</strong>.
             </p>
             <div className="bg-green-50 border border-green-100 rounded-lg p-4 flex gap-3 items-start">

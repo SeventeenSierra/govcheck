@@ -1,19 +1,19 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
 
-import type { Meta, StoryObj } from "@storybook/react";
-import AgentInterface from "./agent-interface";
+import type { Meta, StoryObj } from '@storybook/react';
+import AgentInterface from './agent-interface';
 
 const meta: Meta<typeof AgentInterface> = {
-  title: "App/AgentInterface",
+  title: 'App/AgentInterface',
   component: AgentInterface,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
-    activeProject: { control: "text" },
-    startDemo: { action: "startDemo" },
+    activeProject: { control: 'text' },
+    startDemo: { action: 'startDemo' },
   },
 };
 
@@ -29,7 +29,7 @@ export const Idle: Story = {
 
 export const ActiveProject: Story = {
   args: {
-    activeProject: "proj-1",
+    activeProject: 'proj-1',
     startDemo: () => {},
   },
 };

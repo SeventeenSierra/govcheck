@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
 
-import type { Meta, StoryObj } from "@storybook/react";
-import ReportPreview from "./report-preview";
+import type { Meta, StoryObj } from '@storybook/react';
+import ReportPreview from './report-preview';
 
 const meta: Meta<typeof ReportPreview> = {
-  title: "App/ReportPreview",
+  title: 'App/ReportPreview',
   component: ReportPreview,
   parameters: {
-    layout: "fullscreen",
+    layout: 'fullscreen',
   },
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   argTypes: {
-    isVisible: { control: "boolean" },
+    isVisible: { control: 'boolean' },
   },
 };
 

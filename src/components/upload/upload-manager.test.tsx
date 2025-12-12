@@ -119,7 +119,7 @@ describe('UploadManager', () => {
         />
       );
 
-      const fileInput = screen.getByText('Select PDF File').closest('button')
+      const fileInput = screen.getByText('Select PDF File').closest('button');
       expect(fileInput).toBeInTheDocument();
 
       // Create a valid PDF file with sufficient size
@@ -141,7 +141,7 @@ describe('UploadManager', () => {
     it('should reject invalid file types', async () => {
       render(<UploadManager onUploadError={mockOnUploadError} />);
 
-      const fileInput = screen.getByText('Select PDF File').closest('button')
+      const fileInput = screen.getByText('Select PDF File').closest('button');
 
       // Create an invalid file type
       const invalidFile = new File(['test content'], 'document.txt', {
@@ -170,7 +170,7 @@ describe('UploadManager', () => {
     it('should reject files that are too large', async () => {
       render(<UploadManager onUploadError={mockOnUploadError} />);
 
-      const fileInput = screen.getByTestId("file-input");
+      const fileInput = screen.getByTestId('file-input');
 
       // Create a file that's too large (mock by setting size property)
       const largeFile = new File(['x'.repeat(1000)], 'large-document.pdf', {
@@ -206,7 +206,7 @@ describe('UploadManager', () => {
         />
       );
 
-      const fileInput = screen.getByTestId("file-input");
+      const fileInput = screen.getByTestId('file-input');
 
       // Create a file with sufficient size to pass validation
       const content = 'x'.repeat(2048); // 2KB content
@@ -232,7 +232,7 @@ describe('UploadManager', () => {
     it('should show success state when upload completes', async () => {
       render(<UploadManager onUploadComplete={mockOnUploadComplete} />);
 
-      const fileInput = screen.getByTestId("file-input");
+      const fileInput = screen.getByTestId('file-input');
 
       // Create a file with sufficient size to pass validation
       const content = 'x'.repeat(2048); // 2KB content
@@ -268,7 +268,7 @@ describe('UploadManager', () => {
     it('should show retry option for failed uploads', async () => {
       render(<UploadManager onUploadError={mockOnUploadError} />);
 
-      const fileInput = screen.getByTestId("file-input");
+      const fileInput = screen.getByTestId('file-input');
 
       // Create invalid file to trigger error
       const invalidFile = new File(['test'], 'test.txt', {
@@ -291,7 +291,7 @@ describe('UploadManager', () => {
     it('should clear upload state when clear button is clicked', async () => {
       render(<UploadManager />);
 
-      const fileInput = screen.getByTestId("file-input");
+      const fileInput = screen.getByTestId('file-input');
 
       // Upload invalid file to get error state
       const invalidFile = new File(['test'], 'test.txt', {
@@ -361,7 +361,7 @@ describe('UploadManager', () => {
     it('should display session information', async () => {
       render(<UploadManager />);
 
-      const fileInput = screen.getByTestId("file-input");
+      const fileInput = screen.getByTestId('file-input');
 
       // Create a file with sufficient size
       const content = 'x'.repeat(2048); // 2KB content

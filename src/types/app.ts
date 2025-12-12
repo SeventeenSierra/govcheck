@@ -3,15 +3,15 @@
 
 /**
  * Application Type Definitions
- * 
+ *
  * Core TypeScript interfaces and types for the Proposal Prepper application.
- * These types define the data models used across the upload, analysis, 
+ * These types define the data models used across the upload, analysis,
  * and results presentation components.
  */
 
 /**
  * Upload Session Management
- * 
+ *
  * Tracks the state and progress of document upload operations.
  * Used by the Upload Manager component to provide user feedback
  * and handle upload lifecycle events.
@@ -39,7 +39,7 @@ export interface UploadSession {
 
 /**
  * Upload Status Enumeration
- * 
+ *
  * Defines the possible states of an upload operation throughout
  * its lifecycle from initiation to completion or failure.
  */
@@ -48,12 +48,12 @@ export enum UploadStatus {
   UPLOADING = 'uploading',
   PROCESSING = 'processing',
   COMPLETED = 'completed',
-  FAILED = 'failed'
+  FAILED = 'failed',
 }
 
 /**
  * Analysis Session Management
- * 
+ *
  * Tracks the state and progress of compliance analysis operations.
  * Used by the Analysis Coordinator component to orchestrate the
  * analysis workflow and provide progress feedback.
@@ -79,7 +79,7 @@ export interface AnalysisSession {
 
 /**
  * Analysis Status Enumeration
- * 
+ *
  * Defines the possible states of an analysis operation throughout
  * the compliance checking workflow.
  */
@@ -89,12 +89,12 @@ export enum AnalysisStatus {
   ANALYZING = 'analyzing',
   VALIDATING = 'validating',
   COMPLETED = 'completed',
-  FAILED = 'failed'
+  FAILED = 'failed',
 }
 
 /**
  * User Interface State Management
- * 
+ *
  * Manages the overall state of the user interface including
  * navigation, active sessions, and user preferences.
  * Used by the Navigation Controller and UI components.
@@ -116,7 +116,7 @@ export interface UIState {
 
 /**
  * View Type Enumeration
- * 
+ *
  * Defines the different views/pages available in the application
  * for navigation and routing purposes.
  */
@@ -125,12 +125,12 @@ export enum ViewType {
   UPLOAD = 'upload',
   ANALYSIS = 'analysis',
   RESULTS = 'results',
-  SETTINGS = 'settings'
+  SETTINGS = 'settings',
 }
 
 /**
  * System Notification
- * 
+ *
  * Represents user-facing notifications for system events,
  * errors, and status updates.
  */
@@ -153,7 +153,7 @@ export interface Notification {
 
 /**
  * Notification Type Enumeration
- * 
+ *
  * Defines the different types of notifications for appropriate
  * styling and user interaction patterns.
  */
@@ -161,12 +161,12 @@ export enum NotificationType {
   INFO = 'info',
   SUCCESS = 'success',
   WARNING = 'warning',
-  ERROR = 'error'
+  ERROR = 'error',
 }
 
 /**
  * User Preferences
- * 
+ *
  * Stores user-configurable settings and preferences for
  * personalizing the application experience.
  */

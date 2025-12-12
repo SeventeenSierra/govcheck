@@ -3,7 +3,7 @@
 
 /**
  * UI Component Library Integration
- * 
+ *
  * Centralized exports and configuration for @17sierra/ui components
  * used in the threshold functionality. Provides a consistent interface
  * for importing UI components across the application.
@@ -12,6 +12,10 @@
 // Re-export commonly used components from @17sierra/ui
 // These will be the primary UI building blocks for threshold components
 export {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+  Badge,
   Button,
   Card,
   CardContent,
@@ -19,18 +23,6 @@ export {
   CardFooter,
   CardHeader,
   CardTitle,
-  Input,
-  Label,
-  Progress,
-  Alert,
-  AlertDescription,
-  AlertTitle,
-  Badge,
-  Separator,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -38,6 +30,14 @@ export {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  Input,
+  Label,
+  Progress,
+  Separator,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
   Toast,
   Toaster,
   useToast,
@@ -45,7 +45,7 @@ export {
 
 /**
  * Theme Configuration
- * 
+ *
  * Threshold-specific theme customizations and styling utilities
  * that extend the base @17sierra/ui theme.
  */
@@ -77,7 +77,7 @@ export const thresholdTheme = {
 
 /**
  * Component Variants
- * 
+ *
  * Threshold-specific component variants that extend the base
  * @17sierra/ui component variants for consistent styling.
  */

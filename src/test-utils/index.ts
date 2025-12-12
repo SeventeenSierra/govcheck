@@ -3,7 +3,7 @@
 
 /**
  * Test Utilities
- * 
+ *
  * Centralized exports for all testing utilities used across the
  * threshold functionality tests.
  */
@@ -12,14 +12,14 @@ export * from './property-testing';
 
 /**
  * Common Test Helpers
- * 
+ *
  * Shared utilities for setting up test environments and mocking
  * common dependencies.
  */
 
 /**
  * Mock Upload Session
- * 
+ *
  * Creates a mock upload session for testing components that
  * depend on upload state.
  */
@@ -38,7 +38,7 @@ export function createMockUploadSession(overrides = {}) {
 
 /**
  * Mock Analysis Session
- * 
+ *
  * Creates a mock analysis session for testing components that
  * depend on analysis state.
  */
@@ -56,7 +56,7 @@ export function createMockAnalysisSession(overrides = {}) {
 
 /**
  * Mock UI State
- * 
+ *
  * Creates a mock UI state for testing navigation and state
  * management components.
  */

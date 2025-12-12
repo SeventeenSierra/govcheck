@@ -13,7 +13,7 @@ export enum AnalysisStatus {
   ANALYZING = 'analyzing',
   VALIDATING = 'validating',
   COMPLETED = 'completed',
-  FAILED = 'failed'
+  FAILED = 'failed',
 }
 
 /**
@@ -38,7 +38,7 @@ export interface AnalysisSession {
 export enum IssueSeverity {
   CRITICAL = 'critical',
   WARNING = 'warning',
-  INFO = 'info'
+  INFO = 'info',
 }
 
 /**

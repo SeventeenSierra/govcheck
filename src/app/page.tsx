@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
 
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import AgentInterface from "@/components/agent-interface";
-import Sidebar from "@/components/layout/sidebar";
-import TopBar from "@/components/layout/top-bar";
-import ReportPreview from "@/components/report-preview";
+import { useEffect, useState } from 'react';
+import AgentInterface from '@/components/agent-interface';
+import Sidebar from '@/components/layout/sidebar';
+import TopBar from '@/components/layout/top-bar';
+import ReportPreview from '@/components/report-preview';
 
 export default function App() {
   const [activeProject, setActiveProject] = useState<string | null>(null);
@@ -16,7 +16,7 @@ export default function App() {
 
   // Demo Trigger
   const startDemo = () => {
-    setActiveProject("demo-running");
+    setActiveProject('demo-running');
     // Report appears after animation finishes (approx 5 steps * 1.5s = 7.5s, cutting short for UX)
     setTimeout(() => {
       setShowReport(true);
@@ -34,7 +34,7 @@ export default function App() {
   useEffect(() => {
     if (activeProject) {
       setShowReport(false);
-      if (activeProject !== "demo-running") {
+      if (activeProject !== 'demo-running') {
         setTimeout(() => {
           setShowReport(true);
         }, 500);

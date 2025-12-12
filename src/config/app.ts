@@ -3,14 +3,14 @@
 
 /**
  * Application Configuration
- * 
+ *
  * Configuration constants and settings for the Proposal Prepper application.
  * Centralizes all configurable values used across components, services, and utilities.
  */
 
 /**
  * File Upload Configuration
- * 
+ *
  * Settings for file upload validation and processing.
  * Based on requirements 1.1 and 1.2 for PDF acceptance and validation.
  */
@@ -31,7 +31,7 @@ export const uploadConfig = {
 
 /**
  * Analysis Configuration
- * 
+ *
  * Settings for compliance analysis processing.
  * Based on requirements 2.1-2.5 for FAR/DFARS validation.
  */
@@ -50,7 +50,7 @@ export const analysisConfig = {
 
 /**
  * UI Configuration
- * 
+ *
  * Settings for user interface behavior and appearance.
  * Based on requirements 4.1-4.5 and 5.1-5.5 for interface functionality.
  */
@@ -75,7 +75,7 @@ export const uiConfig = {
 
 /**
  * API Configuration
- * 
+ *
  * Settings for backend service communication.
  * Configured for the federated mesh architecture.
  */
@@ -99,7 +99,7 @@ export const apiConfig = {
 
 /**
  * Validation Configuration
- * 
+ *
  * Settings for input validation and sanitization.
  */
 export const validationConfig = {
@@ -115,7 +115,7 @@ export const validationConfig = {
 
 /**
  * Error Configuration
- * 
+ *
  * Settings for error handling and recovery.
  */
 export const errorConfig = {
@@ -139,7 +139,7 @@ export const errorConfig = {
 
 /**
  * Feature Flags
- * 
+ *
  * Configuration for enabling/disabling features during development
  * and deployment phases.
  */

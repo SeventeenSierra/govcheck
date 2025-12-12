@@ -8,9 +8,9 @@
  * These tests validate requirements through property testing rather than specific examples.
  */
 
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
 import * as fc from 'fast-check';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { UploadManager } from './upload-manager';
 
 // Mock the config imports
@@ -87,16 +87,17 @@ describe('UploadManager Property-Based Tests', () => {
    * Property 1: PDF Upload Acceptance
    * **Feature: threshold, Property 1: PDF Upload Acceptance**
    * **Validates: Requirements 1.1**
-   * 
+   *
    * Property: All valid PDF files should be accepted for upload
    */
   describe('Property 1: PDF Upload Acceptance', () => {
     it('should accept all valid PDF files', () => {
       fc.assert(
         fc.property(
-          fc.string({ minLength: 1, maxLength: 20 })
-            .filter(s => /^[a-zA-Z0-9._-]+$/.test(s))
-            .map(s => `${s}.pdf`),
+          fc
+            .string({ minLength: 1, maxLength: 20 })
+            .filter((s) => /^[a-zA-Z0-9._-]+$/.test(s))
+            .map((s) => `${s}.pdf`),
           fc.integer({ min: 2048, max: 10240 }), // 2KB to 10KB
           (filename, size) => {
             const content = 'x'.repeat(size);
@@ -116,7 +117,7 @@ describe('UploadManager Property-Based Tests', () => {
 
             // Should show file info (indicating acceptance)
             expect(screen.getByText(filename)).toBeInTheDocument();
-            
+
             // Should not call error callback immediately
             expect(mockOnUploadError).not.toHaveBeenCalled();
 
@@ -132,21 +133,22 @@ describe('UploadManager Property-Based Tests', () => {
    * Property 2: File Validation Consistency
    * **Feature: threshold, Property 2: File Validation Consistency**
    * **Validates: Requirements 1.2**
-   * 
+   *
    * Property: File validation should be consistent - same file should always produce same result
    */
   describe('Property 2: File Validation Consistency', () => {
     it('should consistently validate the same file', () => {
       fc.assert(
         fc.property(
-          fc.string({ minLength: 1, maxLength: 10 })
-            .filter(s => /^[a-zA-Z0-9._-]+$/.test(s))
-            .map(s => `${s}.pdf`),
+          fc
+            .string({ minLength: 1, maxLength: 10 })
+            .filter((s) => /^[a-zA-Z0-9._-]+$/.test(s))
+            .map((s) => `${s}.pdf`),
           fc.constantFrom('application/pdf', 'text/plain'),
           fc.integer({ min: 500, max: 5000 }),
           (filename, mimeType, size) => {
             const content = 'x'.repeat(size);
-            
+
             // Create the same file twice
             const file1 = new File([content], filename, { type: mimeType });
             const file2 = new File([content], filename, { type: mimeType });
@@ -187,16 +189,17 @@ describe('UploadManager Property-Based Tests', () => {
    * Property 3: Upload Confirmation
    * **Feature: threshold, Property 3: Upload Confirmation**
    * **Validates: Requirements 1.3**
-   * 
+   *
    * Property: All successful uploads should show confirmation (tested synchronously)
    */
   describe('Property 3: Upload Confirmation', () => {
     it('should initiate upload process for valid files', () => {
       fc.assert(
         fc.property(
-          fc.string({ minLength: 1, maxLength: 10 })
-            .filter(s => /^[a-zA-Z0-9._-]+$/.test(s))
-            .map(s => `${s}.pdf`),
+          fc
+            .string({ minLength: 1, maxLength: 10 })
+            .filter((s) => /^[a-zA-Z0-9._-]+$/.test(s))
+            .map((s) => `${s}.pdf`),
           fc.integer({ min: 2048, max: 5000 }),
           (filename, size) => {
             const content = 'x'.repeat(size);
@@ -204,16 +207,14 @@ describe('UploadManager Property-Based Tests', () => {
               type: 'application/pdf',
             });
 
-            const { unmount } = render(
-              <UploadManager onUploadComplete={mockOnUploadComplete} />
-            );
+            const { unmount } = render(<UploadManager onUploadComplete={mockOnUploadComplete} />);
 
             const fileInput = screen.getByTestId('file-input');
             fireEvent.change(fileInput, { target: { files: [file] } });
 
             // Should show file info (indicating upload started)
             expect(screen.getByText(filename)).toBeInTheDocument();
-            
+
             // Should show file size
             expect(screen.getByText(/KB\)/)).toBeInTheDocument();
 
@@ -229,7 +230,7 @@ describe('UploadManager Property-Based Tests', () => {
    * Property 4: Upload Error Messaging
    * **Feature: threshold, Property 4: Upload Error Messaging**
    * **Validates: Requirements 1.4**
-   * 
+   *
    * Property: All failed uploads should show clear error messages
    */
   describe('Property 4: Upload Error Messaging', () => {
@@ -239,13 +240,13 @@ describe('UploadManager Property-Based Tests', () => {
           fc.oneof(
             // Invalid file type
             fc.record({
-              filename: fc.string({ minLength: 1, maxLength: 10 }).map(s => `${s}.txt`),
+              filename: fc.string({ minLength: 1, maxLength: 10 }).map((s) => `${s}.txt`),
               mimeType: fc.constant('text/plain'),
               size: fc.constant(2048),
             }),
             // File too small
             fc.record({
-              filename: fc.string({ minLength: 1, maxLength: 10 }).map(s => `${s}.pdf`),
+              filename: fc.string({ minLength: 1, maxLength: 10 }).map((s) => `${s}.pdf`),
               mimeType: fc.constant('application/pdf'),
               size: fc.constant(500), // Below 1KB minimum
             })
@@ -254,9 +255,7 @@ describe('UploadManager Property-Based Tests', () => {
             const content = 'x'.repeat(size);
             const file = new File([content], filename, { type: mimeType });
 
-            const { unmount } = render(
-              <UploadManager onUploadError={mockOnUploadError} />
-            );
+            const { unmount } = render(<UploadManager onUploadError={mockOnUploadError} />);
 
             const fileInput = screen.getByTestId('file-input');
             fireEvent.change(fileInput, { target: { files: [file] } });
@@ -283,16 +282,17 @@ describe('UploadManager Property-Based Tests', () => {
    * Property 5: Progress Indication
    * **Feature: threshold, Property 5: Progress Indication**
    * **Validates: Requirements 1.5**
-   * 
+   *
    * Property: All uploads should show progress indication (tested by checking initial state)
    */
   describe('Property 5: Progress Indication', () => {
     it('should show file information for valid uploads', () => {
       fc.assert(
         fc.property(
-          fc.string({ minLength: 1, maxLength: 10 })
-            .filter(s => /^[a-zA-Z0-9._-]+$/.test(s))
-            .map(s => `${s}.pdf`),
+          fc
+            .string({ minLength: 1, maxLength: 10 })
+            .filter((s) => /^[a-zA-Z0-9._-]+$/.test(s))
+            .map((s) => `${s}.pdf`),
           fc.integer({ min: 2048, max: 5000 }),
           (filename, size) => {
             const content = 'x'.repeat(size);
@@ -300,19 +300,17 @@ describe('UploadManager Property-Based Tests', () => {
               type: 'application/pdf',
             });
 
-            const { unmount } = render(
-              <UploadManager onUploadProgress={mockOnUploadProgress} />
-            );
+            const { unmount } = render(<UploadManager onUploadProgress={mockOnUploadProgress} />);
 
             const fileInput = screen.getByTestId('file-input');
             fireEvent.change(fileInput, { target: { files: [file] } });
 
             // Should show file icon
             expect(screen.getByTestId('file-icon')).toBeInTheDocument();
-            
+
             // Should show filename
             expect(screen.getByText(filename)).toBeInTheDocument();
-            
+
             // Should show file size
             expect(screen.getByText(/\d+ KB\)/)).toBeInTheDocument();
 

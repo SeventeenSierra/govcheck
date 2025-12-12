@@ -4,6 +4,14 @@
     "includes": ["src/**/*", "*.ts", "*.tsx", "*.js", "*.jsx", "*.json"],
     "ignoreUnknown": true
   },
+  "overrides": [
+    {
+      "includes": ["src/app/globals.css"],
+      "formatter": {
+        "enabled": false
+      }
+    }
+  ],
   "formatter": {
     "enabled": true,
     "formatWithErrors": false,
@@ -40,7 +48,8 @@
   },
   "css": {
     "parser": {
-      "allowWrongLineComments": true
+      "allowWrongLineComments": true,
+      "cssModules": false
     },
     "linter": {
       "enabled": false

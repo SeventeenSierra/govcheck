@@ -3,7 +3,7 @@
 
 /**
  * Configuration Index
- * 
+ *
  * Centralized exports for all configuration settings used
  * across the Proposal Prepper application.
  */
