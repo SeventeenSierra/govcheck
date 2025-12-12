@@ -289,9 +289,24 @@ export function seedGrantToAnalysisResult(grant: SeedGrant) {
  */
 export function generateMockUploadSession(status?: UploadStatus) {
   const grant = getRandomSeedGrant();
+  const baseSession = seedGrantToUploadSession(grant);
+  
+  // Set progress based on status
+  let progress = baseSession.progress;
+  if (status === UploadStatus.PENDING) {
+    progress = 0;
+  } else if (status === UploadStatus.COMPLETED) {
+    progress = 100;
+  } else if (status === UploadStatus.UPLOADING) {
+    progress = Math.floor(Math.random() * 99) + 1; // 1-99
+  } else if (status === UploadStatus.FAILED) {
+    progress = Math.floor(Math.random() * 90) + 10; // 10-99
+  }
+  
   return {
-    ...seedGrantToUploadSession(grant),
+    ...baseSession,
     status: status || UploadStatus.COMPLETED,
+    progress,
   };
 }
 
@@ -300,14 +315,34 @@ export function generateMockUploadSession(status?: UploadStatus) {
  */
 export function generateMockAnalysisSession(status?: string) {
   const grant = getRandomSeedGrant();
+  
+  // Set progress based on status
+  let progress = 0;
+  if (status === 'queued') {
+    progress = 0;
+  } else if (status === 'extracting') {
+    progress = 15;
+  } else if (status === 'analyzing') {
+    progress = Math.floor(Math.random() * 61) + 20; // 20-80
+  } else if (status === 'validating') {
+    progress = Math.floor(Math.random() * 21) + 70; // 70-90
+  } else if (status === 'completed') {
+    progress = 100;
+  } else if (status === 'failed') {
+    progress = Math.floor(Math.random() * 51) + 10; // 10-60
+  } else {
+    progress = Math.floor(Math.random() * 100);
+  }
+  
   return {
     id: `analysis-${grant.metadata.UUID}`,
     proposalId: grant.metadata.UUID,
     status: status || 'completed',
-    progress: status === 'completed' ? 100 : Math.floor(Math.random() * 100),
+    progress,
     startedAt: new Date(Date.now() - 30000),
     estimatedCompletion: status === 'completed' ? new Date() : new Date(Date.now() + 10000),
     currentStep: status === 'completed' ? 'Analysis complete' : 'Analyzing compliance requirements',
+    completedAt: status === 'completed' ? new Date() : undefined,
   };
 }
 
@@ -321,6 +356,39 @@ export function generateMockAnalysisResults(complianceStatus?: 'pass' | 'fail' |
   if (complianceStatus) {
     result.status = complianceStatus;
     result.overallScore = complianceStatus === 'pass' ? 90 : complianceStatus === 'warning' ? 75 : 45;
+    
+    // Adjust issues based on compliance status
+    if (complianceStatus === 'pass') {
+      result.issues = [];
+    } else if (complianceStatus === 'fail') {
+      // Ensure at least one critical issue for fail status
+      if (!result.issues.some(issue => issue.severity === 'critical')) {
+        result.issues.push({
+          id: 'critical-issue-1',
+          title: 'Critical Compliance Issue',
+          description: 'This is a critical compliance issue for testing',
+          severity: 'critical' as const,
+          category: 'compliance',
+          location: { page: 1, section: 'Section 1' },
+          recommendation: 'Fix this critical issue'
+        });
+      }
+    } else if (complianceStatus === 'warning') {
+      // Filter out critical issues for warning status
+      result.issues = result.issues.filter(issue => issue.severity !== 'critical');
+      // Ensure at least one warning if no issues exist
+      if (result.issues.length === 0) {
+        result.issues.push({
+          id: 'warning-issue-1',
+          title: 'Warning Issue',
+          description: 'This is a warning issue for testing',
+          severity: 'warning' as const,
+          category: 'formatting',
+          location: { page: 1, section: 'Section 1' },
+          recommendation: 'Consider addressing this warning'
+        });
+      }
+    }
   }
   
   return result;
