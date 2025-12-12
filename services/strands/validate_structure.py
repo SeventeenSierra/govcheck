@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+# SPDX-License-Identifier: PolyForm-Perimeter-1.0.0
+# SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+
 """
 Simple validation script to check the Strands service structure.
 This script validates the basic structure without requiring dependencies.
