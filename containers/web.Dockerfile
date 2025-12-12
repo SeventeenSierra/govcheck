@@ -13,8 +13,8 @@ RUN npm install -g pnpm@10.24.0
 # Copy package files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# Install dependencies
-RUN pnpm install --frozen-lockfile
+# Install dependencies (allow lockfile updates in development)
+RUN pnpm install
 
 # Copy source code
 COPY . .

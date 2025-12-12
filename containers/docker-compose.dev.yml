@@ -1,7 +1,5 @@
-<!--
-SPDX-License-Identifier: PolyForm-Perimeter-1.0.0
-SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
--->
+# SPDX-License-Identifier: PolyForm-Perimeter-1.0.0
+# SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
 
 # Development-specific Docker Compose overrides
 version: '3.8'
@@ -16,18 +14,33 @@ services:
     environment:
       - WATCHPACK_POLLING=true
       - CHOKIDAR_USEPOLLING=true
+      - FAST_REFRESH=true
     stdin_open: true
     tty: true
+    # Override health check for faster development feedback
+    healthcheck:
+      interval: 15s
+      timeout: 5s
+      start_period: 30s
+      retries: 2
 
   strands:
     # Enable hot reload for Python development
     volumes:
       - ../services/strands:/app
+      - ../src/seed-data:/app/src/seed-data:ro
     environment:
       - PYTHONUNBUFFERED=1
       - WATCHFILES_FORCE_POLLING=true
+      - LOG_LEVEL=DEBUG
     stdin_open: true
     tty: true
+    # Override health check for faster development feedback
+    healthcheck:
+      interval: 15s
+      timeout: 5s
+      start_period: 45s
+      retries: 2
 
   postgres:
     # Expose additional debugging options
@@ -39,6 +52,13 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ../database/init.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
       - ../database/seed-dev.sql:/docker-entrypoint-initdb.d/dev-data.sql:ro
+
+  redis:
+    # Development Redis configuration - lighter persistence settings
+    volumes:
+      - redis_data:/data
+      - ./redis-dev.conf:/usr/local/etc/redis/redis.conf:ro
+    command: redis-server /usr/local/etc/redis/redis.conf
 
   minio:
     # Add development console access
