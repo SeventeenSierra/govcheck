@@ -2,11 +2,7 @@
   "_comment": "SPDX-License-Identifier: AGPL-3.0-or-later",
   "_copyright": "SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC",
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -25,9 +21,7 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     },
     "target": "ES2017"
   },
@@ -39,10 +33,5 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "**/*.stories.tsx",
-    "vitest.config.ts",
-    "inbox/**/*"
-  ]
+  "exclude": ["node_modules", "**/*.stories.tsx", "vitest.config.ts", "inbox/**/*"]
 }

@@ -8,7 +8,7 @@
  * These tests validate requirements through property testing rather than specific examples.
  */
 
-import { fireEvent, render, screen, cleanup } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import * as fc from 'fast-check';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { UploadManager } from './upload-manager';
@@ -102,7 +102,7 @@ describe('UploadManager Property-Based Tests', () => {
           fc.integer({ min: 2048, max: 10240 }), // 2KB to 10KB
           (filename, size) => {
             cleanup(); // Clean up before each property test run
-            
+
             const content = 'x'.repeat(size);
             const file = new File([content], filename, {
               type: 'application/pdf',
@@ -151,7 +151,7 @@ describe('UploadManager Property-Based Tests', () => {
           fc.integer({ min: 500, max: 5000 }),
           (filename, mimeType, size) => {
             cleanup(); // Clean up before each property test run
-            
+
             const content = 'x'.repeat(size);
 
             // Create the same file twice
@@ -204,7 +204,7 @@ describe('UploadManager Property-Based Tests', () => {
           fc.integer({ min: 2048, max: 5000 }),
           (filename, size) => {
             cleanup(); // Clean up before each property test run
-            
+
             const content = 'x'.repeat(size);
             const file = new File([content], filename, {
               type: 'application/pdf',
@@ -253,7 +253,7 @@ describe('UploadManager Property-Based Tests', () => {
           ),
           ({ filename, mimeType, size }) => {
             cleanup(); // Clean up before each property test run
-            
+
             const content = 'x'.repeat(size);
             const file = new File([content], filename, { type: mimeType });
 
@@ -298,7 +298,7 @@ describe('UploadManager Property-Based Tests', () => {
           fc.integer({ min: 2048, max: 5000 }),
           (filename, size) => {
             cleanup(); // Clean up before each property test run
-            
+
             const content = 'x'.repeat(size);
             const file = new File([content], filename, {
               type: 'application/pdf',

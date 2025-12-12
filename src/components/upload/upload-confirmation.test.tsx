@@ -215,7 +215,7 @@ describe('Upload Confirmation and Error Handling', () => {
       const fileInput = screen.getByTestId('file-input');
 
       // Create file with filename that's too long (over 255 characters)
-      const longFilename = 'a'.repeat(252) + '.pdf'; // 256 characters total
+      const longFilename = `${'a'.repeat(252)}.pdf`; // 256 characters total
       const longNameFile = new File(['x'.repeat(2048)], longFilename, {
         type: 'application/pdf',
       });
