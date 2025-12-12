@@ -47,6 +47,8 @@ class MockWebSocket {
 
 global.WebSocket = MockWebSocket as typeof WebSocket;
 
+// XMLHttpRequest will be mocked per test
+
 describe('StrandsApiClient', () => {
   let client: StrandsApiClient;
 
@@ -79,13 +81,14 @@ describe('StrandsApiClient', () => {
           addEventListener: vi.fn(),
           open: vi.fn(),
           send: vi.fn(),
+          setRequestHeader: vi.fn(),
           status: 200,
           responseText: JSON.stringify(mockResponse),
           timeout: 0,
         };
 
         const originalXHR = global.XMLHttpRequest;
-        global.XMLHttpRequest = (() => mockXHR) as typeof XMLHttpRequest;
+        global.XMLHttpRequest = function() { return mockXHR; } as any;
 
         // Simulate successful upload
         setTimeout(() => {
@@ -116,13 +119,14 @@ describe('StrandsApiClient', () => {
           addEventListener: vi.fn(),
           open: vi.fn(),
           send: vi.fn(),
+          setRequestHeader: vi.fn(),
           status: 200,
           responseText: JSON.stringify({ id: 'upload-123' }),
           timeout: 0,
         };
 
         const originalXHR = global.XMLHttpRequest;
-        global.XMLHttpRequest = (() => mockXHR) as typeof XMLHttpRequest;
+        global.XMLHttpRequest = function() { return mockXHR; } as any;
 
         // Simulate progress events
         setTimeout(() => {
@@ -400,7 +404,7 @@ describe('StrandsApiClient', () => {
 
       expect(result.success).toBe(false);
       expect(result.code).toBe('TIMEOUT_001');
-    });
+    }, 1000); // Reduce timeout for faster test
 
     it('should handle JSON parsing errors', async () => {
       mockFetch.mockResolvedValueOnce({
@@ -416,6 +420,6 @@ describe('StrandsApiClient', () => {
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('Invalid JSON');
-    }, 10000);
+    }, 1000); // Reduce timeout for faster test
   });
 });

@@ -16,6 +16,14 @@ import { UploadManager } from './upload-manager';
 
 // Mock the config imports
 vi.mock('@/config/app', () => ({
+  apiConfig: {
+    strandsBaseUrl: 'http://localhost:8080',
+    genkitBaseUrl: 'http://localhost:8081',
+    websocket: {
+      maxReconnectAttempts: 5,
+      reconnectInterval: 1000,
+    },
+  },
   uploadConfig: {
     acceptedTypes: ['application/pdf'],
     maxFileSize: 100 * 1024 * 1024,
