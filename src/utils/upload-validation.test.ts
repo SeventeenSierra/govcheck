@@ -59,9 +59,16 @@ describe('Upload Validation', () => {
     });
 
     it('should reject files that are too large', () => {
-      const oversizedFile = new File(['x'.repeat(uploadConfig.maxFileSize + 1)], 'large.pdf', { 
+      const oversizedFile = new File(['x'.repeat(1000)], 'large.pdf', { 
         type: 'application/pdf' 
       });
+      
+      // Mock the file size to be larger than the limit
+      Object.defineProperty(oversizedFile, 'size', {
+        value: uploadConfig.maxFileSize + 1,
+        writable: false,
+      });
+      
       const result = validateFileSize(oversizedFile);
       
       expect(result.isValid).toBe(false);
