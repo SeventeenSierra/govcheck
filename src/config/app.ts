@@ -82,8 +82,8 @@ export const uiConfig = {
 export const apiConfig = {
   /** Base URL for Strands service */
   strandsBaseUrl: process.env.NEXT_PUBLIC_STRANDS_URL || 'http://localhost:8080',
-  /** Base URL for Genkit service */
-  genkitBaseUrl: process.env.NEXT_PUBLIC_GENKIT_URL || 'http://localhost:8081',
+  /** Use mock APIs for development (when external services aren't available) */
+  useMockApis: process.env.NEXT_PUBLIC_USE_MOCK_APIS === 'true' || process.env.NODE_ENV === 'development',
   /** API request timeout in milliseconds */
   requestTimeout: 30000, // 30 seconds
   /** Maximum retry attempts for API requests */

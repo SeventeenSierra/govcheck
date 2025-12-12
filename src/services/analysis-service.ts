@@ -233,7 +233,7 @@ export class AnalysisService {
     try {
       await strandsApiClient.connectWebSocket();
 
-      strandsApiClient.subscribeToAnalysisProgress((message) => {
+      strandsApiClient.subscribeToAnalysisProgress((message: any) => {
         const sessionId = message.sessionId;
         const session = this.activeSessions.get(sessionId);
 
