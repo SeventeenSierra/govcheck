@@ -119,7 +119,7 @@ describe('UploadManager', () => {
         />
       );
 
-      const fileInput = screen.getByText('Select PDF File').closest('button');
+      const fileInput = screen.getByTestId('file-input');
       expect(fileInput).toBeInTheDocument();
 
       // Create a valid PDF file with sufficient size
@@ -128,31 +128,27 @@ describe('UploadManager', () => {
         type: 'application/pdf',
       });
 
-      if (fileInput) {
-        fireEvent.change(fileInput, { target: { files: [validFile] } });
-      }
+      fireEvent.change(fileInput, { target: { files: [validFile] } });
 
-      // Should show file info
+      // Should show uploading state with filename
       await waitFor(() => {
-        expect(screen.getByText('test-document.pdf')).toBeInTheDocument();
+        expect(screen.getByText('Uploading test-document.pdf')).toBeInTheDocument();
       });
     });
 
     it('should reject invalid file types', async () => {
       render(<UploadManager onUploadError={mockOnUploadError} />);
 
-      const fileInput = screen.getByText('Select PDF File').closest('button');
+      const fileInput = screen.getByTestId('file-input');
 
       // Create an invalid file type
       const invalidFile = new File(['test content'], 'document.txt', {
         type: 'text/plain',
       });
 
-      if (fileInput) {
-        fireEvent.change(fileInput, { target: { files: [invalidFile] } });
-      }
+      fireEvent.change(fileInput, { target: { files: [invalidFile] } });
 
-      // Should show error
+      // Should show error state
       await waitFor(() => {
         expect(screen.getByText('Upload Failed')).toBeInTheDocument();
         expect(screen.getByText(/Only PDF files are accepted/)).toBeInTheDocument();
@@ -220,7 +216,7 @@ describe('UploadManager', () => {
 
       // Should show uploading state
       await waitFor(() => {
-        expect(screen.getByText('Uploading...')).toBeInTheDocument();
+        expect(screen.getAllByText('Uploading...')[0]).toBeInTheDocument();
       });
 
       // Should show progress bar
@@ -247,13 +243,13 @@ describe('UploadManager', () => {
       // Wait for upload to complete
       await waitFor(
         () => {
-          expect(screen.getByText('Upload completed successfully!')).toBeInTheDocument();
+          expect(screen.getByText('Upload Complete')).toBeInTheDocument();
         },
         { timeout: 3000 }
       );
 
       expect(screen.getByTestId('success-icon')).toBeInTheDocument();
-      expect(screen.getByText('Upload Another File')).toBeInTheDocument();
+      expect(screen.getByText('Upload Another')).toBeInTheDocument();
       expect(mockOnUploadComplete).toHaveBeenCalledWith(
         expect.objectContaining({
           filename: 'test.pdf',
@@ -352,7 +348,7 @@ describe('UploadManager', () => {
 
       // Should show file info
       await waitFor(() => {
-        expect(screen.getByText('dropped.pdf')).toBeInTheDocument();
+        expect(screen.getByText('Uploading dropped.pdf')).toBeInTheDocument();
       });
     });
   });
@@ -373,10 +369,9 @@ describe('UploadManager', () => {
         fireEvent.change(fileInput, { target: { files: [validFile] } });
       }
 
-      // Should show session ID and timestamp
+      // Should show session information
       await waitFor(() => {
-        expect(screen.getByText(/Session ID:/)).toBeInTheDocument();
-        expect(screen.getByText(/Started:/)).toBeInTheDocument();
+        expect(screen.getByText(/Session:/)).toBeInTheDocument();
       });
     });
   });

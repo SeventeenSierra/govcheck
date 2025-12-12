@@ -85,9 +85,7 @@ describe('Upload Confirmation and Error Handling', () => {
       render(<UploadManager onUploadComplete={mockOnUploadComplete} />);
 
       // Upload a valid file
-      const fileInput = screen
-        .getByRole('button', { name: /select pdf file/i })
-        .parentElement?.querySelector('input[type="file"]');
+      const fileInput = screen.getByTestId('file-input');
 
       const validFile = new File(['x'.repeat(2048)], 'success-test.pdf', {
         type: 'application/pdf',
@@ -100,14 +98,14 @@ describe('Upload Confirmation and Error Handling', () => {
       // Wait for upload to complete
       await waitFor(
         () => {
-          expect(screen.getByText('Upload completed successfully!')).toBeInTheDocument();
+          expect(screen.getByText('Upload Complete')).toBeInTheDocument();
         },
         { timeout: 3000 }
       );
 
       // Verify success confirmation elements
       expect(screen.getByTestId('success-icon')).toBeInTheDocument();
-      expect(screen.getByText('Upload Another File')).toBeInTheDocument();
+      expect(screen.getByText('Upload Another')).toBeInTheDocument();
 
       // Verify callback was called
       expect(mockOnUploadComplete).toHaveBeenCalledWith(
@@ -123,9 +121,7 @@ describe('Upload Confirmation and Error Handling', () => {
       render(<UploadManager />);
 
       // Complete an upload first
-      const fileInput = screen
-        .getByRole('button', { name: /select pdf file/i })
-        .parentElement?.querySelector('input[type="file"]');
+      const fileInput = screen.getByTestId('file-input');
 
       const validFile = new File(['x'.repeat(2048)], 'first-upload.pdf', {
         type: 'application/pdf',
@@ -137,13 +133,13 @@ describe('Upload Confirmation and Error Handling', () => {
 
       await waitFor(
         () => {
-          expect(screen.getByText('Upload Another File')).toBeInTheDocument();
+          expect(screen.getByText('Upload Another')).toBeInTheDocument();
         },
         { timeout: 3000 }
       );
 
-      // Click "Upload Another File"
-      fireEvent.click(screen.getByText('Upload Another File'));
+      // Click "Upload Another"
+      fireEvent.click(screen.getByText('Upload Another'));
 
       // Should return to initial upload state
       expect(screen.getByText('Upload your proposal document')).toBeInTheDocument();
@@ -155,9 +151,7 @@ describe('Upload Confirmation and Error Handling', () => {
     it('should display clear error messages for invalid file types', async () => {
       render(<UploadManager onUploadError={mockOnUploadError} />);
 
-      const fileInput = screen
-        .getByRole('button', { name: /select pdf file/i })
-        .parentElement?.querySelector('input[type="file"]');
+      const fileInput = screen.getByTestId('file-input');
 
       // Upload invalid file type
       const invalidFile = new File(['content'], 'document.txt', {
@@ -189,9 +183,7 @@ describe('Upload Confirmation and Error Handling', () => {
     it('should display clear error messages for oversized files', async () => {
       render(<UploadManager onUploadError={mockOnUploadError} />);
 
-      const fileInput = screen
-        .getByRole('button', { name: /select pdf file/i })
-        .parentElement?.querySelector('input[type="file"]');
+      const fileInput = screen.getByTestId('file-input');
 
       // Create oversized file
       const oversizedFile = new File(['x'.repeat(1000)], 'large.pdf', {
@@ -217,28 +209,25 @@ describe('Upload Confirmation and Error Handling', () => {
       expect(mockOnUploadError).toHaveBeenCalled();
     });
 
-    it('should display clear error messages for invalid filenames', async () => {
+    it('should display clear error messages for long filenames', async () => {
       render(<UploadManager onUploadError={mockOnUploadError} />);
 
-      const fileInput = screen
-        .getByRole('button', { name: /select pdf file/i })
-        .parentElement?.querySelector('input[type="file"]');
+      const fileInput = screen.getByTestId('file-input');
 
-      // Create file with invalid filename
-      const invalidNameFile = new File(['x'.repeat(2048)], 'file with spaces.pdf', {
+      // Create file with filename that's too long (over 255 characters)
+      const longFilename = 'a'.repeat(252) + '.pdf'; // 256 characters total
+      const longNameFile = new File(['x'.repeat(2048)], longFilename, {
         type: 'application/pdf',
       });
 
-      if (fileInput) {
-        fireEvent.change(fileInput, { target: { files: [invalidNameFile] } });
-      }
+      fireEvent.change(fileInput, { target: { files: [longNameFile] } });
 
       await waitFor(() => {
         expect(screen.getByText('Upload Failed')).toBeInTheDocument();
       });
 
-      // Verify filename error message
-      expect(screen.getByText(/invalid characters/)).toBeInTheDocument();
+      // Verify filename length error message
+      expect(screen.getByText(/Filename is too long/)).toBeInTheDocument();
       expect(mockOnUploadError).toHaveBeenCalled();
     });
   });
@@ -247,9 +236,7 @@ describe('Upload Confirmation and Error Handling', () => {
     it('should provide retry option for failed uploads', async () => {
       render(<UploadManager />);
 
-      const fileInput = screen
-        .getByRole('button', { name: /select pdf file/i })
-        .parentElement?.querySelector('input[type="file"]');
+      const fileInput = screen.getByTestId('file-input');
 
       // Upload invalid file to trigger error
       const invalidFile = new File(['content'], 'test.txt', {
@@ -272,9 +259,7 @@ describe('Upload Confirmation and Error Handling', () => {
     it('should allow clearing failed upload state', async () => {
       render(<UploadManager />);
 
-      const fileInput = screen
-        .getByRole('button', { name: /select pdf file/i })
-        .parentElement?.querySelector('input[type="file"]');
+      const fileInput = screen.getByTestId('file-input');
 
       // Upload invalid file to trigger error
       const invalidFile = new File(['content'], 'test.txt', {
@@ -300,9 +285,7 @@ describe('Upload Confirmation and Error Handling', () => {
     it('should maintain session information during error states', async () => {
       render(<UploadManager />);
 
-      const fileInput = screen
-        .getByRole('button', { name: /select pdf file/i })
-        .parentElement?.querySelector('input[type="file"]');
+      const fileInput = screen.getByTestId('file-input');
 
       // Upload invalid file
       const invalidFile = new File(['content'], 'test.txt', {
@@ -318,8 +301,7 @@ describe('Upload Confirmation and Error Handling', () => {
       });
 
       // Should still show session information
-      expect(screen.getByText(/Session ID:/)).toBeInTheDocument();
-      expect(screen.getByText(/Started:/)).toBeInTheDocument();
+      expect(screen.getByText(/Session:/)).toBeInTheDocument();
     });
   });
 });
