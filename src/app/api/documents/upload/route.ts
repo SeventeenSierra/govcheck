@@ -1,17 +1,16 @@
 /*
- * SPDX-License-Identifier: PolyForm-Perimeter-1.0.0
+ * SPDX-License-Identifier: AGPL-3.0-or-later
  * SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
  */
 
 /**
  * Next.js API Route for Document Upload
  * 
- * This route now uses the framework-independent adapter pattern.
- * The business logic is handled by the MockApiServer, making it
- * reusable across different frameworks.
+ * This route now uses the Strands integration adapter for end-to-end workflow.
+ * Connects to real Strands service with fallback to mock for development.
  */
 
-import { NextJsApiHandlers } from '@/adapters/nextjs-adapter';
+import { StrandsIntegrationHandlers } from '@/adapters/strands-integration-adapter';
 
-// Export the handler from the adapter
-export const POST = NextJsApiHandlers.handleDocumentUpload;
+// Export the handler from the Strands integration adapter
+export const POST = StrandsIntegrationHandlers.handleDocumentUpload;
