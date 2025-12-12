@@ -30,12 +30,29 @@ export {
   type ComplianceResultsResponse,
   StrandsApiClient,
   strandsApiClient,
+  createStrandsApiClientWithConfig,
   type UploadSessionResponse,
   type WebSocketMessage,
 } from './strands-api-client';
+// Strands Integration
+export {
+  strandsIntegration,
+  StrandsIntegrationManager,
+  StrandsIntegrationUtils,
+  type ServiceIntegrationStatus,
+} from './strands-integration';
 // Upload Service
 export {
   UploadService,
   type UploadServiceEvents,
   uploadService,
 } from './upload-service';
+// Seed Service
+export {
+  SeedService,
+  seedService,
+  type SeedingStatus,
+  type SeededDocument,
+  type FileVerification,
+  type SeedingResult,
+} from './seed-service';

@@ -12,6 +12,7 @@
 import { type AnalysisSession, AnalysisStatus } from '../components/analysis/types';
 import { analysisConfig } from '../config/app';
 import { type AnalysisSessionResponse, strandsApiClient } from './strands-api-client';
+import { strandsIntegration, StrandsIntegrationUtils } from './strands-integration';
 
 /**
  * Analysis service events
@@ -61,8 +62,22 @@ export class AnalysisService {
     request: AnalysisRequest
   ): Promise<{ success: boolean; sessionId: string; error?: string }> {
     try {
+      // Check if service is ready before attempting analysis
+      const serviceReady = await StrandsIntegrationUtils.ensureServiceReady();
+      if (!serviceReady.ready) {
+        return { 
+          success: false, 
+          sessionId: '', 
+          error: serviceReady.message || 'Analysis service is not available'
+        };
+      }
+
       // Start analysis with Strands API
-      const response = await strandsApiClient.startAnalysis(request.proposalId);
+      const response = await strandsApiClient.startAnalysis(
+        request.proposalId,
+        request.proposalId, // Use proposalId as documentId for now
+        `proposal_${request.proposalId}.pdf` // Generate filename
+      );
 
       if (response.success && response.data) {
         // Create local session from API response
@@ -162,6 +177,33 @@ export class AnalysisService {
    */
   clearAllSessions(): void {
     this.activeSessions.clear();
+  }
+
+  /**
+   * Get Strands service status
+   */
+  async getServiceStatus(): Promise<{
+    healthy: boolean;
+    message: string;
+    baseUrl: string;
+    version?: string;
+  }> {
+    const status = strandsIntegration.getStatus();
+    const config = StrandsIntegrationUtils.getServiceConfig();
+    
+    return {
+      healthy: config.healthy,
+      message: strandsIntegration.getStatusMessage(),
+      baseUrl: config.baseUrl,
+      version: config.version
+    };
+  }
+
+  /**
+   * Initialize service integration
+   */
+  async initializeServiceIntegration(): Promise<void> {
+    await StrandsIntegrationUtils.initialize();
   }
 
   /**

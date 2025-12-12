@@ -215,6 +215,17 @@ class HttpClient {
       return errorConfig.codes.VALIDATION_FAILED;
     }
 
+    // Check for specific connection errors
+    if (error.message.includes('ECONNREFUSED') || 
+        error.message.includes('ENOTFOUND') ||
+        error.message.includes('ECONNRESET')) {
+      return 'SERVICE_UNAVAILABLE';
+    }
+
+    if (error.message.includes('HTTP 5')) {
+      return 'SERVICE_ERROR';
+    }
+
     return errorConfig.codes.NETWORK_ERROR;
   }
 
@@ -450,10 +461,21 @@ class WebSocketClient {
 export class StrandsApiClient {
   private httpClient: HttpClient;
   private wsClient: WebSocketClient;
+  private baseUrl: string;
+  private lastHealthCheck: { timestamp: number; healthy: boolean } | null = null;
+  private healthCheckCacheMs = 30000; // Cache health check for 30 seconds
 
   constructor(baseUrl: string = apiConfig.strandsBaseUrl) {
+    this.baseUrl = baseUrl;
     this.httpClient = new HttpClient(baseUrl);
     this.wsClient = new WebSocketClient(baseUrl);
+  }
+
+  /**
+   * Get the base URL being used by this client
+   */
+  getBaseUrl(): string {
+    return this.baseUrl;
   }
 
   // Document Upload Methods
@@ -482,9 +504,20 @@ export class StrandsApiClient {
    * Start compliance analysis
    * Requirement 2.1: Validate against core FAR/DFARS requirements
    */
-  async startAnalysis(proposalId: string): Promise<ApiResponse<AnalysisSessionResponse>> {
+  async startAnalysis(proposalId: string, documentId?: string, filename?: string): Promise<ApiResponse<AnalysisSessionResponse>> {
+    // Check service health before attempting analysis
+    if (!(await this.isServiceHealthy())) {
+      return {
+        success: false,
+        error: 'Strands service is not available. Please try again later.',
+        code: 'SERVICE_UNAVAILABLE'
+      };
+    }
+
     return this.httpClient.post<AnalysisSessionResponse>('/api/analysis/start', {
-      proposalId,
+      proposal_id: proposalId,
+      document_id: documentId || proposalId,
+      filename: filename || 'document.pdf',
       frameworks: ['FAR', 'DFARS'],
     });
   }
@@ -509,8 +542,8 @@ export class StrandsApiClient {
    * Get compliance analysis results with longer caching
    * Requirement 3.1: Show compliance status and findings
    */
-  async getResults(proposalId: string): Promise<ApiResponse<ComplianceResultsResponse>> {
-    return this.httpClient.get<ComplianceResultsResponse>(`/api/results/${proposalId}`, 300000); // 5 minutes cache
+  async getResults(sessionId: string): Promise<ApiResponse<ComplianceResultsResponse>> {
+    return this.httpClient.get<ComplianceResultsResponse>(`/api/analysis/${sessionId}/results`, 300000); // 5 minutes cache
   }
 
   /**
@@ -583,14 +616,96 @@ export class StrandsApiClient {
   /**
    * Check if Strands service is available
    */
-  async healthCheck(): Promise<ApiResponse<{ status: string; version: string }>> {
-    return this.httpClient.get<{ status: string; version: string }>('/api/health');
+  async healthCheck(): Promise<ApiResponse<{ status: string; version: string; checks?: Record<string, string> }>> {
+    const result = await this.httpClient.get<{ status: string; version: string; checks?: Record<string, string> }>('/api/health');
+    
+    // Update health check cache
+    this.lastHealthCheck = {
+      timestamp: Date.now(),
+      healthy: result.success && (result.data?.status === 'healthy' || result.data?.status === 'degraded')
+    };
+    
+    return result;
+  }
+
+  /**
+   * Check if Strands service is healthy and ready for requests
+   * Uses cached result if available and recent
+   */
+  async isServiceHealthy(): Promise<boolean> {
+    // Use cached result if available and recent
+    if (this.lastHealthCheck && 
+        Date.now() - this.lastHealthCheck.timestamp < this.healthCheckCacheMs) {
+      return this.lastHealthCheck.healthy;
+    }
+
+    try {
+      const result = await this.healthCheck();
+      return result.success && (result.data?.status === 'healthy' || result.data?.status === 'degraded');
+    } catch (error) {
+      // Update cache with failure
+      this.lastHealthCheck = {
+        timestamp: Date.now(),
+        healthy: false
+      };
+      return false;
+    }
+  }
+
+  /**
+   * Wait for service to become healthy with timeout
+   */
+  async waitForService(timeoutMs: number = 30000): Promise<boolean> {
+    const startTime = Date.now();
+    const checkInterval = 2000; // Check every 2 seconds
+
+    while (Date.now() - startTime < timeoutMs) {
+      if (await this.isServiceHealthy()) {
+        return true;
+      }
+      await new Promise(resolve => setTimeout(resolve, checkInterval));
+    }
+    return false;
+  }
+
+  /**
+   * Get detailed service status including all health checks
+   */
+  async getServiceStatus(): Promise<{
+    healthy: boolean;
+    baseUrl: string;
+    status?: string;
+    version?: string;
+    checks?: Record<string, string>;
+    lastChecked?: number;
+    error?: string;
+  }> {
+    try {
+      const result = await this.healthCheck();
+      
+      return {
+        healthy: result.success && (result.data?.status === 'healthy' || result.data?.status === 'degraded'),
+        baseUrl: this.baseUrl,
+        status: result.data?.status,
+        version: result.data?.version,
+        checks: result.data?.checks,
+        lastChecked: Date.now(),
+        error: result.success ? undefined : result.error
+      };
+    } catch (error) {
+      return {
+        healthy: false,
+        baseUrl: this.baseUrl,
+        lastChecked: Date.now(),
+        error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
   }
 }
 
 /**
  * Smart API client factory that switches between real and mock APIs
- * Now uses framework-independent configuration
+ * Now uses framework-independent configuration with Docker support
  */
 function createStrandsApiClient() {
   // Import configuration dynamically to avoid circular dependencies
@@ -600,13 +715,25 @@ function createStrandsApiClient() {
     config = configModule.apiConfiguration;
   } catch (error) {
     // Fallback configuration if api-config is not available
+    const baseUrl = apiConfig.useMockApis 
+      ? 'http://localhost:3000' 
+      : apiConfig.strandsBaseUrl;
+    
     config = {
-      baseUrl: apiConfig.useMockApis ? 'http://localhost:3000' : apiConfig.strandsBaseUrl,
+      baseUrl,
       useMock: apiConfig.useMockApis
     };
   }
 
   return new StrandsApiClient(config.baseUrl);
+}
+
+/**
+ * Create a Strands API client with explicit configuration
+ * Useful for testing or specific deployment scenarios
+ */
+export function createStrandsApiClientWithConfig(baseUrl: string, useMock: boolean = false) {
+  return new StrandsApiClient(baseUrl);
 }
 
 /**
