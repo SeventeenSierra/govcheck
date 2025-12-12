@@ -51,25 +51,25 @@ export function RegulatoryReferences({ issues, rulesChecked }: RegulatoryReferen
         return {
           bgColor: 'bg-red-100',
           textColor: 'text-red-800',
-          icon: <XCircle className="h-3 w-3" />
+          icon: <XCircle className="h-3 w-3" />,
         };
       case IssueSeverity.WARNING:
         return {
           bgColor: 'bg-yellow-100',
           textColor: 'text-yellow-800',
-          icon: <AlertCircle className="h-3 w-3" />
+          icon: <AlertCircle className="h-3 w-3" />,
         };
       case IssueSeverity.INFO:
         return {
           bgColor: 'bg-blue-100',
           textColor: 'text-blue-800',
-          icon: <FileText className="h-3 w-3" />
+          icon: <FileText className="h-3 w-3" />,
         };
       default:
         return {
           bgColor: 'bg-gray-100',
           textColor: 'text-gray-800',
-          icon: <FileText className="h-3 w-3" />
+          icon: <FileText className="h-3 w-3" />,
         };
     }
   };
@@ -98,7 +98,9 @@ export function RegulatoryReferences({ issues, rulesChecked }: RegulatoryReferen
                       const severityConfig = getSeverityConfig(issue.severity);
                       return (
                         <div key={issue.id} className="flex items-center space-x-3 text-sm">
-                          <span className={`inline-flex items-center space-x-1 px-2 py-1 rounded-md text-xs font-medium ${severityConfig.bgColor} ${severityConfig.textColor}`}>
+                          <span
+                            className={`inline-flex items-center space-x-1 px-2 py-1 rounded-md text-xs font-medium ${severityConfig.bgColor} ${severityConfig.textColor}`}
+                          >
                             {severityConfig.icon}
                             <span>{issue.severity.toUpperCase()}</span>
                           </span>
@@ -124,9 +126,7 @@ export function RegulatoryReferences({ issues, rulesChecked }: RegulatoryReferen
                   <div
                     key={rule}
                     className={`p-3 rounded-lg border ${
-                      hasIssues
-                        ? 'bg-red-50 border-red-200'
-                        : 'bg-green-50 border-green-200'
+                      hasIssues ? 'bg-red-50 border-red-200' : 'bg-green-50 border-green-200'
                     }`}
                   >
                     <div className="flex items-center justify-between">
@@ -156,9 +156,11 @@ export function RegulatoryReferences({ issues, rulesChecked }: RegulatoryReferen
       ) : (
         <div className="text-center py-8">
           <CheckCircle className="h-12 w-12 text-green-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No Regulatory Violations Found</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            No Regulatory Violations Found
+          </h3>
           <p className="text-gray-600 mb-6">All regulatory requirements have been met.</p>
-          
+
           {/* All Rules Checked - Success State */}
           <div className="text-left">
             <h4 className="text-base font-semibold text-gray-900 mb-4">
@@ -168,9 +170,7 @@ export function RegulatoryReferences({ issues, rulesChecked }: RegulatoryReferen
               {rulesChecked.map((rule) => (
                 <div key={rule} className="p-3 rounded-lg border bg-green-50 border-green-200">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-900 truncate pr-2">
-                      {rule}
-                    </span>
+                    <span className="text-sm font-medium text-gray-900 truncate pr-2">{rule}</span>
                     <div className="flex items-center space-x-1">
                       <CheckCircle className="h-4 w-4 text-green-500" />
                       <span className="text-xs text-green-700 font-medium">Passed</span>

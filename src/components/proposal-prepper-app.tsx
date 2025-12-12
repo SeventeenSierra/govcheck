@@ -5,18 +5,17 @@
 
 'use client';
 
-import type React from 'react';
-import { useCallback, useState } from 'react';
 import { Button } from '@17sierra/ui';
 import { AlertCircle, FileText, Home, Settings } from 'lucide-react';
-import { UploadManager } from '@/components/upload/upload-manager';
+import type React from 'react';
+import { useCallback, useState } from 'react';
 import { AnalysisCoordinator } from '@/components/analysis/analysis-coordinator';
-import { ResultsPresenter } from '@/components/results/results-presenter';
-
-import type { UploadSession } from '@/types/app';
 import type { AnalysisResult, AnalysisSession } from '@/components/analysis/types';
+import { ResultsPresenter } from '@/components/results/results-presenter';
 import type { AnalysisResults } from '@/components/results/types';
 import { ComplianceStatus } from '@/components/results/types';
+import { UploadManager } from '@/components/upload/upload-manager';
+import type { UploadSession } from '@/types/app';
 
 /**
  * Application workflow states
@@ -154,16 +153,19 @@ export function ProposalPrepperApp(): React.JSX.Element {
    * Navigate to specific workflow step
    * Requirement 4.2: Clear navigation and workflow
    */
-  const navigateToStep = useCallback((step: WorkflowState) => {
-    // Only allow navigation to completed steps
-    if (step === WorkflowState.UPLOAD) {
-      setAppState((prev) => ({ ...prev, currentWorkflow: step }));
-    } else if (step === WorkflowState.ANALYSIS && appState.uploadSession) {
-      setAppState((prev) => ({ ...prev, currentWorkflow: step }));
-    } else if (step === WorkflowState.RESULTS && appState.analysisResults) {
-      setAppState((prev) => ({ ...prev, currentWorkflow: step }));
-    }
-  }, [appState.uploadSession, appState.analysisResults]);
+  const navigateToStep = useCallback(
+    (step: WorkflowState) => {
+      // Only allow navigation to completed steps
+      if (step === WorkflowState.UPLOAD) {
+        setAppState((prev) => ({ ...prev, currentWorkflow: step }));
+      } else if (step === WorkflowState.ANALYSIS && appState.uploadSession) {
+        setAppState((prev) => ({ ...prev, currentWorkflow: step }));
+      } else if (step === WorkflowState.RESULTS && appState.analysisResults) {
+        setAppState((prev) => ({ ...prev, currentWorkflow: step }));
+      }
+    },
+    [appState.uploadSession, appState.analysisResults]
+  );
 
   /**
    * Convert AnalysisResult to AnalysisResults for ResultsPresenter
@@ -232,13 +234,13 @@ export function ProposalPrepperApp(): React.JSX.Element {
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex items-center space-x-8 py-3">
             {Object.values(WorkflowState).map((step, index) => {
-              const isCompleted = 
+              const isCompleted =
                 (step === WorkflowState.UPLOAD && appState.uploadSession) ||
                 (step === WorkflowState.ANALYSIS && appState.analysisResults) ||
                 (step === WorkflowState.RESULTS && appState.analysisResults);
-              
+
               const isCurrent = appState.currentWorkflow === step;
-              const isAccessible = 
+              const isAccessible =
                 step === WorkflowState.UPLOAD ||
                 (step === WorkflowState.ANALYSIS && appState.uploadSession) ||
                 (step === WorkflowState.RESULTS && appState.analysisResults);
@@ -259,13 +261,15 @@ export function ProposalPrepperApp(): React.JSX.Element {
                           : 'text-gray-400 cursor-not-allowed'
                   }`}
                 >
-                  <span className={`flex items-center justify-center w-6 h-6 rounded-full text-xs ${
-                    isCompleted 
-                      ? 'bg-green-100 text-green-600' 
-                      : isCurrent 
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-gray-100 text-gray-500'
-                  }`}>
+                  <span
+                    className={`flex items-center justify-center w-6 h-6 rounded-full text-xs ${
+                      isCompleted
+                        ? 'bg-green-100 text-green-600'
+                        : isCurrent
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-gray-100 text-gray-500'
+                    }`}
+                  >
                     {index + 1}
                   </span>
                   <span className="capitalize">{step}</span>
@@ -298,7 +302,9 @@ export function ProposalPrepperApp(): React.JSX.Element {
                 {appState.currentWorkflow === WorkflowState.UPLOAD && (
                   <div>
                     <div className="mb-6">
-                      <h1 className="text-2xl font-bold text-slate-900 mb-2">Upload Proposal Document</h1>
+                      <h1 className="text-2xl font-bold text-slate-900 mb-2">
+                        Upload Proposal Document
+                      </h1>
                       <p className="text-gray-500 text-sm">
                         Upload your PDF proposal document to begin compliance analysis
                       </p>
