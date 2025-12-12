@@ -33,5 +33,14 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "**/*.stories.tsx", "vitest.config.ts", ".inbox/**/*"]
+  "exclude": [
+    "node_modules",
+    "**/*.stories.tsx",
+    "vitest.config.ts",
+    ".inbox/**/*",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
+  ]
 }

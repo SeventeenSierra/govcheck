@@ -246,11 +246,7 @@ export class AnalysisService {
             currentStep: data.currentStep || session.currentStep,
           };
           this.activeSessions.set(sessionId, updatedSession);
-          this.eventHandlers.onProgress?.(
-            sessionId,
-            data.progress,
-            updatedSession.currentStep
-          );
+          this.eventHandlers.onProgress?.(sessionId, data.progress, updatedSession.currentStep);
         }
       });
 
