@@ -10,3 +10,4 @@
  */
 
 export { default as AgentInterface } from './agent-interface';
+export * from './types';

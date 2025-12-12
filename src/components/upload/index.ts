@@ -10,3 +10,5 @@
 
 // Upload Manager component
 export { UploadManager, type UploadManagerProps } from './upload-manager';
+// Upload types
+export * from './types';

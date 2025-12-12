@@ -10,3 +10,4 @@
  */
 
 export { default as ReportPreview } from './report-preview';
+export * from './types';

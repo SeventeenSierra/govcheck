@@ -3,11 +3,7 @@
  * SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
  */
 
-export type { IssueDetailsProps } from './issue-details';
-export { IssueDetails } from './issue-details';
-export { IssueList } from './issue-list';
-export type { IssueLocationViewerProps } from './issue-location-viewer';
-export { IssueLocationViewer } from './issue-location-viewer';
+// Issue components moved to src/components/issues/
 export { RegulatoryReferences } from './regulatory-references';
 export * from './remediation-utils';
 export { ResultsPresenter } from './results-presenter';

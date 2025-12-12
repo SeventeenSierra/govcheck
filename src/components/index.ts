@@ -7,18 +7,18 @@
 export * from './agent';
 // Analysis components
 export * from './analysis';
-// App components
-export * from './app';
+// Issues components
+export * from './issues';
 // Layout components
 export * from './layout';
 // Navigation components
 export * from './navigation';
-// Proposal components
-export * from './proposal';
 // Reports components
 export * from './reports';
 // Results components
 export * from './results';
+// RFP components
+export * from './rfp';
 // Shared components
 export * from './shared';
 // UI components
