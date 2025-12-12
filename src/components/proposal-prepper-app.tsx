@@ -8,10 +8,11 @@
 import type React from 'react';
 import { useCallback, useState } from 'react';
 import { Button } from '@17sierra/ui';
-import { AlertCircle, CheckCircle, FileText, Home, Settings, Upload } from 'lucide-react';
+import { AlertCircle, FileText, Home, Settings } from 'lucide-react';
 import { UploadManager } from '@/components/upload/upload-manager';
 import { AnalysisCoordinator } from '@/components/analysis/analysis-coordinator';
 import { ResultsPresenter } from '@/components/results/results-presenter';
+
 import type { UploadSession } from '@/types/app';
 import type { AnalysisResult, AnalysisSession } from '@/components/analysis/types';
 import type { AnalysisResults } from '@/components/results/types';
@@ -165,26 +166,6 @@ export function ProposalPrepperApp(): React.JSX.Element {
   }, [appState.uploadSession, appState.analysisResults]);
 
   /**
-   * Get workflow step status for navigation
-   */
-  const getStepStatus = useCallback((step: WorkflowState) => {
-    switch (step) {
-      case WorkflowState.UPLOAD:
-        return appState.uploadSession ? 'completed' : 'current';
-      case WorkflowState.ANALYSIS:
-        return appState.analysisResults
-          ? 'completed'
-          : appState.uploadSession
-            ? 'current'
-            : 'pending';
-      case WorkflowState.RESULTS:
-        return appState.analysisResults ? 'current' : 'pending';
-      default:
-        return 'pending';
-    }
-  }, [appState]);
-
-  /**
    * Convert AnalysisResult to AnalysisResults for ResultsPresenter
    */
   const getAnalysisResults = useCallback((): AnalysisResults | undefined => {
@@ -246,28 +227,47 @@ export function ProposalPrepperApp(): React.JSX.Element {
         </div>
       </header>
 
-      {/* Navigation Breadcrumb - Matching original tab style */}
+      {/* Simple Navigation Tabs */}
       <nav className="bg-white border-b border-gray-200">
         <div className="px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center space-x-6 py-3">
+          <div className="flex items-center space-x-8 py-3">
             {Object.values(WorkflowState).map((step, index) => {
-              const status = getStepStatus(step);
-              const isClickable = status === 'completed' || status === 'current';
+              const isCompleted = 
+                (step === WorkflowState.UPLOAD && appState.uploadSession) ||
+                (step === WorkflowState.ANALYSIS && appState.analysisResults) ||
+                (step === WorkflowState.RESULTS && appState.analysisResults);
+              
+              const isCurrent = appState.currentWorkflow === step;
+              const isAccessible = 
+                step === WorkflowState.UPLOAD ||
+                (step === WorkflowState.ANALYSIS && appState.uploadSession) ||
+                (step === WorkflowState.RESULTS && appState.analysisResults);
 
               return (
                 <button
                   key={step}
                   type="button"
-                  onClick={() => isClickable && navigateToStep(step)}
-                  disabled={!isClickable}
-                  className={`pb-2 px-1 text-sm font-medium transition-colors ${
-                    status === 'current'
+                  onClick={() => isAccessible && navigateToStep(step)}
+                  disabled={!isAccessible || appState.isLoading}
+                  className={`flex items-center space-x-2 pb-2 px-1 text-sm font-medium transition-colors ${
+                    isCurrent
                       ? 'text-primary border-b-2 border-primary'
-                      : status === 'completed'
+                      : isCompleted
                         ? 'text-slate-800 hover:text-primary'
-                        : 'text-gray-400 cursor-not-allowed'
+                        : isAccessible
+                          ? 'text-slate-600 hover:text-primary'
+                          : 'text-gray-400 cursor-not-allowed'
                   }`}
                 >
+                  <span className={`flex items-center justify-center w-6 h-6 rounded-full text-xs ${
+                    isCompleted 
+                      ? 'bg-green-100 text-green-600' 
+                      : isCurrent 
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-gray-100 text-gray-500'
+                  }`}>
+                    {index + 1}
+                  </span>
                   <span className="capitalize">{step}</span>
                 </button>
               );
