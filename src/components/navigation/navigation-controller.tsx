@@ -5,10 +5,10 @@
 
 'use client';
 
-import type React from 'react';
-import { useCallback, useMemo } from 'react';
 import { Button } from '@17sierra/ui';
 import { ChevronLeft, ChevronRight, Home } from 'lucide-react';
+import type React from 'react';
+import { useCallback, useMemo } from 'react';
 
 /**
  * Navigation step definition
@@ -128,41 +128,45 @@ export function NavigationController({
   /**
    * Get step status indicator
    */
-  const getStepStatusIndicator = useCallback((step: NavigationStep) => {
-    if (step.isCompleted) {
-      return (
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-600 text-white">
-          <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path
-              fillRule="evenodd"
-              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </div>
-      );
-    }
+  const getStepStatusIndicator = useCallback(
+    (step: NavigationStep) => {
+      if (step.isCompleted) {
+        return (
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-600 text-white">
+            <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <title>Completed</title>
+              <path
+                fillRule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </div>
+        );
+      }
 
-    if (step.isCurrent) {
+      if (step.isCurrent) {
+        return (
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white">
+            <span className="text-sm font-medium">{steps.indexOf(step) + 1}</span>
+          </div>
+        );
+      }
+
       return (
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white">
+        <div
+          className={`flex h-8 w-8 items-center justify-center rounded-full border-2 ${
+            step.isAccessible
+              ? 'border-gray-300 bg-white text-gray-500 hover:border-gray-400'
+              : 'border-gray-200 bg-gray-100 text-gray-400'
+          }`}
+        >
           <span className="text-sm font-medium">{steps.indexOf(step) + 1}</span>
         </div>
       );
-    }
-
-    return (
-      <div
-        className={`flex h-8 w-8 items-center justify-center rounded-full border-2 ${
-          step.isAccessible
-            ? 'border-gray-300 bg-white text-gray-500 hover:border-gray-400'
-            : 'border-gray-200 bg-gray-100 text-gray-400'
-        }`}
-      >
-        <span className="text-sm font-medium">{steps.indexOf(step) + 1}</span>
-      </div>
-    );
-  }, [steps]);
+    },
+    [steps]
+  );
 
   return (
     <div className={`navigation-controller ${className}`}>

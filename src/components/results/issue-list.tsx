@@ -5,8 +5,8 @@
 
 'use client';
 
-import { useState } from 'react';
 import { AlertCircle, ChevronDown, ChevronRight, MapPin, XCircle } from 'lucide-react';
+import { useState } from 'react';
 import { IssueDetails } from './issue-details';
 import { generateRemediationRecommendation } from './remediation-utils';
 import { type ExtendedComplianceIssue, type IssueListProps, IssueSeverity } from './types';
@@ -29,7 +29,7 @@ export function IssueList({ issues, onIssueClick, showDetails = false }: IssueLi
           borderColor: 'border-red-200',
           textColor: 'text-red-900',
           badgeColor: 'bg-red-100 text-red-800',
-          iconColor: 'text-red-500'
+          iconColor: 'text-red-500',
         };
       case IssueSeverity.WARNING:
         return {
@@ -38,7 +38,7 @@ export function IssueList({ issues, onIssueClick, showDetails = false }: IssueLi
           borderColor: 'border-yellow-200',
           textColor: 'text-yellow-900',
           badgeColor: 'bg-yellow-100 text-yellow-800',
-          iconColor: 'text-yellow-500'
+          iconColor: 'text-yellow-500',
         };
       case IssueSeverity.INFO:
         return {
@@ -47,7 +47,7 @@ export function IssueList({ issues, onIssueClick, showDetails = false }: IssueLi
           borderColor: 'border-blue-200',
           textColor: 'text-blue-900',
           badgeColor: 'bg-blue-100 text-blue-800',
-          iconColor: 'text-blue-500'
+          iconColor: 'text-blue-500',
         };
       default:
         return {
@@ -56,7 +56,7 @@ export function IssueList({ issues, onIssueClick, showDetails = false }: IssueLi
           borderColor: 'border-gray-200',
           textColor: 'text-gray-900',
           badgeColor: 'bg-gray-100 text-gray-800',
-          iconColor: 'text-gray-500'
+          iconColor: 'text-gray-500',
         };
     }
   };
@@ -111,36 +111,27 @@ export function IssueList({ issues, onIssueClick, showDetails = false }: IssueLi
 
         return (
           <div key={issue.id} className="border border-gray-200 rounded-lg overflow-hidden">
-            <div
-              className={`${severityConfig.bgColor} ${severityConfig.borderColor} border-l-4 p-4 cursor-pointer hover:bg-opacity-80 transition-colors`}
+            <button
+              type="button"
+              className={`${severityConfig.bgColor} ${severityConfig.borderColor} border-l-4 p-4 cursor-pointer hover:bg-opacity-80 transition-colors w-full text-left`}
               onClick={() => handleIssueClick(issue.id)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  handleIssueClick(issue.id);
-                }
-              }}
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-start space-x-3 flex-1">
-                  <div className={`${severityConfig.iconColor} mt-0.5`}>
-                    {severityConfig.icon}
-                  </div>
+                  <div className={`${severityConfig.iconColor} mt-0.5`}>{severityConfig.icon}</div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2 mb-2">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${severityConfig.badgeColor}`}>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${severityConfig.badgeColor}`}
+                      >
                         {issue.severity.toUpperCase()}
                       </span>
                       <h3 className={`text-sm font-semibold ${severityConfig.textColor} truncate`}>
                         {issue.title}
                       </h3>
                     </div>
-                    <p className="text-sm text-gray-700 mb-3 line-clamp-2">
-                      {issue.description}
-                    </p>
-                    
+                    <p className="text-sm text-gray-700 mb-3 line-clamp-2">{issue.description}</p>
+
                     <div className="flex items-center space-x-4 text-xs text-gray-600">
                       <div className="flex items-center space-x-1">
                         <span className="font-medium">Regulation:</span>
@@ -166,7 +157,7 @@ export function IssueList({ issues, onIssueClick, showDetails = false }: IssueLi
                   )}
                 </div>
               </div>
-            </div>
+            </button>
 
             {/* Expanded Details */}
             {isExpanded && (
@@ -176,7 +167,9 @@ export function IssueList({ issues, onIssueClick, showDetails = false }: IssueLi
                     {/* Location Excerpt */}
                     {issue.location?.excerpt && (
                       <div>
-                        <h4 className="text-sm font-medium text-gray-900 mb-2">Document Excerpt:</h4>
+                        <h4 className="text-sm font-medium text-gray-900 mb-2">
+                          Document Excerpt:
+                        </h4>
                         <blockquote className="bg-gray-50 border-l-4 border-gray-300 pl-4 py-2 text-sm text-gray-700 italic">
                           "{issue.location.excerpt}"
                         </blockquote>
@@ -185,17 +178,18 @@ export function IssueList({ issues, onIssueClick, showDetails = false }: IssueLi
 
                     {/* Remediation Guidance */}
                     <div>
-                      <h4 className="text-sm font-medium text-gray-900 mb-2">Recommended Action:</h4>
+                      <h4 className="text-sm font-medium text-gray-900 mb-2">
+                        Recommended Action:
+                      </h4>
                       <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
-                        <p className="text-sm text-blue-900">
-                          {getRemediationPreview(issue)}
-                        </p>
+                        <p className="text-sm text-blue-900">{getRemediationPreview(issue)}</p>
                       </div>
                     </div>
 
                     {/* Additional Details */}
                     <div className="pt-3 border-t border-gray-100">
                       <button
+                        type="button"
                         onClick={(e) => {
                           e.stopPropagation();
                           // This would open a detailed modal or navigate to details page
@@ -210,10 +204,10 @@ export function IssueList({ issues, onIssueClick, showDetails = false }: IssueLi
                 )}
 
                 {/* Expanded Issue Details Component */}
-                <IssueDetails 
-                  issue={issue} 
-                  expanded={true} 
-                  onClose={() => setExpandedIssue(null)} 
+                <IssueDetails
+                  issue={issue}
+                  expanded={true}
+                  onClose={() => setExpandedIssue(null)}
                 />
               </div>
             )}

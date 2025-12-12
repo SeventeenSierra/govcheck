@@ -9,7 +9,7 @@ import { Button } from '@17sierra/ui';
 import { AlertCircle, CheckCircle, Download, FileText, RefreshCw, XCircle } from 'lucide-react';
 import { IssueList } from './issue-list';
 import { RegulatoryReferences } from './regulatory-references';
-import { StatusDisplay } from './status-display';
+
 import type { ResultsPresenterProps } from './types';
 import { ComplianceStatus } from './types';
 
@@ -62,9 +62,7 @@ export function ResultsPresenter({
         <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
         <h2 className="text-xl font-semibold text-gray-900 mb-2">No Results Available</h2>
         <p className="text-gray-600 mb-6">No analysis results to display.</p>
-        <Button onClick={onStartNewAnalysis}>
-          Start New Analysis
-        </Button>
+        <Button onClick={onStartNewAnalysis}>Start New Analysis</Button>
       </div>
     );
   }
@@ -79,7 +77,7 @@ export function ResultsPresenter({
           borderColor: 'border-green-200',
           textColor: 'text-green-900',
           badgeColor: 'bg-green-100 text-green-800',
-          status: 'PASS'
+          status: 'PASS',
         };
       case ComplianceStatus.FAIL:
         return {
@@ -88,7 +86,7 @@ export function ResultsPresenter({
           borderColor: 'border-red-200',
           textColor: 'text-red-900',
           badgeColor: 'bg-red-100 text-red-800',
-          status: 'FAIL'
+          status: 'FAIL',
         };
       default:
         return {
@@ -97,7 +95,7 @@ export function ResultsPresenter({
           borderColor: 'border-yellow-200',
           textColor: 'text-yellow-900',
           badgeColor: 'bg-yellow-100 text-yellow-800',
-          status: 'WARNING'
+          status: 'WARNING',
         };
     }
   };
@@ -126,7 +124,9 @@ export function ResultsPresenter({
       </div>
 
       {/* Overall Status Card */}
-      <div className={`${statusDisplay.bgColor} ${statusDisplay.borderColor} border rounded-lg p-6`}>
+      <div
+        className={`${statusDisplay.bgColor} ${statusDisplay.borderColor} border rounded-lg p-6`}
+      >
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             {statusDisplay.icon}
@@ -134,9 +134,7 @@ export function ResultsPresenter({
               <h2 className={`text-xl font-semibold ${statusDisplay.textColor}`}>
                 Compliance Status: {statusDisplay.status}
               </h2>
-              <p className="text-gray-600 mt-1">
-                Overall Score: {results.overallScore}/100
-              </p>
+              <p className="text-gray-600 mt-1">Overall Score: {results.overallScore}/100</p>
             </div>
           </div>
           <div className={`px-3 py-1 rounded-full text-sm font-medium ${statusDisplay.badgeColor}`}>
@@ -151,27 +149,33 @@ export function ResultsPresenter({
           <div className="flex items-center justify-between">
             <div>
               <p className="text-red-600 text-sm font-medium">Critical Issues</p>
-              <p className="text-2xl font-bold text-red-900">{results.metadata.issueCounts.critical}</p>
+              <p className="text-2xl font-bold text-red-900">
+                {results.metadata.issueCounts.critical}
+              </p>
             </div>
             <XCircle className="h-8 w-8 text-red-400" />
           </div>
         </div>
-        
+
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-yellow-600 text-sm font-medium">Warnings</p>
-              <p className="text-2xl font-bold text-yellow-900">{results.metadata.issueCounts.warning}</p>
+              <p className="text-2xl font-bold text-yellow-900">
+                {results.metadata.issueCounts.warning}
+              </p>
             </div>
             <AlertCircle className="h-8 w-8 text-yellow-400" />
           </div>
         </div>
-        
+
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-blue-600 text-sm font-medium">Info</p>
-              <p className="text-2xl font-bold text-blue-900">{results.metadata.issueCounts.info}</p>
+              <p className="text-2xl font-bold text-blue-900">
+                {results.metadata.issueCounts.info}
+              </p>
             </div>
             <FileText className="h-8 w-8 text-blue-400" />
           </div>
@@ -224,7 +228,9 @@ export function ResultsPresenter({
             <p className="text-sm text-gray-600">Processing Time</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-gray-900">{results.metadata.rulesChecked.length}</p>
+            <p className="text-2xl font-bold text-gray-900">
+              {results.metadata.rulesChecked.length}
+            </p>
             <p className="text-sm text-gray-600">Rules Checked</p>
           </div>
           <div className="text-center">
