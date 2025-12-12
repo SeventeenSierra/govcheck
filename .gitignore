@@ -3,6 +3,11 @@
 /.pnp
 .pnp.js
 
+# Python virtual environments
+venv/
+__pycache__/
+.pytest_cache/
+
 # testing
 /coverage
 /test-results/
@@ -41,20 +46,12 @@ next-env.d.ts
 
 # Branch-specific exclusions (ai-ssdf-nonopen content)
 /apps/
-/services/
-/packages/
 /.private/
 /ee/
 /enterprise/
-/scripts/
 /python/
 /tools/
 /.agent/
-/.kiro/
-/.github/
-/.husky/
-/.storybook/
-/.vscode/
 /docs/private/
 /signatures/
 /proprietary/
