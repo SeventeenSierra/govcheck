@@ -9,13 +9,9 @@
  * Implements requirements 2.1, 2.2, 2.3, 2.4, and 2.5 for analysis functionality.
  */
 
-import {
-  strandsApiClient,
-  type ApiResponse,
-  type AnalysisSessionResponse,
-} from './strands-api-client';
 import { type AnalysisSession, AnalysisStatus } from '../components/analysis/types';
-import { analysisConfig, errorConfig } from '../config/app';
+import { analysisConfig } from '../config/app';
+import { type AnalysisSessionResponse, strandsApiClient } from './strands-api-client';
 
 /**
  * Analysis service events

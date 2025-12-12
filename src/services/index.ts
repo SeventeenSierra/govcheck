@@ -9,36 +9,33 @@
  * and orchestrates data flow between components.
  */
 
-// Strands API Client
-export {
-  StrandsApiClient,
-  strandsApiClient,
-  type ApiResponse,
-  type UploadSessionResponse,
-  type AnalysisSessionResponse,
-  type ComplianceResultsResponse,
-  type ComplianceIssue,
-  type WebSocketMessage,
-} from './strands-api-client';
-
-// Upload Service
-export {
-  UploadService,
-  uploadService,
-  type UploadServiceEvents,
-} from './upload-service';
-
 // Analysis Service
 export {
-  AnalysisService,
-  analysisService,
-  type AnalysisServiceEvents,
   type AnalysisRequest,
+  AnalysisService,
+  type AnalysisServiceEvents,
+  analysisService,
 } from './analysis-service';
-
 // Results Service
 export {
   ResultsService,
-  resultsService,
   type ResultsServiceEvents,
+  resultsService,
 } from './results-service';
+// Strands API Client
+export {
+  type AnalysisSessionResponse,
+  type ApiResponse,
+  type ComplianceIssue,
+  type ComplianceResultsResponse,
+  StrandsApiClient,
+  strandsApiClient,
+  type UploadSessionResponse,
+  type WebSocketMessage,
+} from './strands-api-client';
+// Upload Service
+export {
+  UploadService,
+  type UploadServiceEvents,
+  uploadService,
+} from './upload-service';

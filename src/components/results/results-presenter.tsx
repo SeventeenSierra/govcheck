@@ -7,12 +7,11 @@
 
 import { Button } from '@17sierra/ui';
 import { AlertCircle, CheckCircle, Download, FileText, RefreshCw, XCircle } from 'lucide-react';
+import { resultsService } from '@/services';
 import { IssueList } from './issue-list';
 import { RegulatoryReferences } from './regulatory-references';
-
 import type { ResultsPresenterProps } from './types';
 import { ComplianceStatus } from './types';
-import { resultsService } from '@/services';
 
 /**
  * Results Presenter Component

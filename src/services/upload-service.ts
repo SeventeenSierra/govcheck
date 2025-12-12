@@ -9,13 +9,9 @@
  * Implements requirements 1.1, 1.2, 1.3, 1.4, and 1.5 for upload functionality.
  */
 
-import {
-  strandsApiClient,
-  type ApiResponse,
-  type UploadSessionResponse,
-} from './strands-api-client';
+import { errorConfig, uploadConfig } from '../config/app';
 import { type UploadSession, UploadStatus } from '../types/app';
-import { uploadConfig, errorConfig } from '../config/app';
+import { strandsApiClient, type UploadSessionResponse } from './strands-api-client';
 
 /**
  * Upload service events

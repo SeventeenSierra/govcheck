@@ -7,12 +7,7 @@
 
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
-import {
-  analyzeDocumentStructure,
-  detectCriticalViolations,
-  detectWarningIssues,
-  generateComplianceStatus,
-} from '@/utils/compliance-detection';
+import { type AnalysisRequest, analysisService } from '@/services';
 import {
   type AnalysisResult,
   type AnalysisSession,
@@ -22,7 +17,6 @@ import {
   type TextExtractionResult,
   type ValidationResult,
 } from './types';
-import { analysisService, type AnalysisRequest } from '@/services';
 
 /**
  * Analysis Coordinator Props
@@ -59,7 +53,7 @@ export interface AnalysisCoordinatorProps {
  */
 export const AnalysisCoordinator: React.FC<AnalysisCoordinatorProps> = ({
   proposalId,
-  fileContent,
+  fileContent: _fileContent,
   onAnalysisStart,
   onProgressUpdate,
   onAnalysisComplete,
@@ -82,7 +76,7 @@ export const AnalysisCoordinator: React.FC<AnalysisCoordinatorProps> = ({
    * Extract text content from document
    * Implements Requirement 2.2: Text extraction for compliance checking
    */
-  const extractTextContent = useCallback(
+  const _extractTextContent = useCallback(
     async (content: File | string): Promise<TextExtractionResult> => {
       const startTime = Date.now();
 
@@ -132,7 +126,7 @@ export const AnalysisCoordinator: React.FC<AnalysisCoordinatorProps> = ({
    * Core FAR/DFARS validation rules
    * Implements Requirement 2.1: Validate against core FAR/DFARS requirements
    */
-  const validateFARDFARS = useCallback(async (text: string): Promise<ValidationResult[]> => {
+  const _validateFARDFARS = useCallback(async (text: string): Promise<ValidationResult[]> => {
     const results: ValidationResult[] = [];
 
     // Basic FAR/DFARS validation rules for threshold implementation
@@ -190,7 +184,7 @@ export const AnalysisCoordinator: React.FC<AnalysisCoordinatorProps> = ({
   /**
    * Update session progress
    */
-  const updateProgress = useCallback(
+  const _updateProgress = useCallback(
     (sessionId: string, status: AnalysisStatus, progress: number, currentStep: string) => {
       setSession((prev) => {
         if (!prev || prev.id !== sessionId) return prev;
@@ -227,13 +221,13 @@ export const AnalysisCoordinator: React.FC<AnalysisCoordinatorProps> = ({
     try {
       // Set up event handlers for analysis service
       analysisService.setEventHandlers({
-        onProgress: (sessionId, progress, currentStep) => {
+        onProgress: (_sessionId, progress, currentStep) => {
           setSession((prev) => (prev ? { ...prev, progress, currentStep } : null));
           if (session) {
             onProgressUpdate?.({ ...session, progress, currentStep });
           }
         },
-        onComplete: (sessionId, completedSession) => {
+        onComplete: (_sessionId, completedSession) => {
           setSession(completedSession);
           setIsAnalyzing(false);
 
@@ -258,7 +252,7 @@ export const AnalysisCoordinator: React.FC<AnalysisCoordinatorProps> = ({
           setResult(analysisResult);
           onAnalysisComplete?.(analysisResult);
         },
-        onError: (sessionId, error) => {
+        onError: (_sessionId, error) => {
           setSession((prev) =>
             prev
               ? {

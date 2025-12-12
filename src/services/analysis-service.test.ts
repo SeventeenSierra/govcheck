@@ -8,9 +8,9 @@
  * progress tracking, and API integration.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { AnalysisService, type AnalysisRequest } from './analysis-service';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AnalysisStatus } from '../components/analysis/types';
+import { type AnalysisRequest, AnalysisService } from './analysis-service';
 import * as strandsApiModule from './strands-api-client';
 
 // Mock the Strands API client
@@ -219,7 +219,7 @@ describe('AnalysisService', () => {
       mockStrandsApi.cancelAnalysis.mockResolvedValueOnce({ success: true });
 
       const result = await analysisService.cancelAnalysis('analysis-456');
-      const session = analysisService['activeSessions'].get('analysis-456');
+      const session = analysisService.activeSessions.get('analysis-456');
 
       expect(result).toBe(true);
       expect(session?.status).toBe(AnalysisStatus.FAILED);
@@ -228,7 +228,7 @@ describe('AnalysisService', () => {
 
     it('should clear completed sessions', () => {
       const sessionId = 'analysis-456';
-      analysisService['activeSessions'].set(sessionId, {
+      analysisService.activeSessions.set(sessionId, {
         id: sessionId,
         proposalId: 'proposal-123',
         status: AnalysisStatus.COMPLETED,
@@ -240,12 +240,12 @@ describe('AnalysisService', () => {
       const result = analysisService.clearSession(sessionId);
 
       expect(result).toBe(true);
-      expect(analysisService['activeSessions'].has(sessionId)).toBe(false);
+      expect(analysisService.activeSessions.has(sessionId)).toBe(false);
     });
 
     it('should not clear active sessions', () => {
       const sessionId = 'analysis-456';
-      analysisService['activeSessions'].set(sessionId, {
+      analysisService.activeSessions.set(sessionId, {
         id: sessionId,
         proposalId: 'proposal-123',
         status: AnalysisStatus.ANALYZING,
@@ -257,12 +257,12 @@ describe('AnalysisService', () => {
       const result = analysisService.clearSession(sessionId);
 
       expect(result).toBe(false);
-      expect(analysisService['activeSessions'].has(sessionId)).toBe(true);
+      expect(analysisService.activeSessions.has(sessionId)).toBe(true);
     });
 
     it('should clear all sessions', () => {
-      analysisService['activeSessions'].set('session1', {} as any);
-      analysisService['activeSessions'].set('session2', {} as any);
+      analysisService.activeSessions.set('session1', {} as any);
+      analysisService.activeSessions.set('session2', {} as any);
 
       analysisService.clearAllSessions();
 
@@ -275,7 +275,7 @@ describe('AnalysisService', () => {
       const sessionId = 'analysis-456';
 
       // Set up a failed session
-      analysisService['activeSessions'].set(sessionId, {
+      analysisService.activeSessions.set(sessionId, {
         id: sessionId,
         proposalId: 'proposal-123',
         status: AnalysisStatus.FAILED,
@@ -302,13 +302,13 @@ describe('AnalysisService', () => {
 
       expect(result.success).toBe(true);
       expect(result.newSessionId).toBe('analysis-789');
-      expect(analysisService['activeSessions'].has(sessionId)).toBe(false);
+      expect(analysisService.activeSessions.has(sessionId)).toBe(false);
     });
 
     it('should not retry non-failed analysis', async () => {
       const sessionId = 'analysis-456';
 
-      analysisService['activeSessions'].set(sessionId, {
+      analysisService.activeSessions.set(sessionId, {
         id: sessionId,
         proposalId: 'proposal-123',
         status: AnalysisStatus.ANALYZING,
@@ -373,9 +373,9 @@ describe('AnalysisService', () => {
       });
 
       // Test that handlers are set
-      expect(analysisService['eventHandlers'].onProgress).toBe(onProgress);
-      expect(analysisService['eventHandlers'].onComplete).toBe(onComplete);
-      expect(analysisService['eventHandlers'].onError).toBe(onError);
+      expect(analysisService.eventHandlers.onProgress).toBe(onProgress);
+      expect(analysisService.eventHandlers.onComplete).toBe(onComplete);
+      expect(analysisService.eventHandlers.onError).toBe(onError);
     });
   });
 
@@ -401,7 +401,7 @@ describe('AnalysisService', () => {
           currentStep: 'test',
         };
 
-        const session = analysisService['mapApiResponseToSession'](mockResponse);
+        const session = analysisService.mapApiResponseToSession(mockResponse);
         expect(session.status).toBe(testCase.local);
       }
     });

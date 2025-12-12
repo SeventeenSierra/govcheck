@@ -8,10 +8,10 @@
  * upload management, and API integration.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { UploadService } from './upload-service';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { UploadStatus } from '../types/app';
 import * as strandsApiModule from './strands-api-client';
+import { UploadService } from './upload-service';
 
 // Mock the Strands API client
 vi.mock('./strands-api-client', () => ({
@@ -80,7 +80,7 @@ describe('UploadService', () => {
     });
 
     it('should reject files with very long filenames', () => {
-      const longName = 'x'.repeat(300) + '.pdf';
+      const longName = `${'x'.repeat(300)}.pdf`;
       const content = 'x'.repeat(2048); // Ensure file is large enough
       const file = new File([content], longName, { type: 'application/pdf' });
       const result = uploadService.validateFile(file);
@@ -234,7 +234,7 @@ describe('UploadService', () => {
     it('should cancel upload sessions', () => {
       // Manually add a session in uploading state
       const sessionId = 'upload-123';
-      uploadService['activeSessions'].set(sessionId, {
+      uploadService.activeSessions.set(sessionId, {
         id: sessionId,
         filename: 'test.pdf',
         fileSize: 1024,
@@ -245,7 +245,7 @@ describe('UploadService', () => {
       });
 
       const result = uploadService.cancelUpload(sessionId);
-      const session = uploadService['activeSessions'].get(sessionId);
+      const session = uploadService.activeSessions.get(sessionId);
 
       expect(result).toBe(true);
       expect(session?.status).toBe(UploadStatus.FAILED);
@@ -254,7 +254,7 @@ describe('UploadService', () => {
 
     it('should clear completed sessions', () => {
       const sessionId = 'upload-123';
-      uploadService['activeSessions'].set(sessionId, {
+      uploadService.activeSessions.set(sessionId, {
         id: sessionId,
         filename: 'test.pdf',
         fileSize: 1024,
@@ -268,12 +268,12 @@ describe('UploadService', () => {
       const result = uploadService.clearSession(sessionId);
 
       expect(result).toBe(true);
-      expect(uploadService['activeSessions'].has(sessionId)).toBe(false);
+      expect(uploadService.activeSessions.has(sessionId)).toBe(false);
     });
 
     it('should clear all sessions', () => {
-      uploadService['activeSessions'].set('session1', {} as any);
-      uploadService['activeSessions'].set('session2', {} as any);
+      uploadService.activeSessions.set('session1', {} as any);
+      uploadService.activeSessions.set('session2', {} as any);
 
       uploadService.clearAllSessions();
 

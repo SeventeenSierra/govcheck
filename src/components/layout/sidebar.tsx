@@ -64,16 +64,9 @@ const Sidebar = ({ activeProject, setActiveProject, resetDemo, isOpen }: Sidebar
             Recent Checks
           </div>
 
-          <div
-            role="button"
-            tabIndex={0}
+          <button
+            type="button"
             onClick={() => setActiveProject('proj-1')}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                setActiveProject('proj-1');
-              }
-            }}
             className={`group cursor-pointer p-3 rounded-lg mb-2 text-sm transition-all w-full text-left ${
               activeProject
                 ? 'bg-white border-primary/30 border shadow-sm ring-1 ring-primary/10'
@@ -91,7 +84,7 @@ const Sidebar = ({ activeProject, setActiveProject, resetDemo, isOpen }: Sidebar
                 <MoreHorizontal size={14} />
               </Button>
             </div>
-          </div>
+          </button>
         </div>
       </div>
     </div>

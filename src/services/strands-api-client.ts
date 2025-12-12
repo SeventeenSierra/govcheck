@@ -249,7 +249,7 @@ class HttpClient {
               code: errorConfig.codes.UPLOAD_FAILED,
             });
           }
-        } catch (error) {
+        } catch (_error) {
           resolve({
             success: false,
             error: 'Failed to parse upload response',
@@ -293,7 +293,7 @@ class WebSocketClient {
   private listeners: Map<string, Set<(message: WebSocketMessage) => void>> = new Map();
 
   constructor(baseUrl: string) {
-    this.url = baseUrl.replace('http', 'ws') + '/ws';
+    this.url = `${baseUrl.replace('http', 'ws')}/ws`;
     this.maxReconnectAttempts = apiConfig.websocket.maxReconnectAttempts;
     this.reconnectInterval = apiConfig.websocket.reconnectInterval;
   }
@@ -372,7 +372,9 @@ class WebSocketClient {
   private notifyListeners(type: string, message: WebSocketMessage) {
     const typeListeners = this.listeners.get(type);
     if (typeListeners) {
-      typeListeners.forEach((callback) => callback(message));
+      typeListeners.forEach((callback) => {
+        callback(message);
+      });
     }
   }
 

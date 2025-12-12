@@ -8,12 +8,8 @@
  * Tests error handling, retry logic, and API integration.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import {
-  StrandsApiClient,
-  type ApiResponse,
-  type UploadSessionResponse,
-} from './strands-api-client';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { StrandsApiClient, type UploadSessionResponse } from './strands-api-client';
 
 // Mock fetch globally
 const mockFetch = vi.fn();
@@ -37,7 +33,7 @@ class MockWebSocket {
     }, 0);
   }
 
-  send(data: string) {
+  send(_data: string) {
     // Mock send implementation
   }
 
@@ -88,9 +84,7 @@ describe('StrandsApiClient', () => {
         };
 
         const originalXHR = global.XMLHttpRequest;
-        global.XMLHttpRequest = function () {
-          return mockXHR;
-        } as any;
+        global.XMLHttpRequest = (() => mockXHR) as any;
 
         // Simulate successful upload
         setTimeout(() => {
@@ -127,9 +121,7 @@ describe('StrandsApiClient', () => {
         };
 
         const originalXHR = global.XMLHttpRequest;
-        global.XMLHttpRequest = function () {
-          return mockXHR;
-        } as any;
+        global.XMLHttpRequest = (() => mockXHR) as any;
 
         // Simulate progress events
         setTimeout(() => {
@@ -349,7 +341,7 @@ describe('StrandsApiClient', () => {
 
       // Access the WebSocket instance and trigger onmessage
       const wsInstance = (client as any).wsClient.ws;
-      if (wsInstance && wsInstance.onmessage) {
+      if (wsInstance?.onmessage) {
         wsInstance.onmessage({
           data: JSON.stringify(mockMessage),
         } as MessageEvent);
@@ -386,7 +378,7 @@ describe('StrandsApiClient', () => {
       };
 
       const wsInstance = (client as any).wsClient.ws;
-      if (wsInstance && wsInstance.onmessage) {
+      if (wsInstance?.onmessage) {
         wsInstance.onmessage({
           data: JSON.stringify(mockMessage),
         } as MessageEvent);

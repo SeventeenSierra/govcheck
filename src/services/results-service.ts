@@ -10,18 +10,16 @@
  */
 
 import {
-  strandsApiClient,
-  type ApiResponse,
-  type ComplianceResultsResponse,
-  type ComplianceIssue,
-} from './strands-api-client';
-import {
   type AnalysisResults,
   ComplianceStatus,
-  type ComplianceIssue as LocalComplianceIssue,
   IssueSeverity,
+  type ComplianceIssue as LocalComplianceIssue,
 } from '../components/results/types';
-import { errorConfig } from '../config/app';
+import {
+  type ComplianceIssue,
+  type ComplianceResultsResponse,
+  strandsApiClient,
+} from './strands-api-client';
 
 /**
  * Results service events
@@ -235,12 +233,13 @@ export class ResultsService {
             data: JSON.stringify(results, null, 2),
           };
 
-        case 'csv':
+        case 'csv': {
           const csvData = this.convertToCSV(results);
           return {
             success: true,
             data: csvData,
           };
+        }
 
         case 'pdf':
           // For threshold implementation, return JSON format

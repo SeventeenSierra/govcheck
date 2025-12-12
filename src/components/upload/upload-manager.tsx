@@ -16,8 +16,8 @@ import { AlertCircle, CheckCircle, FileText, Upload, X } from 'lucide-react';
 import type React from 'react';
 import { useCallback, useRef, useState } from 'react';
 import { errorConfig, uploadConfig, validationConfig } from '@/config/app';
-import { type UploadSession, UploadStatus } from '@/types/app';
 import { strandsApiClient } from '@/services';
+import { type UploadSession, UploadStatus } from '@/types/app';
 
 /**
  * Upload Manager Props
@@ -301,13 +301,13 @@ export function UploadManager({
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-gray-400'}
           ${isUploading ? 'border-blue-400 bg-blue-50' : ''}
         `}
+        role="button"
+        tabIndex={0}
         onDragEnter={handleDragIn}
         onDragLeave={handleDragOut}
         onDragOver={handleDrag}
         onDrop={handleDrop}
         onClick={handleClick}
-        role="button"
-        tabIndex={0}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();

@@ -8,9 +8,9 @@
  * issue details, and regulatory references.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { ResultsService } from './results-service';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ComplianceStatus, IssueSeverity } from '../components/results/types';
+import { ResultsService } from './results-service';
 import * as strandsApiModule from './strands-api-client';
 
 // Mock the Strands API client
