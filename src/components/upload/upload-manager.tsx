@@ -300,22 +300,27 @@ export function UploadManager({
           ${dragActive ? 'border-blue-400 bg-blue-50' : 'border-gray-300'}
           ${disabled ? 'opacity-50' : ''}
           ${isUploading ? 'border-blue-400 bg-blue-50' : ''}
+          ${disabled ? 'cursor-not-allowed' : 'cursor-pointer hover:bg-gray-50'}
         `}
         aria-label="File drop zone"
         onDragEnter={handleDragIn}
         onDragLeave={handleDragOut}
         onDragOver={handleDrag}
         onDrop={handleDrop}
+        onClick={!isUploading && !hasCompleted ? handleClick : undefined}
+        onKeyDown={
+          !isUploading && !hasCompleted
+            ? (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleClick();
+                }
+              }
+            : undefined
+        }
+        tabIndex={!isUploading && !hasCompleted && !disabled ? 0 : -1}
       >
-        <button
-          type="button"
-          className={`w-full p-8 text-center transition-colors ${
-            disabled ? 'cursor-not-allowed' : 'cursor-pointer hover:bg-gray-50'
-          }`}
-          onClick={handleClick}
-          disabled={disabled}
-          aria-label="Upload area - drag and drop files or click to browse"
-        >
+        <div className="w-full p-8 text-center">
           <input
             ref={fileInputRef}
             type="file"
@@ -359,7 +364,7 @@ export function UploadManager({
           </p>
 
           {!isUploading && !hasCompleted && (
-            <Button variant="outline" disabled={disabled}>
+            <Button variant="outline" disabled={disabled} onClick={handleClick}>
               Select PDF File
             </Button>
           )}
@@ -367,7 +372,7 @@ export function UploadManager({
           <p className="text-xs text-gray-500 mt-2">
             Maximum file size: {Math.round(uploadConfig.maxFileSize / (1024 * 1024))}MB
           </p>
-        </button>
+        </div>
       </section>
 
       {/* Progress Bar */}
