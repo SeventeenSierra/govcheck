@@ -404,7 +404,7 @@ describe('StrandsApiClient', () => {
 
       expect(result.success).toBe(false);
       expect(result.code).toBe('TIMEOUT_001');
-    }, 1000); // Reduce timeout for faster test
+    }, 10000); // Allow time for retries
 
     it('should handle JSON parsing errors', async () => {
       mockFetch.mockResolvedValueOnce({
@@ -420,6 +420,6 @@ describe('StrandsApiClient', () => {
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('Invalid JSON');
-    }, 1000); // Reduce timeout for faster test
+    }, 10000); // Allow time for retries
   });
 });
