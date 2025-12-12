@@ -17,6 +17,7 @@ import type React from 'react';
 import { useCallback, useRef, useState } from 'react';
 import { errorConfig, uploadConfig, validationConfig } from '@/config/app';
 import { type UploadSession, UploadStatus } from '@/types/app';
+import { strandsApiClient } from '@/services';
 
 /**
  * Upload Manager Props
@@ -122,39 +123,46 @@ export function UploadManager({
   }, []);
 
   /**
-   * Simulates file upload with progress tracking
-   * Implements requirement 1.5 (progress tracking)
+   * Uploads file using Strands API with progress tracking
+   * Implements requirement 1.5 (progress tracking) and API integration
    */
-  const simulateUpload = useCallback(
-    (session: UploadSession) => {
+  const uploadFileToApi = useCallback(
+    async (file: File, session: UploadSession): Promise<UploadSession> => {
       const updatedSession = { ...session, status: UploadStatus.UPLOADING };
       setCurrentUpload(updatedSession);
 
-      return new Promise<UploadSession>((resolve) => {
-        let progress = 0;
-        const interval = setInterval(() => {
-          progress += Math.random() * 15 + 5; // Random progress increment
-          if (progress >= 100) {
-            progress = 100;
-            clearInterval(interval);
+      try {
+        const response = await strandsApiClient.uploadDocument(file, (progress) => {
+          const progressSession = { ...updatedSession, progress };
+          setCurrentUpload(progressSession);
+          onUploadProgress?.(progress, progressSession);
+        });
 
-            const completedSession: UploadSession = {
-              ...updatedSession,
-              status: UploadStatus.COMPLETED,
-              progress: 100,
-              completedAt: new Date(),
-            };
+        if (response.success && response.data) {
+          const completedSession: UploadSession = {
+            ...updatedSession,
+            id: response.data.id, // Use server-generated ID
+            status: UploadStatus.COMPLETED,
+            progress: 100,
+            completedAt: new Date(),
+          };
 
-            setCurrentUpload(completedSession);
-            onUploadProgress?.(100, completedSession);
-            resolve(completedSession);
-          } else {
-            const progressSession = { ...updatedSession, progress };
-            setCurrentUpload(progressSession);
-            onUploadProgress?.(progress, progressSession);
-          }
-        }, 200);
-      });
+          setCurrentUpload(completedSession);
+          onUploadProgress?.(100, completedSession);
+          return completedSession;
+        } else {
+          throw new Error(response.error || 'Upload failed');
+        }
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Upload failed';
+        const failedSession: UploadSession = {
+          ...updatedSession,
+          status: UploadStatus.FAILED,
+          errorMessage,
+        };
+        setCurrentUpload(failedSession);
+        throw error;
+      }
     },
     [onUploadProgress]
   );
@@ -181,7 +189,7 @@ export function UploadManager({
 
       try {
         const session = createUploadSession(file);
-        const completedSession = await simulateUpload(session);
+        const completedSession = await uploadFileToApi(file, session);
         onUploadComplete?.(completedSession);
       } catch (error) {
         const session = createUploadSession(file);
@@ -195,7 +203,7 @@ export function UploadManager({
         onUploadError?.(errorMessage, failedSession);
       }
     },
-    [validateFile, createUploadSession, simulateUpload, onUploadComplete, onUploadError]
+    [validateFile, createUploadSession, uploadFileToApi, onUploadComplete, onUploadError]
   );
 
   /**
@@ -272,11 +280,11 @@ export function UploadManager({
    */
   const handleRetry = useCallback(() => {
     if (currentUpload && currentUpload.status === UploadStatus.FAILED) {
-      // Create a new file object for retry (simplified for demo)
-      const mockFile = new File([''], currentUpload.filename, { type: currentUpload.mimeType });
-      handleFileUpload(mockFile);
+      // For retry, we need the user to select the file again
+      // since we can't recreate the File object from session data
+      handleClick();
     }
-  }, [currentUpload, handleFileUpload]);
+  }, [currentUpload, handleClick]);
 
   // Component state checks
   const isUploading = currentUpload?.status === UploadStatus.UPLOADING;
