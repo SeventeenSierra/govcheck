@@ -45,14 +45,14 @@ describe('AnalysisCoordinator', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Setup default mock responses
-    (analysisService.startAnalysis as any).mockResolvedValue({
+    (analysisService.startAnalysis as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
       success: true,
       sessionId: 'test-session-123',
     });
-    
-    (analysisService.getAnalysisStatus as any).mockResolvedValue({
+
+    (analysisService.getAnalysisStatus as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
       id: 'test-session-123',
       proposalId: 'test-proposal-123',
       status: AnalysisStatus.QUEUED,
@@ -60,39 +60,43 @@ describe('AnalysisCoordinator', () => {
       startedAt: new Date(),
       currentStep: 'Initializing analysis',
     });
-    
-    (analysisService.validateAnalysisRequest as any).mockReturnValue({
+
+    (
+      analysisService.validateAnalysisRequest as unknown as ReturnType<typeof vi.fn>
+    ).mockReturnValue({
       isValid: true,
     });
-    
+
     // Mock setEventHandlers to simulate dynamic progress
-    (analysisService.setEventHandlers as any).mockImplementation((handlers: any) => {
-      // Simulate analysis progression after a short delay
-      setTimeout(() => {
-        // Progress through states: QUEUED → EXTRACTING → ANALYZING → COMPLETED
-        handlers.onProgress?.('test-session-123', 25, 'Extracting text content');
-        
+    (analysisService.setEventHandlers as unknown as ReturnType<typeof vi.fn>).mockImplementation(
+      (handlers: unknown) => {
+        // Simulate analysis progression after a short delay
         setTimeout(() => {
-          handlers.onProgress?.('test-session-123', 50, 'Analyzing FAR/DFARS compliance');
-          
+          // Progress through states: QUEUED → EXTRACTING → ANALYZING → COMPLETED
+          handlers.onProgress?.('test-session-123', 25, 'Extracting text content');
+
           setTimeout(() => {
-            handlers.onProgress?.('test-session-123', 75, 'Validating compliance requirements');
-            
+            handlers.onProgress?.('test-session-123', 50, 'Analyzing FAR/DFARS compliance');
+
             setTimeout(() => {
-              handlers.onComplete?.('test-session-123', {
-                id: 'test-session-123',
-                proposalId: 'test-proposal-123',
-                status: AnalysisStatus.COMPLETED,
-                progress: 100,
-                startedAt: new Date(),
-                completedAt: new Date(),
-                currentStep: 'Analysis complete',
-              });
+              handlers.onProgress?.('test-session-123', 75, 'Validating compliance requirements');
+
+              setTimeout(() => {
+                handlers.onComplete?.('test-session-123', {
+                  id: 'test-session-123',
+                  proposalId: 'test-proposal-123',
+                  status: AnalysisStatus.COMPLETED,
+                  progress: 100,
+                  startedAt: new Date(),
+                  completedAt: new Date(),
+                  currentStep: 'Analysis complete',
+                });
+              }, 100);
             }, 100);
           }, 100);
         }, 100);
-      }, 100);
-    });
+      }
+    );
   });
 
   describe('Component Rendering', () => {
@@ -259,14 +263,21 @@ describe('AnalysisCoordinator', () => {
       const onAnalysisError = vi.fn();
 
       // Mock analysis service to fail
-      (analysisService.startAnalysis as any).mockRejectedValue(new Error('File read error'));
-      
+      (analysisService.startAnalysis as unknown as ReturnType<typeof vi.fn>).mockRejectedValue(
+        new Error('File read error')
+      );
+
       // Override setEventHandlers to simulate error
-      (analysisService.setEventHandlers as any).mockImplementation((handlers: any) => {
-        setTimeout(() => {
-          handlers.onError?.('test-session-123', 'File read error');
-        }, 100);
-      });
+      (analysisService.setEventHandlers as unknown as ReturnType<typeof vi.fn>).mockImplementation(
+        (handlers: unknown) => {
+          setTimeout(() => {
+            (handlers as { onError?: (sessionId: string, error: string) => void }).onError?.(
+              'test-session-123',
+              'File read error'
+            );
+          }, 100);
+        }
+      );
 
       // Create invalid file content that will cause extraction to fail
       const invalidFile = new File([''], 'empty.pdf', { type: 'application/pdf' });
@@ -298,14 +309,21 @@ describe('AnalysisCoordinator', () => {
 
     it('should show retry button after failure', async () => {
       // Mock analysis service to fail
-      (analysisService.startAnalysis as any).mockRejectedValue(new Error('File read error'));
-      
+      (analysisService.startAnalysis as unknown as ReturnType<typeof vi.fn>).mockRejectedValue(
+        new Error('File read error')
+      );
+
       // Override setEventHandlers to simulate error
-      (analysisService.setEventHandlers as any).mockImplementation((handlers: any) => {
-        setTimeout(() => {
-          handlers.onError?.('test-session-123', 'File read error');
-        }, 100);
-      });
+      (analysisService.setEventHandlers as unknown as ReturnType<typeof vi.fn>).mockImplementation(
+        (handlers: unknown) => {
+          setTimeout(() => {
+            (handlers as { onError?: (sessionId: string, error: string) => void }).onError?.(
+              'test-session-123',
+              'File read error'
+            );
+          }, 100);
+        }
+      );
 
       const invalidFile = new File([''], 'empty.pdf', { type: 'application/pdf' });
       Object.defineProperty(invalidFile, 'text', {
@@ -326,14 +344,21 @@ describe('AnalysisCoordinator', () => {
 
     it('should display error messages clearly', async () => {
       // Mock analysis service to fail with custom error
-      (analysisService.startAnalysis as any).mockRejectedValue(new Error('Custom error message'));
-      
+      (analysisService.startAnalysis as unknown as ReturnType<typeof vi.fn>).mockRejectedValue(
+        new Error('Custom error message')
+      );
+
       // Override setEventHandlers to simulate custom error
-      (analysisService.setEventHandlers as any).mockImplementation((handlers: any) => {
-        setTimeout(() => {
-          handlers.onError?.('test-session-123', 'Custom error message');
-        }, 100);
-      });
+      (analysisService.setEventHandlers as unknown as ReturnType<typeof vi.fn>).mockImplementation(
+        (handlers: unknown) => {
+          setTimeout(() => {
+            (handlers as { onError?: (sessionId: string, error: string) => void }).onError?.(
+              'test-session-123',
+              'Custom error message'
+            );
+          }, 100);
+        }
+      );
 
       const invalidFile = new File([''], 'empty.pdf', { type: 'application/pdf' });
       Object.defineProperty(invalidFile, 'text', {

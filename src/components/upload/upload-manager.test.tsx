@@ -11,9 +11,9 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { strandsApiClient } from '@/services';
 import { UploadStatus } from '@/types/app';
 import { UploadManager } from './upload-manager';
-import { strandsApiClient } from '@/services';
 
 // Mock the config imports
 vi.mock('@/config/app', () => ({
@@ -99,9 +99,9 @@ describe('UploadManager', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Setup successful upload mocks by default
-    (strandsApiClient.uploadDocument as any).mockResolvedValue({
+    (strandsApiClient.uploadDocument as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
       success: true,
       data: {
         id: 'upload-123',
@@ -113,8 +113,8 @@ describe('UploadManager', () => {
         startedAt: new Date().toISOString(),
       },
     });
-    
-    (strandsApiClient.getUploadStatus as any).mockResolvedValue({
+
+    (strandsApiClient.getUploadStatus as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
       success: true,
       data: {
         id: 'upload-123',
@@ -240,8 +240,8 @@ describe('UploadManager', () => {
   describe('Upload Progress', () => {
     it('should show progress during upload', async () => {
       // Mock a slower upload with progress callbacks
-      (strandsApiClient.uploadDocument as any).mockImplementation(
-        (file: File, progressCallback?: (progress: number) => void) => {
+      (strandsApiClient.uploadDocument as unknown as ReturnType<typeof vi.fn>).mockImplementation(
+        (_file: File, progressCallback?: (progress: number) => void) => {
           return new Promise((resolve) => {
             // Simulate progress updates
             setTimeout(() => progressCallback?.(25), 10);

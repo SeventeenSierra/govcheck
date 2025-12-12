@@ -88,7 +88,11 @@ describe('StrandsApiClient', () => {
         };
 
         const originalXHR = global.XMLHttpRequest;
-        global.XMLHttpRequest = function() { return mockXHR; } as any;
+        // biome-ignore lint/complexity/useArrowFunction: Constructor function needed for XMLHttpRequest mocking
+        global.XMLHttpRequest = function () {
+          return mockXHR;
+          // biome-ignore lint/suspicious/noExplicitAny: XMLHttpRequest mocking requires any type
+        } as any;
 
         // Simulate successful upload
         setTimeout(() => {
@@ -126,7 +130,11 @@ describe('StrandsApiClient', () => {
         };
 
         const originalXHR = global.XMLHttpRequest;
-        global.XMLHttpRequest = function() { return mockXHR; } as any;
+        // biome-ignore lint/complexity/useArrowFunction: Constructor function needed for XMLHttpRequest mocking
+        global.XMLHttpRequest = function () {
+          return mockXHR;
+          // biome-ignore lint/suspicious/noExplicitAny: XMLHttpRequest mocking requires any type
+        } as any;
 
         // Simulate progress events
         setTimeout(() => {
@@ -416,7 +424,8 @@ describe('StrandsApiClient', () => {
         json: vi.fn().mockRejectedValue(new Error('Invalid JSON')),
         text: vi.fn().mockResolvedValue('invalid json response'),
       };
-      
+
+      // biome-ignore lint/suspicious/noExplicitAny: Mock response requires any type for testing
       mockFetch.mockResolvedValueOnce(mockResponse as any);
 
       const result = await client.healthCheck();

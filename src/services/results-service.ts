@@ -125,7 +125,7 @@ export class ResultsService {
         const parts = issue.regulation.split(' ');
         const framework = parts[0]; // e.g., "FAR" or "DFARS"
         const section = parts.slice(1).join(' '); // e.g., "52.204-1"
-        
+
         if (!references.has(framework)) {
           references.set(framework, new Set());
         }
