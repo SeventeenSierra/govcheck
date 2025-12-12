@@ -133,7 +133,7 @@ export function UploadManager({
       setCurrentUpload(updatedSession);
 
       try {
-        const response = await strandsApiClient.uploadDocument(file, (progress) => {
+        const response = await strandsApiClient.uploadDocument(file, (progress: number) => {
           const progressSession = { ...updatedSession, progress };
           setCurrentUpload(progressSession);
           onUploadProgress?.(progress, progressSession);
@@ -251,8 +251,8 @@ export function UploadManager({
 
       if (disabled) return;
       
-      // Prevent double uploads by checking if we're already uploading or have completed
-      if (currentUpload?.status === UploadStatus.UPLOADING || currentUpload?.status === UploadStatus.COMPLETED) {
+      // Only prevent if currently uploading
+      if (currentUpload?.status === UploadStatus.UPLOADING) {
         return;
       }
 
@@ -276,8 +276,8 @@ export function UploadManager({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (disabled) return;
       
-      // Prevent double uploads by checking if we're already uploading or have completed
-      if (currentUpload?.status === UploadStatus.UPLOADING || currentUpload?.status === UploadStatus.COMPLETED) {
+      // Only prevent if currently uploading
+      if (currentUpload?.status === UploadStatus.UPLOADING) {
         return;
       }
 
@@ -300,9 +300,9 @@ export function UploadManager({
     
     if (disabled) return;
     
-    // Prevent opening file dialog if we're already uploading or have completed
-    if (currentUpload?.status === UploadStatus.UPLOADING || currentUpload?.status === UploadStatus.COMPLETED) {
-      console.log('Click ignored - upload in progress or completed:', currentUpload?.status);
+    // Only prevent opening file dialog if currently uploading
+    if (currentUpload?.status === UploadStatus.UPLOADING) {
+      console.log('Click ignored - upload in progress:', currentUpload?.status);
       return;
     }
     
@@ -368,9 +368,9 @@ export function UploadManager({
         onDragLeave={handleDragOut}
         onDragOver={handleDrag}
         onDrop={handleDrop}
-        onClick={!isUploading && !hasCompleted && !hasFailed ? handleClick : undefined}
+        onClick={!isUploading ? handleClick : undefined}
         onKeyDown={
-          !isUploading && !hasCompleted && !hasFailed
+          !isUploading
             ? (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
@@ -379,7 +379,7 @@ export function UploadManager({
               }
             : undefined
         }
-        tabIndex={!isUploading && !hasCompleted && !hasFailed && !disabled ? 0 : -1}
+        tabIndex={!isUploading && !disabled ? 0 : -1}
       >
         <div className="w-full p-8 text-center">
           <input
@@ -387,7 +387,7 @@ export function UploadManager({
             type="file"
             accept=".pdf,application/pdf"
             onChange={handleFileInputChange}
-            className="hidden"
+            className="absolute -left-[9999px] w-px h-px opacity-0"
             disabled={disabled}
             data-testid="file-input"
           />
@@ -424,9 +424,9 @@ export function UploadManager({
                   : 'Drag and drop your PDF file here, or click to browse'}
           </p>
 
-          {!isUploading && !hasCompleted && !hasFailed && (
+          {!isUploading && (
             <Button variant="outline" disabled={disabled} onClick={(e) => handleClick(e)}>
-              Select PDF File
+              {hasCompleted || hasFailed ? 'Select Another PDF' : 'Select PDF File'}
             </Button>
           )}
 

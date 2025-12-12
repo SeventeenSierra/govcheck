@@ -1,16 +1,76 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
-// SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+/*
+ * SPDX-License-Identifier: PolyForm-Perimeter-1.0.0
+ * SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+ */
 
 'use client';
 
 import { Badge, Button } from '@17sierra/ui';
-import { CheckCircle2, Download, Maximize2 } from 'lucide-react';
+import { CheckCircle2, Download, Maximize2, ExternalLink } from 'lucide-react';
+import type { AnalysisResults } from '@/components/results/types';
 
-type ReportPreviewProps = {
+/**
+ * Report data structure
+ */
+export interface ReportData {
+  /** Unique report identifier */
+  id: string;
+  /** Report title */
+  title: string;
+  /** Report reference number */
+  reference: string;
+  /** Generation timestamp */
+  generatedAt: Date;
+  /** Analysis results data */
+  analysisResults?: AnalysisResults;
+  /** Overall compliance score (0-100) */
+  complianceScore: number;
+  /** Report status */
+  status: 'generating' | 'ready' | 'error';
+}
+
+/**
+ * Report Preview Component Props
+ */
+export interface ReportPreviewProps {
+  /** Whether the preview panel is visible */
   isVisible: boolean;
-};
+  /** Report data to display */
+  reportData?: ReportData;
+  /** Whether the report is being generated */
+  isGenerating?: boolean;
+  /** Callback when user downloads the report */
+  onDownload?: (format: 'pdf' | 'docx' | 'html') => void;
+  /** Callback when user opens report in fullscreen */
+  onFullscreen?: () => void;
+  /** Callback when user shares the report */
+  onShare?: () => void;
+  /** Additional CSS classes */
+  className?: string;
+}
 
-const ReportPreview = ({ isVisible }: ReportPreviewProps) => {
+/**
+ * Report Preview Component
+ *
+ * Displays a live preview of the compliance analysis report with
+ * options for download, fullscreen viewing, and sharing.
+ * 
+ * Features:
+ * - Real-time report generation preview
+ * - Multiple export formats (PDF, DOCX, HTML)
+ * - Fullscreen viewing mode
+ * - Professional report formatting
+ * - Compliance score visualization
+ */
+const ReportPreview: React.FC<ReportPreviewProps> = ({ 
+  isVisible, 
+  reportData,
+  isGenerating = false,
+  onDownload,
+  onFullscreen,
+  onShare,
+  className = ''
+}) => {
   if (!isVisible) return null;
 
   return (
