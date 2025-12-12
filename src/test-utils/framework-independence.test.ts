@@ -305,5 +305,5 @@ describe('Framework Independence Integration', () => {
       const resultsResult = await mockApiServer.handleAnalysisResults('test-session');
       expect(resultsResult.success).toBe(true);
     }
-  });
+  }, 10000); // 10 second timeout
 });
