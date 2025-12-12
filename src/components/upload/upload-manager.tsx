@@ -55,7 +55,7 @@ export function UploadManager({
   onUploadProgress,
   disabled = false,
   className = '',
-}: UploadManagerProps) {
+}: UploadManagerProps): React.JSX.Element {
   const [currentUpload, setCurrentUpload] = useState<UploadSession | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -66,9 +66,7 @@ export function UploadManager({
    */
   const validateFile = useCallback((file: File): ValidationResult => {
     // Check file type (requirement 1.1: PDF format only)
-    if (
-      !uploadConfig.acceptedTypes.includes(file.type as (typeof uploadConfig.acceptedTypes)[number])
-    ) {
+    if (!uploadConfig.acceptedTypes.includes(file.type as (typeof uploadConfig.acceptedTypes)[number])) {
       return {
         isValid: false,
         error: 'Only PDF files are accepted for upload.',
@@ -98,16 +96,7 @@ export function UploadManager({
     if (file.name.length > validationConfig.maxFilenameLength) {
       return {
         isValid: false,
-        error: 'Filename is too long. Please rename the file and try again.',
-        errorCode: errorConfig.codes.VALIDATION_FAILED,
-      };
-    }
-
-    if (!validationConfig.filenamePattern.test(file.name)) {
-      return {
-        isValid: false,
-        error:
-          'Filename contains invalid characters. Please use only letters, numbers, dots, hyphens, and underscores.',
+        error: `Filename is too long. Maximum ${validationConfig.maxFilenameLength} characters allowed.`,
         errorCode: errorConfig.codes.VALIDATION_FAILED,
       };
     }
@@ -120,7 +109,7 @@ export function UploadManager({
    */
   const createUploadSession = useCallback((file: File): UploadSession => {
     return {
-      id: `upload-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: `upload_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       filename: file.name,
       fileSize: file.size,
       mimeType: file.type,
@@ -132,151 +121,132 @@ export function UploadManager({
 
   /**
    * Simulates file upload with progress tracking
-   * Implements requirement 1.5 (progress indication)
+   * Implements requirement 1.5 (progress tracking)
    */
-  const simulateUpload = useCallback(
-    async (session: UploadSession): Promise<void> => {
-      return new Promise((resolve, reject) => {
-        let progress = 0;
-        const interval = setInterval(() => {
-          progress += Math.random() * 15 + 5; // Random progress increment
+  const simulateUpload = useCallback((session: UploadSession) => {
+    const updatedSession = { ...session, status: UploadStatus.UPLOADING };
+    setCurrentUpload(updatedSession);
 
-          if (progress >= 100) {
-            progress = 100;
-            clearInterval(interval);
-
-            // Update session to completed
-            const completedSession: UploadSession = {
-              ...session,
-              status: UploadStatus.COMPLETED,
-              progress: 100,
-              completedAt: new Date(),
-            };
-
-            setCurrentUpload(completedSession);
-            onUploadComplete?.(completedSession);
-            resolve();
-          } else {
-            // Update progress
-            const updatedSession: UploadSession = {
-              ...session,
-              status: UploadStatus.UPLOADING,
-              progress: Math.min(progress, 100),
-            };
-
-            setCurrentUpload(updatedSession);
-            onUploadProgress?.(updatedSession.progress, updatedSession);
-          }
-        }, 200); // Update every 200ms for smooth progress
-
-        // Simulate potential upload failure (5% chance for testing)
-        if (Math.random() < 0.05) {
-          setTimeout(
-            () => {
-              clearInterval(interval);
-              const failedSession: UploadSession = {
-                ...session,
-                status: UploadStatus.FAILED,
-                errorMessage: 'Upload failed due to network error. Please try again.',
-              };
-              setCurrentUpload(failedSession);
-              onUploadError?.(failedSession.errorMessage!, failedSession);
-              reject(new Error(failedSession.errorMessage));
-            },
-            1000 + Math.random() * 2000
-          );
+    return new Promise<UploadSession>((resolve, reject) => {
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += Math.random() * 15 + 5; // Random progress increment
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(interval);
+          
+          const completedSession: UploadSession = {
+            ...updatedSession,
+            status: UploadStatus.COMPLETED,
+            progress: 100,
+            completedAt: new Date(),
+          };
+          
+          setCurrentUpload(completedSession);
+          onUploadProgress?.(100, completedSession);
+          resolve(completedSession);
+        } else {
+          const progressSession = { ...updatedSession, progress };
+          setCurrentUpload(progressSession);
+          onUploadProgress?.(progress, progressSession);
         }
-      });
-    },
-    [onUploadComplete, onUploadError, onUploadProgress]
-  );
+      }, 200);
+    });
+  }, [onUploadProgress]);
 
   /**
-   * Handles file upload process
+   * Handles file selection and upload
+   * Implements requirements 1.1, 1.2, 1.3, 1.4 (validation, confirmation, error handling)
    */
-  const handleFileUpload = useCallback(
-    async (file: File) => {
-      // Validate file
-      const validation = validateFile(file);
-      if (!validation.isValid) {
-        const errorSession = createUploadSession(file);
-        errorSession.status = UploadStatus.FAILED;
-        errorSession.errorMessage = validation.error;
-        setCurrentUpload(errorSession);
-        onUploadError?.(validation.error!, errorSession);
-        return;
-      }
-
-      // Create upload session
+  const handleFileUpload = useCallback(async (file: File) => {
+    const validation = validateFile(file);
+    
+    if (!validation.isValid) {
       const session = createUploadSession(file);
-      setCurrentUpload(session);
+      const failedSession = {
+        ...session,
+        status: UploadStatus.FAILED,
+        errorMessage: validation.error,
+      };
+      setCurrentUpload(failedSession);
+      onUploadError?.(validation.error!, failedSession);
+      return;
+    }
 
-      try {
-        // Start upload simulation
-        await simulateUpload(session);
-      } catch (error) {
-        // Error handling is done in simulateUpload
-        console.error('Upload failed:', error);
-      }
-    },
-    [validateFile, createUploadSession, simulateUpload, onUploadError]
-  );
+    try {
+      const session = createUploadSession(file);
+      const completedSession = await simulateUpload(session);
+      onUploadComplete?.(completedSession);
+    } catch (error) {
+      const session = createUploadSession(file);
+      const errorMessage = error instanceof Error ? error.message : 'Upload failed';
+      const failedSession = {
+        ...session,
+        status: UploadStatus.FAILED,
+        errorMessage,
+      };
+      setCurrentUpload(failedSession);
+      onUploadError?.(errorMessage, failedSession);
+    }
+  }, [validateFile, createUploadSession, simulateUpload, onUploadComplete, onUploadError]);
 
   /**
-   * Handles file input change
-   */
-  const handleFileInputChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const files = event.target.files;
-      if (files && files.length > 0) {
-        handleFileUpload(files[0]);
-      }
-    },
-    [handleFileUpload]
-  );
-
-  /**
-   * Handles drag and drop events
+   * Handle drag events
    */
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === 'dragenter' || e.type === 'dragover') {
-      setDragActive(true);
-    } else if (e.type === 'dragleave') {
-      setDragActive(false);
-    }
   }, []);
 
-  const handleDrop = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setDragActive(false);
+  const handleDragIn = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(true);
+  }, []);
 
-      if (disabled) return;
+  const handleDragOut = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+  }, []);
 
-      const files = e.dataTransfer.files;
-      if (files && files.length > 0) {
-        handleFileUpload(files[0]);
-      }
-    },
-    [disabled, handleFileUpload]
-  );
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    
+    if (disabled) return;
+    
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
+      handleFileUpload(files[0]);
+    }
+  }, [disabled, handleFileUpload]);
 
   /**
-   * Triggers file input click
+   * Handle file input change
    */
-  const handleUploadClick = useCallback(() => {
-    if (!disabled && fileInputRef.current) {
-      fileInputRef.current.click();
+  const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    if (disabled) return;
+    
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      handleFileUpload(files[0]);
     }
+  }, [disabled, handleFileUpload]);
+
+  /**
+   * Handle click to open file dialog
+   */
+  const handleClick = useCallback(() => {
+    if (disabled) return;
+    fileInputRef.current?.click();
   }, [disabled]);
 
   /**
-   * Clears current upload session
+   * Clear current upload
    */
-  const clearUpload = useCallback(() => {
+  const handleClear = useCallback(() => {
     setCurrentUpload(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -284,55 +254,42 @@ export function UploadManager({
   }, []);
 
   /**
-   * Retries failed upload
+   * Retry failed upload
    */
-  const retryUpload = useCallback(() => {
+  const handleRetry = useCallback(() => {
     if (currentUpload && currentUpload.status === UploadStatus.FAILED) {
-      const retrySession: UploadSession = {
-        ...currentUpload,
-        status: UploadStatus.PENDING,
-        progress: 0,
-        errorMessage: undefined,
-        startedAt: new Date(),
-        completedAt: undefined,
-      };
-      setCurrentUpload(retrySession);
-
-      // Re-create file object for retry (this is a simulation)
-      // In a real implementation, you would store the original file
-      const _mockFile = new File([''], currentUpload.filename, { type: currentUpload.mimeType });
-      simulateUpload(retrySession).catch(() => {
-        // Error handling is done in simulateUpload
-      });
+      // Create a new file object for retry (simplified for demo)
+      const mockFile = new File([''], currentUpload.filename, { type: currentUpload.mimeType });
+      handleFileUpload(mockFile);
     }
-  }, [currentUpload, simulateUpload]);
+  }, [currentUpload, handleFileUpload]);
 
+  // Component state checks
   const isUploading = currentUpload?.status === UploadStatus.UPLOADING;
-  const isCompleted = currentUpload?.status === UploadStatus.COMPLETED;
+  const hasCompleted = currentUpload?.status === UploadStatus.COMPLETED;
   const hasFailed = currentUpload?.status === UploadStatus.FAILED;
 
   return (
     <div className={`upload-manager ${className}`}>
       {/* Upload Area */}
-      {/* biome-ignore lint/a11y/useSemanticElements: div needed for drag-and-drop functionality */}
       <div
         className={`
           border-2 border-dashed rounded-lg p-8 text-center transition-colors
-          ${dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}
+          ${dragActive ? 'border-blue-400 bg-blue-50' : 'border-gray-300'}
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-gray-400'}
-          ${isUploading ? 'pointer-events-none' : ''}
+          ${isUploading ? 'border-blue-400 bg-blue-50' : ''}
         `}
-        role="button"
-        tabIndex={0}
-        onDragEnter={handleDrag}
-        onDragLeave={handleDrag}
+        onDragEnter={handleDragIn}
+        onDragLeave={handleDragOut}
         onDragOver={handleDrag}
         onDrop={handleDrop}
-        onClick={handleUploadClick}
+        onClick={handleClick}
+        role="button"
+        tabIndex={0}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            handleUploadClick();
+            handleClick();
           }
         }}
       >
@@ -341,97 +298,85 @@ export function UploadManager({
           type="file"
           accept=".pdf,application/pdf"
           onChange={handleFileInputChange}
-          disabled={disabled || isUploading}
           className="hidden"
+          disabled={disabled}
           data-testid="file-input"
         />
 
-        {!currentUpload && (
-          <>
-            <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Upload your proposal document
-            </h3>
-            <p className="text-sm text-gray-600 mb-4">
-              Drag and drop your PDF file here, or click to browse
-            </p>
-            <Button disabled={disabled}>Select PDF File</Button>
-            <p className="text-xs text-gray-500 mt-2">
-              Maximum file size: {Math.round(uploadConfig.maxFileSize / (1024 * 1024))}MB
-            </p>
-          </>
+        <div className="mb-4" data-testid="upload-icon">
+          {isUploading ? (
+            <Upload className="mx-auto h-12 w-12 text-blue-500 animate-pulse" />
+          ) : hasCompleted ? (
+            <CheckCircle className="mx-auto h-12 w-12 text-green-500" />
+          ) : hasFailed ? (
+            <AlertCircle className="mx-auto h-12 w-12 text-red-500" />
+          ) : (
+            <FileText className="mx-auto h-12 w-12 text-gray-400" />
+          )}
+        </div>
+
+        <h3 className="text-lg font-medium text-gray-900 mb-2">
+          {isUploading ? 'Uploading...' : 
+           hasCompleted ? 'Upload Complete' :
+           hasFailed ? 'Upload Failed' :
+           'Upload your proposal document'}
+        </h3>
+
+        <p className="text-sm text-gray-600 mb-4">
+          {isUploading ? `Uploading ${currentUpload?.filename}` :
+           hasCompleted ? `Successfully uploaded ${currentUpload?.filename}` :
+           hasFailed ? currentUpload?.errorMessage :
+           'Drag and drop your PDF file here, or click to browse'}
+        </p>
+
+        {!isUploading && !hasCompleted && (
+          <Button variant="outline" disabled={disabled}>
+            Select PDF File
+          </Button>
         )}
 
-        {currentUpload && (
-          <div className="space-y-4">
-            {/* File Info */}
-            <div className="flex items-center justify-center space-x-2">
-              <FileText className="h-5 w-5 text-gray-600" />
-              <span className="text-sm font-medium text-gray-900">{currentUpload.filename}</span>
-              <span className="text-xs text-gray-500">
-                ({Math.round(currentUpload.fileSize / 1024)} KB)
-              </span>
-            </div>
-
-            {/* Progress Bar */}
-            {isUploading && (
-              <div className="w-full">
-                <div className="flex justify-between text-sm text-gray-600 mb-1">
-                  <span>Uploading...</span>
-                  <span>{Math.round(currentUpload.progress)}%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div
-                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${currentUpload.progress}%` }}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Success State */}
-            {isCompleted && (
-              <div className="text-center">
-                <CheckCircle className="mx-auto h-8 w-8 text-green-500 mb-2" />
-                <p className="text-sm text-green-600 font-medium">Upload completed successfully!</p>
-                <Button variant="outline" size="sm" onClick={clearUpload} className="mt-2">
-                  Upload Another File
-                </Button>
-              </div>
-            )}
-
-            {/* Error State */}
-            {hasFailed && (
-              <div className="text-center">
-                <AlertCircle className="mx-auto h-8 w-8 text-red-500 mb-2" />
-                <p className="text-sm text-red-600 font-medium mb-2">Upload Failed</p>
-                <p className="text-xs text-red-500 mb-3">{currentUpload.errorMessage}</p>
-                <div className="flex justify-center space-x-2">
-                  <Button variant="outline" size="sm" onClick={retryUpload}>
-                    Retry Upload
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={clearUpload}>
-                    <X className="h-4 w-4 mr-1" />
-                    Clear
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+        <p className="text-xs text-gray-500 mt-2">
+          Maximum file size: {Math.round(uploadConfig.maxFileSize / (1024 * 1024))}MB
+        </p>
       </div>
 
-      {/* Upload Status Summary */}
+      {/* Progress Bar */}
+      {isUploading && currentUpload && (
+        <div className="mt-4">
+          <div className="flex justify-between text-sm text-gray-600 mb-1">
+            <span>Uploading...</span>
+            <span>{Math.round(currentUpload.progress)}%</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div
+              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${currentUpload.progress}%` }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Success/Error Actions */}
+      {(hasCompleted || hasFailed) && (
+        <div className="mt-4 flex gap-2 justify-center">
+          {hasFailed && (
+            <Button onClick={handleRetry} variant="outline" size="sm">
+              Retry Upload
+            </Button>
+          )}
+          <Button onClick={handleClear} variant="outline" size="sm">
+            <X className="h-4 w-4 mr-1" />
+            {hasCompleted ? 'Upload Another' : 'Clear'}
+          </Button>
+        </div>
+      )}
+
+      {/* Session Info */}
       {currentUpload && (
         <div className="mt-4 text-xs text-gray-500 text-center">
-          Session ID: {currentUpload.id} | Started: {currentUpload.startedAt.toLocaleTimeString()}
-          {currentUpload.completedAt && (
-            <> | Completed: {currentUpload.completedAt.toLocaleTimeString()}</>
-          )}
+          Session: {currentUpload.id}
         </div>
       )}
     </div>
   );
 }
-
-export default UploadManager;
