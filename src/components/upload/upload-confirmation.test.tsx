@@ -1,0 +1,325 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+
+/**
+ * Upload Confirmation and Error Handling Tests
+ *
+ * Focused tests for upload confirmation and error handling functionality
+ * as specified in requirements 1.3 and 1.4.
+ */
+
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import type React from 'react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { UploadStatus } from '@/types/app';
+import { UploadManager } from './upload-manager';
+
+// Mock the config imports
+vi.mock('@/config/app', () => ({
+  uploadConfig: {
+    acceptedTypes: ['application/pdf'],
+    maxFileSize: 100 * 1024 * 1024,
+    minFileSize: 1024,
+    chunkSize: 1024 * 1024,
+    maxConcurrentUploads: 1,
+    uploadTimeout: 5 * 60 * 1000,
+  },
+  validationConfig: {
+    maxFilenameLength: 255,
+    filenamePattern: /^[a-zA-Z0-9._-]+$/,
+  },
+  errorConfig: {
+    codes: {
+      VALIDATION_FAILED: 'VALIDATION_001',
+      UPLOAD_FAILED: 'UPLOAD_001',
+    },
+  },
+}));
+
+// Mock icons
+vi.mock('lucide-react', () => ({
+  Upload: () => <div data-testid="upload-icon" />,
+  FileText: () => <div data-testid="file-icon" />,
+  AlertCircle: () => <div data-testid="error-icon" />,
+  CheckCircle: () => <div data-testid="success-icon" />,
+  X: () => <div data-testid="close-icon" />,
+}));
+
+// Mock Button component
+vi.mock('@17sierra/ui', () => ({
+  Button: ({
+    children,
+    onClick,
+    disabled,
+    variant,
+    size,
+  }: {
+    children: React.ReactNode;
+    onClick?: () => void;
+    disabled?: boolean;
+    variant?: string;
+    size?: string;
+  }) => (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      data-variant={variant}
+      data-size={size}
+    >
+      {children}
+    </button>
+  ),
+}));
+
+describe('Upload Confirmation and Error Handling', () => {
+  const mockOnUploadComplete = vi.fn();
+  const mockOnUploadError = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  describe('Upload Confirmation (Requirement 1.3)', () => {
+    it('should display success confirmation when upload completes', async () => {
+      render(<UploadManager onUploadComplete={mockOnUploadComplete} />);
+
+      // Upload a valid file
+      const fileInput = screen
+        .getByRole('button', { name: /select pdf file/i })
+        .parentElement?.querySelector('input[type="file"]');
+
+      const validFile = new File(['x'.repeat(2048)], 'success-test.pdf', {
+        type: 'application/pdf',
+      });
+
+      if (fileInput) {
+        fireEvent.change(fileInput, { target: { files: [validFile] } });
+      }
+
+      // Wait for upload to complete
+      await waitFor(
+        () => {
+          expect(screen.getByText('Upload completed successfully!')).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
+
+      // Verify success confirmation elements
+      expect(screen.getByTestId('success-icon')).toBeInTheDocument();
+      expect(screen.getByText('Upload Another File')).toBeInTheDocument();
+
+      // Verify callback was called
+      expect(mockOnUploadComplete).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filename: 'success-test.pdf',
+          status: UploadStatus.COMPLETED,
+          progress: 100,
+        })
+      );
+    });
+
+    it('should allow uploading another file after successful upload', async () => {
+      render(<UploadManager />);
+
+      // Complete an upload first
+      const fileInput = screen
+        .getByRole('button', { name: /select pdf file/i })
+        .parentElement?.querySelector('input[type="file"]');
+
+      const validFile = new File(['x'.repeat(2048)], 'first-upload.pdf', {
+        type: 'application/pdf',
+      });
+
+      if (fileInput) {
+        fireEvent.change(fileInput, { target: { files: [validFile] } });
+      }
+
+      await waitFor(
+        () => {
+          expect(screen.getByText('Upload Another File')).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
+
+      // Click "Upload Another File"
+      fireEvent.click(screen.getByText('Upload Another File'));
+
+      // Should return to initial upload state
+      expect(screen.getByText('Upload your proposal document')).toBeInTheDocument();
+      expect(screen.getByText('Select PDF File')).toBeInTheDocument();
+    });
+  });
+
+  describe('Error Message Display (Requirement 1.4)', () => {
+    it('should display clear error messages for invalid file types', async () => {
+      render(<UploadManager onUploadError={mockOnUploadError} />);
+
+      const fileInput = screen
+        .getByRole('button', { name: /select pdf file/i })
+        .parentElement?.querySelector('input[type="file"]');
+
+      // Upload invalid file type
+      const invalidFile = new File(['content'], 'document.txt', {
+        type: 'text/plain',
+      });
+
+      if (fileInput) {
+        fireEvent.change(fileInput, { target: { files: [invalidFile] } });
+      }
+
+      await waitFor(() => {
+        expect(screen.getByText('Upload Failed')).toBeInTheDocument();
+      });
+
+      // Verify error message elements
+      expect(screen.getByTestId('error-icon')).toBeInTheDocument();
+      expect(screen.getByText(/Only PDF files are accepted/)).toBeInTheDocument();
+
+      // Verify error callback was called
+      expect(mockOnUploadError).toHaveBeenCalledWith(
+        expect.stringContaining('Only PDF files are accepted'),
+        expect.objectContaining({
+          filename: 'document.txt',
+          status: UploadStatus.FAILED,
+        })
+      );
+    });
+
+    it('should display clear error messages for oversized files', async () => {
+      render(<UploadManager onUploadError={mockOnUploadError} />);
+
+      const fileInput = screen
+        .getByRole('button', { name: /select pdf file/i })
+        .parentElement?.querySelector('input[type="file"]');
+
+      // Create oversized file
+      const oversizedFile = new File(['x'.repeat(1000)], 'large.pdf', {
+        type: 'application/pdf',
+      });
+
+      // Mock file size to exceed limit
+      Object.defineProperty(oversizedFile, 'size', {
+        value: 101 * 1024 * 1024, // 101MB
+        writable: false,
+      });
+
+      if (fileInput) {
+        fireEvent.change(fileInput, { target: { files: [oversizedFile] } });
+      }
+
+      await waitFor(() => {
+        expect(screen.getByText('Upload Failed')).toBeInTheDocument();
+      });
+
+      // Verify size limit error message
+      expect(screen.getByText(/exceeds the maximum limit/)).toBeInTheDocument();
+      expect(mockOnUploadError).toHaveBeenCalled();
+    });
+
+    it('should display clear error messages for invalid filenames', async () => {
+      render(<UploadManager onUploadError={mockOnUploadError} />);
+
+      const fileInput = screen
+        .getByRole('button', { name: /select pdf file/i })
+        .parentElement?.querySelector('input[type="file"]');
+
+      // Create file with invalid filename
+      const invalidNameFile = new File(['x'.repeat(2048)], 'file with spaces.pdf', {
+        type: 'application/pdf',
+      });
+
+      if (fileInput) {
+        fireEvent.change(fileInput, { target: { files: [invalidNameFile] } });
+      }
+
+      await waitFor(() => {
+        expect(screen.getByText('Upload Failed')).toBeInTheDocument();
+      });
+
+      // Verify filename error message
+      expect(screen.getByText(/invalid characters/)).toBeInTheDocument();
+      expect(mockOnUploadError).toHaveBeenCalled();
+    });
+  });
+
+  describe('Retry Mechanisms (Requirement 1.4)', () => {
+    it('should provide retry option for failed uploads', async () => {
+      render(<UploadManager />);
+
+      const fileInput = screen
+        .getByRole('button', { name: /select pdf file/i })
+        .parentElement?.querySelector('input[type="file"]');
+
+      // Upload invalid file to trigger error
+      const invalidFile = new File(['content'], 'test.txt', {
+        type: 'text/plain',
+      });
+
+      if (fileInput) {
+        fireEvent.change(fileInput, { target: { files: [invalidFile] } });
+      }
+
+      await waitFor(() => {
+        expect(screen.getByText('Retry Upload')).toBeInTheDocument();
+      });
+
+      // Verify retry and clear buttons are available
+      expect(screen.getByText('Retry Upload')).toBeInTheDocument();
+      expect(screen.getByText('Clear')).toBeInTheDocument();
+    });
+
+    it('should allow clearing failed upload state', async () => {
+      render(<UploadManager />);
+
+      const fileInput = screen
+        .getByRole('button', { name: /select pdf file/i })
+        .parentElement?.querySelector('input[type="file"]');
+
+      // Upload invalid file to trigger error
+      const invalidFile = new File(['content'], 'test.txt', {
+        type: 'text/plain',
+      });
+
+      if (fileInput) {
+        fireEvent.change(fileInput, { target: { files: [invalidFile] } });
+      }
+
+      await waitFor(() => {
+        expect(screen.getByText('Clear')).toBeInTheDocument();
+      });
+
+      // Click clear button
+      fireEvent.click(screen.getByText('Clear'));
+
+      // Should return to initial state
+      expect(screen.getByText('Upload your proposal document')).toBeInTheDocument();
+      expect(screen.queryByText('Upload Failed')).not.toBeInTheDocument();
+    });
+
+    it('should maintain session information during error states', async () => {
+      render(<UploadManager />);
+
+      const fileInput = screen
+        .getByRole('button', { name: /select pdf file/i })
+        .parentElement?.querySelector('input[type="file"]');
+
+      // Upload invalid file
+      const invalidFile = new File(['content'], 'test.txt', {
+        type: 'text/plain',
+      });
+
+      if (fileInput) {
+        fireEvent.change(fileInput, { target: { files: [invalidFile] } });
+      }
+
+      await waitFor(() => {
+        expect(screen.getByText('Upload Failed')).toBeInTheDocument();
+      });
+
+      // Should still show session information
+      expect(screen.getByText(/Session ID:/)).toBeInTheDocument();
+      expect(screen.getByText(/Started:/)).toBeInTheDocument();
+    });
+  });
+});

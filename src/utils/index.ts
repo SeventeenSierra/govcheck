@@ -9,5 +9,14 @@
  * common operations used across components.
  */
 
-// Export placeholder - utilities will be added in subsequent tasks
-export {};
+// Upload validation utilities
+export {
+  validateFile,
+  validateFileType,
+  validateFileSize,
+  validateFilename,
+  validatePDFContent,
+  formatFileSize,
+  generateSessionId,
+  type FileValidationResult,
+} from './upload-validation';
