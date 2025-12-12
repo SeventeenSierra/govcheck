@@ -7,6 +7,8 @@
 export * from './analysis';
 // Proposal components
 export * from './proposal';
+// Results components
+export * from './results';
 // UI components
 export * from './ui';
 // Upload components
