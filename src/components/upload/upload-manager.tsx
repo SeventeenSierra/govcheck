@@ -467,7 +467,7 @@ export function UploadManager({
   }, [currentUpload, handleClick]);
 
   return (
-    <div className={`upload-manager ${className}`}>
+    <div className={`upload-manager ${className}`} data-testid="upload-manager">
       {/* Upload Area */}
       <section
         className={`

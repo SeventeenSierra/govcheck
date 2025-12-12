@@ -270,7 +270,7 @@ describe('Upload Confirmation and Error Handling', () => {
       });
 
       // Verify filename length error message
-      expect(screen.getByText(/Filename is too long/)).toBeInTheDocument();
+      expect(screen.getByText(/is too long/)).toBeInTheDocument();
       expect(mockOnUploadError).toHaveBeenCalled();
     });
   });

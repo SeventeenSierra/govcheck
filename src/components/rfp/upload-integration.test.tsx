@@ -8,14 +8,12 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { RFPInterface } from './rfp-interface';
 
 // Mock the strands API client with realistic responses
-const mockStrandsApiClient = {
-  uploadDocument: vi.fn(),
-  startAnalysis: vi.fn(),
-  getResults: vi.fn(),
-};
-
 vi.mock('@/services', () => ({
-  strandsApiClient: mockStrandsApiClient,
+  strandsApiClient: {
+    uploadDocument: vi.fn(),
+    startAnalysis: vi.fn(),
+    getResults: vi.fn(),
+  },
 }));
 
 describe('RFPInterface - Upload Integration', () => {
@@ -26,13 +24,15 @@ describe('RFPInterface - Upload Integration', () => {
     onStartNew: vi.fn(),
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
   });
 
   it('should handle complete upload-to-analysis workflow', async () => {
+    const { strandsApiClient } = await import('@/services');
+    
     // Mock successful upload
-    mockStrandsApiClient.uploadDocument.mockImplementation((file, onProgress) => {
+    vi.mocked(strandsApiClient.uploadDocument).mockImplementation((file, onProgress) => {
       // Simulate progress updates
       setTimeout(() => onProgress?.(25), 100);
       setTimeout(() => onProgress?.(50), 200);
@@ -50,7 +50,7 @@ describe('RFPInterface - Upload Integration', () => {
     });
 
     // Mock successful analysis start
-    mockStrandsApiClient.startAnalysis.mockResolvedValue({
+    vi.mocked(strandsApiClient.startAnalysis).mockResolvedValue({
       success: true,
       data: { 
         id: 'analysis-session-456',
@@ -60,7 +60,7 @@ describe('RFPInterface - Upload Integration', () => {
     });
 
     // Mock successful results
-    mockStrandsApiClient.getResults.mockResolvedValue({
+    vi.mocked(strandsApiClient.getResults).mockResolvedValue({
       success: true,
       data: {
         complianceScore: 92,
@@ -112,8 +112,10 @@ describe('RFPInterface - Upload Integration', () => {
   });
 
   it('should handle upload errors gracefully', async () => {
+    const { strandsApiClient } = await import('@/services');
+    
     // Mock upload failure
-    mockStrandsApiClient.uploadDocument.mockRejectedValue(
+    vi.mocked(strandsApiClient.uploadDocument).mockRejectedValue(
       new Error('Upload failed: Network error')
     );
 
@@ -124,13 +126,15 @@ describe('RFPInterface - Upload Integration', () => {
   });
 
   it('should handle analysis errors gracefully', async () => {
+    const { strandsApiClient } = await import('@/services');
+    
     // Mock successful upload but failed analysis
-    mockStrandsApiClient.uploadDocument.mockResolvedValue({
+    vi.mocked(strandsApiClient.uploadDocument).mockResolvedValue({
       success: true,
       data: { id: 'upload-123', status: 'completed' }
     });
 
-    mockStrandsApiClient.startAnalysis.mockRejectedValue(
+    vi.mocked(strandsApiClient.startAnalysis).mockRejectedValue(
       new Error('Analysis service unavailable')
     );
 

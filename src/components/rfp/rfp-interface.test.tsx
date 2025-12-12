@@ -15,12 +15,12 @@ vi.mock('@/services', () => ({
   },
 }));
 
-// Mock the upload manager
-vi.mock('@/components/upload', () => ({
-  UploadManager: ({ onUploadComplete }: { onUploadComplete: (session: any) => void }) => (
-    <div data-testid="upload-manager">
+// Mock the upload workflow
+vi.mock('@/components/upload/upload-workflow', () => ({
+  UploadWorkflow: vi.fn(({ onWorkflowComplete }: { onWorkflowComplete: (session: any) => void }) => (
+    <div data-testid="upload-workflow">
       <button
-        onClick={() => onUploadComplete({
+        onClick={() => onWorkflowComplete({
           id: 'test-upload-123',
           filename: 'test-proposal.pdf',
           fileSize: 1024000,
@@ -32,7 +32,7 @@ vi.mock('@/components/upload', () => ({
         Mock Upload Complete
       </button>
     </div>
-  ),
+  )),
 }));
 
 describe('RFPInterface', () => {
@@ -52,7 +52,7 @@ describe('RFPInterface', () => {
     
     expect(screen.getByText('RFP Compliance Analyzer')).toBeInTheDocument();
     expect(screen.getByText('Upload & Analyze Proposal')).toBeInTheDocument();
-    expect(screen.getByTestId('upload-manager')).toBeInTheDocument();
+    expect(screen.getByTestId('upload-workflow')).toBeInTheDocument();
   });
 
   it('should handle upload completion and start analysis', async () => {
@@ -73,14 +73,15 @@ describe('RFPInterface', () => {
     render(<RFPInterface {...mockProps} />);
     
     // Trigger upload completion
-    fireEvent.click(screen.getByText('Mock Upload Complete'));
+    const uploadButton = screen.getByText('Mock Upload Complete');
+    fireEvent.click(uploadButton);
     
     // Should call onProjectStart
     expect(mockProps.onProjectStart).toHaveBeenCalledWith('test-upload-123');
     
-    // Should show analysis state
+    // Should show analysis complete state (since mock completes immediately)
     await waitFor(() => {
-      expect(screen.getByText('Analyzing Your Proposal')).toBeInTheDocument();
+      expect(screen.getByText('Analysis Complete')).toBeInTheDocument();
     });
   });
 
