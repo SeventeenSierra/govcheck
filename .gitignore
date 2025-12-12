@@ -21,7 +21,7 @@
 # misc
 .DS_Store
 *.pem
-/inbox/
+/.inbox/
 
 # debug
 npm-debug.log*
