@@ -283,3 +283,55 @@ export function seedGrantToAnalysisResult(grant: SeedGrant) {
     },
   };
 }
+
+/**
+ * Generate mock upload session for testing
+ */
+export function generateMockUploadSession(status?: UploadStatus) {
+  const grant = getRandomSeedGrant();
+  return {
+    ...seedGrantToUploadSession(grant),
+    status: status || UploadStatus.COMPLETED,
+  };
+}
+
+/**
+ * Generate mock analysis session for testing
+ */
+export function generateMockAnalysisSession(status?: string) {
+  const grant = getRandomSeedGrant();
+  return {
+    id: `analysis-${grant.metadata.UUID}`,
+    proposalId: grant.metadata.UUID,
+    status: status || 'completed',
+    progress: status === 'completed' ? 100 : Math.floor(Math.random() * 100),
+    startedAt: new Date(Date.now() - 30000),
+    estimatedCompletion: status === 'completed' ? new Date() : new Date(Date.now() + 10000),
+    currentStep: status === 'completed' ? 'Analysis complete' : 'Analyzing compliance requirements',
+  };
+}
+
+/**
+ * Generate mock analysis results for testing
+ */
+export function generateMockAnalysisResults(complianceStatus?: 'pass' | 'fail' | 'warning') {
+  const grant = getRandomSeedGrant();
+  const result = seedGrantToAnalysisResult(grant);
+  
+  if (complianceStatus) {
+    result.status = complianceStatus;
+    result.overallScore = complianceStatus === 'pass' ? 90 : complianceStatus === 'warning' ? 75 : 45;
+  }
+  
+  return result;
+}
+
+/**
+ * Generate mock file for testing
+ */
+export function generateMockFile(): File {
+  const grant = getRandomSeedGrant();
+  const content = `Mock PDF content for ${grant.metadata.Title}`;
+  const blob = new Blob([content], { type: 'application/pdf' });
+  return new File([blob], grant.documents[0].filename, { type: 'application/pdf' });
+}

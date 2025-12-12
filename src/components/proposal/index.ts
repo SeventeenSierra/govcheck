@@ -9,5 +9,4 @@
  * compliance analysis, and results display.
  */
 
-// Export placeholder - components will be added in subsequent tasks
-export {};
+export { default as ProposalInterface } from './proposal-interface';

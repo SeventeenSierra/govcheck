@@ -19,7 +19,6 @@ import { UploadManager } from './upload-manager';
 vi.mock('@/config/app', () => ({
   apiConfig: {
     strandsBaseUrl: 'http://localhost:8080',
-    genkitBaseUrl: 'http://localhost:8081',
     websocket: {
       maxReconnectAttempts: 5,
       reconnectInterval: 1000,

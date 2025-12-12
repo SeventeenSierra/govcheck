@@ -60,7 +60,6 @@ describe('Application Configuration', () => {
   describe('apiConfig', () => {
     it('should have correct service URLs', () => {
       expect(apiConfig.strandsBaseUrl).toContain('8080');
-      expect(apiConfig.genkitBaseUrl).toContain('8081');
     });
 
     it('should have reasonable timeout and retry settings', () => {

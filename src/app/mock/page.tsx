@@ -4,10 +4,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import AgentInterface from '@/components/agent-interface';
+import { AgentInterface } from '@/components/agent';
 import Sidebar from '@/components/layout/sidebar';
 import TopBar from '@/components/layout/top-bar';
-import ReportPreview from '@/components/report-preview';
+import { ReportPreview } from '@/components/reports';
 
 export default function MockApp() {
   const [activeProject, setActiveProject] = useState<string | null>(null);
