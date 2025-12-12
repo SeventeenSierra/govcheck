@@ -154,7 +154,7 @@ describe('Performance Utilities', () => {
   describe('memoize', () => {
     it('should cache function results', () => {
       const expensiveFn = vi.fn((x: number) => x * 2);
-      const memoizedFn = memoize(expensiveFn);
+      const memoizedFn = memoize(expensiveFn as (...args: unknown[]) => unknown);
 
       const result1 = memoizedFn(5);
       const result2 = memoizedFn(5);
@@ -166,7 +166,10 @@ describe('Performance Utilities', () => {
 
     it('should use custom key generator', () => {
       const fn = vi.fn((obj: { id: number }) => obj.id * 2);
-      const memoizedFn = memoize(fn, (obj) => `id:${obj.id}`);
+      const memoizedFn = memoize(
+        fn as (...args: unknown[]) => unknown, 
+        (obj: unknown) => `id:${(obj as { id: number }).id}`
+      );
 
       memoizedFn({ id: 1 });
       memoizedFn({ id: 1 });
