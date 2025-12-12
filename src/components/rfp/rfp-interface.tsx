@@ -1,16 +1,16 @@
 /*
- * SPDX-License-Identifier: PolyForm-Perimeter-1.0.0
+ * SPDX-License-Identifier: AGPL-3.0-or-later
  * SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
  */
 
 'use client';
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { Button } from '@17sierra/ui';
-import { Bot, FileCheck, Sparkles } from 'lucide-react';
+import { Bot, FileCheck, Sparkles, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
 import { AnalysisSteps, ChatInput, type AnalysisStep } from '@/components/shared';
-import { UploadManager } from '@/components/upload';
-import { strandsApiClient } from '@/services';
+import { UploadWorkflow } from '@/components/upload/upload-workflow';
+import { strandsApiClient, StrandsIntegrationUtils } from '@/services';
 import type { UploadSession } from '@/types/app';
 
 /**
@@ -33,6 +33,90 @@ export interface RFPInterfaceProps {
  * Analysis workflow states
  */
 type WorkflowState = 'welcome' | 'upload' | 'analysis' | 'chat' | 'results';
+
+/**
+ * Service Status Indicator Component
+ * Shows the current status of the Strands analysis service
+ */
+const ServiceStatusIndicator: React.FC = () => {
+  const [serviceStatus, setServiceStatus] = useState<{
+    healthy: boolean;
+    message: string;
+    baseUrl: string;
+    version?: string;
+  } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const checkServiceStatus = async () => {
+      try {
+        const config = StrandsIntegrationUtils.getServiceConfig();
+        const serviceReady = await StrandsIntegrationUtils.ensureServiceReady();
+        
+        setServiceStatus({
+          healthy: serviceReady.ready,
+          message: serviceReady.ready ? 'Analysis service is ready' : (serviceReady.message || 'Service unavailable'),
+          baseUrl: config.baseUrl,
+          version: config.version
+        });
+      } catch (error) {
+        setServiceStatus({
+          healthy: false,
+          message: 'Unable to check service status',
+          baseUrl: 'Unknown'
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkServiceStatus();
+    
+    // Check status every 30 seconds
+    const interval = setInterval(checkServiceStatus, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="mb-6 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+          <span>Checking service status...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!serviceStatus) return null;
+
+  const statusIcon = serviceStatus.healthy ? (
+    <CheckCircle className="w-4 h-4 text-green-600" />
+  ) : (
+    <XCircle className="w-4 h-4 text-red-600" />
+  );
+
+  const statusColor = serviceStatus.healthy 
+    ? 'bg-green-50 border-green-200 text-green-800'
+    : 'bg-red-50 border-red-200 text-red-800';
+
+  return (
+    <div className={`mb-6 p-3 border rounded-lg ${statusColor}`}>
+      <div className="flex items-center gap-2 text-sm">
+        {statusIcon}
+        <span className="font-medium">{serviceStatus.message}</span>
+        {serviceStatus.version && (
+          <span className="text-xs opacity-75">v{serviceStatus.version}</span>
+        )}
+      </div>
+      {!serviceStatus.healthy && (
+        <div className="mt-2 text-xs opacity-75">
+          Service URL: {serviceStatus.baseUrl}
+        </div>
+      )}
+    </div>
+  );
+};
 
 /**
  * RFP Interface Component
@@ -92,53 +176,41 @@ export const RFPInterface: React.FC<RFPInterfaceProps> = ({
     },
   ]);
 
-  // Handle upload completion
-  const handleUploadComplete = useCallback(async (session: UploadSession) => {
+  // Handle workflow completion (upload + analysis)
+  const handleWorkflowComplete = useCallback(async (session: UploadSession, analysisResults?: any) => {
+    console.log('Workflow completed:', { session, analysisResults });
+    
     setUploadSession(session);
-    setWorkflowState('analysis');
+    setWorkflowState('chat');
     onProjectStart(session.id);
 
-    try {
-      // Start analysis
-      const analysisResponse = await strandsApiClient.startAnalysis(session.id);
-      
-      if (analysisResponse.success && analysisResponse.data) {
-        // Simulate step-by-step progress
-        for (let i = 0; i < steps.length; i++) {
-          setSteps(prev => prev.map((s, idx) => 
-            idx === i ? { ...s, status: 'loading', startedAt: new Date() } : s
-          ));
-          
-          // In real implementation, this would poll the strands API
-          await new Promise(resolve => setTimeout(resolve, 2000));
-          
-          setSteps(prev => prev.map((s, idx) => 
-            idx === i ? { ...s, status: 'complete', completedAt: new Date() } : s
-          ));
-        }
-
-        // Get results and transition to chat mode
-        const results = await strandsApiClient.getResults(analysisResponse.data.id);
-        if (onAnalysisComplete) {
-          onAnalysisComplete(results);
-        }
-        
-        setWorkflowState('chat');
-        
-        // Add initial AI message
-        setChatHistory([{
-          id: Date.now().toString(),
-          type: 'assistant',
-          content: "I've completed the compliance analysis of your proposal. The document has been thoroughly reviewed against current federal regulations. How can I help you understand the results?",
-          timestamp: new Date()
-        }]);
-      }
-    } catch (error) {
-      console.error('Analysis failed:', error);
-      // Handle error state
-      setSteps(prev => prev.map(s => ({ ...s, status: 'error', error: 'Analysis failed. Please try again.' })));
+    if (onAnalysisComplete && analysisResults) {
+      onAnalysisComplete(analysisResults);
     }
-  }, [onProjectStart, onAnalysisComplete, steps.length]);
+    
+    // Add initial AI message
+    setChatHistory([{
+      id: Date.now().toString(),
+      type: 'assistant',
+      content: "I've completed the compliance analysis of your proposal. The document has been thoroughly reviewed against current federal regulations. How can I help you understand the results?",
+      timestamp: new Date()
+    }]);
+  }, [onProjectStart, onAnalysisComplete]);
+
+  // Handle workflow errors
+  const handleWorkflowError = useCallback((error: string, context?: any) => {
+    console.error('Workflow error:', error, context);
+    
+    // Add error message to chat if we're in chat mode
+    if (workflowState === 'chat') {
+      setChatHistory(prev => [...prev, {
+        id: Date.now().toString(),
+        type: 'assistant',
+        content: `I encountered an error: ${error}. Please try uploading your document again or contact support if the issue persists.`,
+        timestamp: new Date()
+      }]);
+    }
+  }, [workflowState]);
 
   // Handle chat submission
   const handleChatSubmit = useCallback(async (message: string) => {
@@ -190,9 +262,10 @@ export const RFPInterface: React.FC<RFPInterfaceProps> = ({
               <h1 className="text-3xl font-bold text-slate-900 mb-3">
                 RFP Compliance Analyzer
               </h1>
-              <p className="text-lg text-gray-600 mb-8">
+              <p className="text-lg text-gray-600 mb-4">
                 AI-powered proposal analysis for federal procurement compliance
               </p>
+              <ServiceStatusIndicator />
             </div>
 
             <div className="grid grid-cols-1 gap-6 mb-8">
@@ -211,7 +284,10 @@ export const RFPInterface: React.FC<RFPInterfaceProps> = ({
                   </div>
                 </div>
                 
-                <UploadManager onUploadComplete={handleUploadComplete} />
+                <UploadWorkflow 
+                  onWorkflowComplete={handleWorkflowComplete}
+                  onWorkflowError={handleWorkflowError}
+                />
               </div>
 
               <div className="border border-gray-200 rounded-xl p-6 bg-gradient-to-br from-blue-50 to-indigo-50">

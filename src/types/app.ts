@@ -35,6 +35,8 @@ export interface UploadSession {
   completedAt?: Date;
   /** Error message if upload failed */
   errorMessage?: string;
+  /** Analysis session ID if analysis was automatically started */
+  analysisSessionId?: string;
 }
 
 /**

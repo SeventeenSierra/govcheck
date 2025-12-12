@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: PolyForm-Perimeter-1.0.0
+// SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import AgentInterface from './agent-interface';

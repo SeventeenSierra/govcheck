@@ -80,10 +80,12 @@ export const uiConfig = {
  * Configured for the federated mesh architecture.
  */
 export const apiConfig = {
-  /** Base URL for Strands service */
-  strandsBaseUrl: process.env.NEXT_PUBLIC_STRANDS_URL || 'http://localhost:8080',
+  /** Base URL for Strands service - Docker container or localhost */
+  strandsBaseUrl: process.env.NEXT_PUBLIC_STRANDS_URL || 
+                  process.env.STRANDS_SERVICE_URL || 
+                  (typeof window === 'undefined' ? 'http://strands:8080' : 'http://localhost:8080'),
   /** Use mock APIs for development (when external services aren't available) */
-  useMockApis: process.env.NEXT_PUBLIC_USE_MOCK_APIS === 'true' || process.env.NODE_ENV === 'development',
+  useMockApis: process.env.NEXT_PUBLIC_USE_MOCK_APIS === 'true',
   /** API request timeout in milliseconds */
   requestTimeout: 30000, // 30 seconds
   /** Maximum retry attempts for API requests */
@@ -128,6 +130,8 @@ export const errorConfig = {
     VALIDATION_FAILED: 'VALIDATION_001',
     NETWORK_ERROR: 'NETWORK_001',
     TIMEOUT_ERROR: 'TIMEOUT_001',
+    SERVICE_UNAVAILABLE: 'SERVICE_002',
+    SERVICE_ERROR: 'SERVICE_003',
   },
   /** Error recovery strategies */
   recovery: {

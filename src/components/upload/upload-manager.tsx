@@ -199,6 +199,8 @@ export function UploadManager({
             status: UploadStatus.COMPLETED,
             progress: 100,
             completedAt: new Date(),
+            // Store analysis session ID if available (from Strands integration)
+            analysisSessionId: (response.data as any).analysisSessionId,
           };
 
           setCurrentUpload(completedSession);
