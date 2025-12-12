@@ -13,6 +13,56 @@ const preview: Preview = {
       },
     },
     layout: "fullscreen",
+    actions: { argTypesRegex: "^on[A-Z].*" },
+    docs: {
+      autodocs: "tag",
+    },
+    viewport: {
+      viewports: {
+        mobile: {
+          name: "Mobile",
+          styles: {
+            width: "375px",
+            height: "667px",
+          },
+        },
+        tablet: {
+          name: "Tablet",
+          styles: {
+            width: "768px",
+            height: "1024px",
+          },
+        },
+        desktop: {
+          name: "Desktop",
+          styles: {
+            width: "1024px",
+            height: "768px",
+          },
+        },
+        large: {
+          name: "Large Desktop",
+          styles: {
+            width: "1440px",
+            height: "900px",
+          },
+        },
+      },
+    },
+    a11y: {
+      config: {
+        rules: [
+          {
+            id: "color-contrast",
+            enabled: true,
+          },
+          {
+            id: "focus-trap",
+            enabled: true,
+          },
+        ],
+      },
+    },
   },
   tags: ["autodocs"],
 };
