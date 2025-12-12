@@ -23,6 +23,23 @@ vi.mock('./strands-api-client', () => ({
   strandsApiClient: createMockStrandsApiClient(),
 }));
 
+// Mock the Strands integration utilities
+vi.mock('./strands-integration', () => ({
+  strandsIntegration: {
+    getStatus: vi.fn(() => ({ healthy: true })),
+    getStatusMessage: vi.fn(() => 'Service healthy'),
+  },
+  StrandsIntegrationUtils: {
+    ensureServiceReady: vi.fn(() => Promise.resolve({ ready: true })),
+    getServiceConfig: vi.fn(() => ({ 
+      baseUrl: 'http://localhost:8080', 
+      healthy: true, 
+      version: '1.0.0' 
+    })),
+    initialize: vi.fn(() => Promise.resolve()),
+  },
+}));
+
 describe('AnalysisService', () => {
   let analysisService: AnalysisService;
   let mockStrandsApi: MockStrandsApiClient;
@@ -111,7 +128,11 @@ describe('AnalysisService', () => {
 
       expect(result.success).toBe(true);
       expect(result.sessionId).toBe('analysis-456');
-      expect(mockStrandsApi.startAnalysis).toHaveBeenCalledWith('proposal-123');
+      expect(mockStrandsApi.startAnalysis).toHaveBeenCalledWith(
+        'proposal-123',
+        'proposal-123',
+        'proposal_proposal-123.pdf'
+      );
     });
 
     it('should handle analysis start failures', async () => {

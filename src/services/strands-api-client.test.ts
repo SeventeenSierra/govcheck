@@ -207,6 +207,11 @@ describe('StrandsApiClient', () => {
 
     describe('startAnalysis', () => {
       it('should start analysis successfully', async () => {
+        const mockHealthResponse = {
+          status: 'healthy',
+          version: '1.0.0',
+        };
+
         const mockResponse = {
           id: 'analysis-123',
           proposalId: 'proposal-456',
@@ -216,10 +221,16 @@ describe('StrandsApiClient', () => {
           currentStep: 'initializing',
         };
 
-        mockFetch.mockResolvedValueOnce({
-          ok: true,
-          json: () => Promise.resolve(mockResponse),
-        });
+        // Mock health check first, then analysis start
+        mockFetch
+          .mockResolvedValueOnce({
+            ok: true,
+            json: () => Promise.resolve(mockHealthResponse),
+          })
+          .mockResolvedValueOnce({
+            ok: true,
+            json: () => Promise.resolve(mockResponse),
+          });
 
         const result = await client.startAnalysis('proposal-456');
 
@@ -230,7 +241,9 @@ describe('StrandsApiClient', () => {
           expect.objectContaining({
             method: 'POST',
             body: JSON.stringify({
-              proposalId: 'proposal-456',
+              proposal_id: 'proposal-456',
+              document_id: 'proposal-456',
+              filename: 'document.pdf',
               frameworks: ['FAR', 'DFARS'],
             }),
           })
@@ -275,7 +288,7 @@ describe('StrandsApiClient', () => {
         expect(result.success).toBe(true);
         expect(result.data).toEqual(mockResponse);
         expect(mockFetch).toHaveBeenCalledWith(
-          'http://localhost:8080/api/results/proposal-456',
+          'http://localhost:8080/api/analysis/proposal-456/results',
           expect.objectContaining({ method: 'GET' })
         );
       });
