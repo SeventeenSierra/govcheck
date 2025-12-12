@@ -194,20 +194,24 @@ export const AnalysisCoordinator: React.FC<AnalysisCoordinatorProps> = ({
       setSession((prev) => {
         if (!prev || prev.id !== sessionId) return prev;
 
-        const updated = {
+        return {
           ...prev,
           status,
           progress,
           currentStep,
           ...(status === AnalysisStatus.COMPLETED && { completedAt: new Date() }),
         };
-
-        onProgressUpdate?.(updated);
-        return updated;
       });
     },
-    [onProgressUpdate]
+    []
   );
+
+  // Call onProgressUpdate when session changes (outside of render)
+  useEffect(() => {
+    if (session) {
+      onProgressUpdate?.(session);
+    }
+  }, [session, onProgressUpdate]);
 
   /**
    * Start analysis process
