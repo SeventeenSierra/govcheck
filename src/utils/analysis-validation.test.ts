@@ -4,7 +4,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { IssueSeverity } from '@/components/analysis/types';
+import { IssueSeverity } from '@/types/app';
 import {
   CORE_VALIDATION_RULES,
   calculateComplianceScore,

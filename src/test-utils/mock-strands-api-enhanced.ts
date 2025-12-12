@@ -4,7 +4,9 @@
  */
 
 import type { AnalysisResult, AnalysisSession } from '@/components/analysis/types';
+import { AnalysisStatus } from '@/components/analysis/types';
 import type { UploadSession } from '@/types/app';
+import { UploadStatus } from '@/types/app';
 import { getRandomSeedGrant, seedGrantToAnalysisResult, seedGrantToUploadSession } from '@/seed-data';
 
 /**
@@ -65,7 +67,7 @@ export class MockStrandsAPIEnhanced {
     return {
       id: `analysis-${Date.now()}`,
       proposalId,
-      status: 'analyzing',
+      status: AnalysisStatus.ANALYZING,
       progress: 0,
       startedAt: new Date(),
       currentStep: 'Extracting text from document',
@@ -93,7 +95,7 @@ export class MockStrandsAPIEnhanced {
     return {
       id: sessionId,
       proposalId: 'mock-proposal',
-      status: progress === 100 ? 'completed' : 'analyzing',
+      status: progress === 100 ? AnalysisStatus.COMPLETED : AnalysisStatus.ANALYZING,
       progress,
       startedAt: new Date(Date.now() - 30000), // 30 seconds ago
       estimatedCompletion: new Date(Date.now() + 10000), // 10 seconds from now

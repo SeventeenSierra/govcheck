@@ -165,6 +165,18 @@ export enum NotificationType {
 }
 
 /**
+ * Issue Severity Enumeration
+ *
+ * Defines the severity levels for compliance issues found during analysis.
+ * Used across analysis, validation, and results components.
+ */
+export enum IssueSeverity {
+  CRITICAL = 'critical',
+  WARNING = 'warning',
+  INFO = 'info',
+}
+
+/**
  * User Preferences
  *
  * Stores user-configurable settings and preferences for

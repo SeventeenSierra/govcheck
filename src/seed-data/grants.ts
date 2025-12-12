@@ -3,7 +3,9 @@
  * SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
  */
 
+import { IssueSeverity } from '@/components/analysis/types';
 import type { SeedGrant } from './types';
+import { UploadStatus } from '../types/app';
 
 /**
  * Seed data from AATB dataset for testing proposal compliance analysis
@@ -60,7 +62,7 @@ export const seedGrants: SeedGrant[] = [
         {
           id: 'issue-1',
           type: 'compliance',
-          severity: 'info',
+          severity: IssueSeverity.INFO,
           title: 'Budget justification format',
           description: 'Budget justification follows standard format but could include more detail on equipment costs',
           location: { page: 8, section: 'Budget Justification' },
@@ -116,7 +118,7 @@ export const seedGrants: SeedGrant[] = [
         {
           id: 'issue-2',
           type: 'compliance',
-          severity: 'warning',
+          severity: IssueSeverity.WARNING,
           title: 'Missing cost-sharing documentation',
           description: 'Cost-sharing commitments mentioned but supporting documentation not clearly referenced',
           location: { page: 12, section: 'Budget and Cost Sharing' },
@@ -126,7 +128,7 @@ export const seedGrants: SeedGrant[] = [
         {
           id: 'issue-3',
           type: 'compliance',
-          severity: 'info',
+          severity: IssueSeverity.INFO,
           title: 'Data management plan completeness',
           description: 'Data management plan is present but could benefit from more specific technical details',
           location: { page: 15, section: 'Data Management Plan' },
@@ -230,7 +232,7 @@ export function seedGrantToUploadSession(grant: SeedGrant) {
     filename: document.filename,
     fileSize: 1024000, // Mock file size
     mimeType: 'application/pdf',
-    status: 'completed' as const,
+    status: UploadStatus.COMPLETED,
     progress: 100,
     startedAt: new Date(),
     completedAt: new Date(),
@@ -247,17 +249,37 @@ export function seedGrantToAnalysisResult(grant: SeedGrant) {
     issues: [],
   };
 
+  // Convert issues to match ComplianceIssue interface
+  const convertedIssues = mockResult.issues.map(issue => ({
+    id: issue.id,
+    severity: issue.severity,
+    title: issue.title,
+    description: issue.description,
+    regulation: issue.regulation.section, // Convert object to string
+    location: {
+      page: issue.location.page,
+      section: issue.location.section,
+    },
+    remediation: issue.remediation,
+  }));
+
   return {
     sessionId: `analysis-${grant.metadata.UUID}`,
     proposalId: grant.metadata.UUID,
     status: mockResult.status,
     overallScore: mockResult.overallScore,
-    issues: mockResult.issues,
+    issues: convertedIssues,
     analysisMetadata: {
       totalPages: Math.floor(Math.random() * 20) + 10, // Random page count
       processingTime: Math.floor(Math.random() * 10000) + 2000, // Random processing time
-      completedAt: new Date().toISOString(),
-      rulesChecked: Math.floor(Math.random() * 50) + 20, // Random rules count
+      completedAt: new Date(),
+      rulesChecked: [
+        'FAR 52.204-8',
+        'FAR 52.204-21', 
+        'DFARS 252.204-7012',
+        'FAR 52.219-8',
+        'FAR 52.222-50'
+      ].slice(0, Math.floor(Math.random() * 5) + 1), // Random subset of rules
     },
   };
 }

@@ -3,6 +3,8 @@
  * SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
  */
 
+import { IssueSeverity } from '@/components/analysis/types';
+
 /**
  * Grant metadata structure from AATB dataset
  */
@@ -47,7 +49,7 @@ export interface SeedGrant {
     issues: Array<{
       id: string;
       type: string;
-      severity: 'critical' | 'warning' | 'info';
+      severity: IssueSeverity;
       title: string;
       description: string;
       location: { page: number; section: string };

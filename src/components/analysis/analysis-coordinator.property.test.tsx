@@ -12,7 +12,7 @@ import {
   generateComplianceStatus,
   validateFARDFARS,
 } from '@/utils';
-import { IssueSeverity } from './types';
+import { IssueSeverity } from '@/types/app';
 
 /**
  * Property-Based Tests for Analysis Coordinator

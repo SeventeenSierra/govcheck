@@ -8,12 +8,6 @@
 
 import '@testing-library/jest-dom';
 
-declare global {
-  namespace Vi {
-    interface JestAssertion<T = any> extends jest.Matchers<void, T> {}
-  }
-}
-
 // Allow accessing private members in tests
 declare module '*.test.ts' {
   interface AnalysisService {

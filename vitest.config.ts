@@ -12,6 +12,10 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
     exclude: ['**/node_modules/**', '**/dist/**', '**/e2e/**', '**/.next/**'],
+    // Ensure TypeScript declarations are properly loaded
+    typecheck: {
+      tsconfig: './tsconfig.test.json',
+    },
   },
   resolve: {
     alias: {

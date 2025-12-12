@@ -14,6 +14,7 @@ import {
   seedGrantToUploadSession,
   seedGrantToAnalysisResult,
 } from './grants';
+import { UploadStatus } from '../types/app';
 
 describe('Seed Data - Grant Utilities', () => {
   it('should have seed grants available', () => {
@@ -82,7 +83,7 @@ describe('Seed Data - Grant Utilities', () => {
     
     expect(uploadSession.id).toBe(grant.metadata.UUID);
     expect(uploadSession.filename).toBe(grant.documents[0].filename);
-    expect(uploadSession.status).toBe('completed');
+    expect(uploadSession.status).toBe(UploadStatus.COMPLETED);
     expect(uploadSession.mimeType).toBe('application/pdf');
   });
 

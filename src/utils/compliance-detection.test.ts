@@ -4,7 +4,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { IssueSeverity } from '@/components/analysis/types';
+import { IssueSeverity } from '@/types/app';
 import {
   analyzeDocumentStructure,
   CRITICAL_VIOLATION_PATTERNS,
