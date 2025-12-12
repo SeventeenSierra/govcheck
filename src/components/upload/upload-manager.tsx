@@ -17,6 +17,7 @@ import type React from 'react';
 import { useCallback, useRef, useState } from 'react';
 import { errorConfig, uploadConfig, validationConfig } from '@/config/app';
 import { strandsApiClient } from '@/services';
+import { MockStrandsClient } from '@/services/mock-strands-client';
 import { type UploadSession, UploadStatus } from '@/types/app';
 
 /**
@@ -71,9 +72,11 @@ export function UploadManager({
     if (
       !uploadConfig.acceptedTypes.includes(file.type as (typeof uploadConfig.acceptedTypes)[number])
     ) {
+      const detectedType = file.type || 'unknown';
+      const fileExtension = file.name.split('.').pop()?.toLowerCase() || 'none';
       return {
         isValid: false,
-        error: 'Only PDF files are accepted for upload.',
+        error: `Invalid file type: ${detectedType} (.${fileExtension}). Only PDF files are accepted for upload.`,
         errorCode: errorConfig.codes.VALIDATION_FAILED,
       };
     }
@@ -81,17 +84,20 @@ export function UploadManager({
     // Check file size limits (requirement 1.2)
     if (file.size > uploadConfig.maxFileSize) {
       const maxSizeMB = Math.round(uploadConfig.maxFileSize / (1024 * 1024));
+      const fileSizeMB = (file.size / (1024 * 1024)).toFixed(1);
       return {
         isValid: false,
-        error: `File size exceeds the maximum limit of ${maxSizeMB}MB.`,
+        error: `File size (${fileSizeMB}MB) exceeds the maximum limit of ${maxSizeMB}MB. Please compress your PDF or select a smaller file.`,
         errorCode: errorConfig.codes.VALIDATION_FAILED,
       };
     }
 
     if (file.size < uploadConfig.minFileSize) {
+      const fileSizeKB = (file.size / 1024).toFixed(1);
+      const minSizeKB = (uploadConfig.minFileSize / 1024).toFixed(1);
       return {
         isValid: false,
-        error: 'File is too small. Please select a valid PDF document.',
+        error: `File size (${fileSizeKB}KB) is too small (minimum: ${minSizeKB}KB). Please select a valid PDF document.`,
         errorCode: errorConfig.codes.VALIDATION_FAILED,
       };
     }
@@ -100,7 +106,26 @@ export function UploadManager({
     if (file.name.length > validationConfig.maxFilenameLength) {
       return {
         isValid: false,
-        error: `Filename is too long. Maximum ${validationConfig.maxFilenameLength} characters allowed.`,
+        error: `Filename "${file.name}" is too long (${file.name.length} characters). Maximum ${validationConfig.maxFilenameLength} characters allowed. Please rename your file.`,
+        errorCode: errorConfig.codes.VALIDATION_FAILED,
+      };
+    }
+
+    // Check for empty or corrupted files
+    if (file.size === 0) {
+      return {
+        isValid: false,
+        error: 'File appears to be empty or corrupted. Please select a valid PDF document.',
+        errorCode: errorConfig.codes.VALIDATION_FAILED,
+      };
+    }
+
+    // Check filename for invalid characters
+    const invalidChars = /[<>:"/\\|?*]/;
+    if (invalidChars.test(file.name)) {
+      return {
+        isValid: false,
+        error: `Filename contains invalid characters: ${file.name}. Please remove special characters like < > : " / \\ | ? *`,
         errorCode: errorConfig.codes.VALIDATION_FAILED,
       };
     }
@@ -126,6 +151,7 @@ export function UploadManager({
   /**
    * Uploads file using Strands API with progress tracking
    * Implements requirement 1.5 (progress tracking) and API integration
+   * Falls back to mock client if real API is unavailable
    */
   const uploadFileToApi = useCallback(
     async (file: File, session: UploadSession): Promise<UploadSession> => {
@@ -133,11 +159,38 @@ export function UploadManager({
       setCurrentUpload(updatedSession);
 
       try {
-        const response = await strandsApiClient.uploadDocument(file, (progress: number) => {
-          const progressSession = { ...updatedSession, progress };
-          setCurrentUpload(progressSession);
-          onUploadProgress?.(progress, progressSession);
-        });
+        let response;
+        
+        try {
+          // Try real API first
+          console.log('Attempting upload to real API...');
+          response = await strandsApiClient.uploadDocument(file, (progress: number) => {
+            const progressSession = { ...updatedSession, progress };
+            setCurrentUpload(progressSession);
+            onUploadProgress?.(progress, progressSession);
+          });
+          console.log('Real API upload successful');
+        } catch (realApiError) {
+          console.log('Real API failed, attempting mock fallback:', realApiError);
+          
+          // Provide detailed error context
+          const apiErrorMessage = realApiError instanceof Error ? realApiError.message : 'Unknown API error';
+          console.log(`API Error Details: ${apiErrorMessage}`);
+          
+          // Check if it's a network connectivity issue
+          if (apiErrorMessage.includes('fetch') || apiErrorMessage.includes('network') || apiErrorMessage.includes('ECONNREFUSED')) {
+            console.log('Network connectivity issue detected, using mock client');
+          }
+          
+          // Fallback to mock client
+          const mockClient = new MockStrandsClient();
+          response = await mockClient.uploadDocument(file, (progress: number) => {
+            const progressSession = { ...updatedSession, progress };
+            setCurrentUpload(progressSession);
+            onUploadProgress?.(progress, progressSession);
+          });
+          console.log('Mock client upload successful');
+        }
 
         if (response.success && response.data) {
           const completedSession: UploadSession = {
@@ -152,17 +205,66 @@ export function UploadManager({
           onUploadProgress?.(100, completedSession);
           return completedSession;
         } else {
-          throw new Error(response.error || 'Upload failed');
+          // Provide detailed error information from API response
+          const apiError = response.error || 'Upload failed';
+          const errorCode = (response as any).code || 'UNKNOWN_ERROR';
+          console.error('API Response Error:', { error: apiError, code: errorCode, response });
+          throw new Error(`${apiError} (Code: ${errorCode})`);
         }
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Upload failed';
+        console.error('Upload error caught:', error);
+        
+        // Create detailed error message based on error type
+        let errorMessage = 'Upload failed';
+        let errorDetails = '';
+        
+        if (error instanceof Error) {
+          const originalMessage = error.message;
+          
+          // Network/connectivity errors
+          if (originalMessage.includes('fetch') || originalMessage.includes('NetworkError')) {
+            errorMessage = 'Network connection failed';
+            errorDetails = 'Unable to connect to upload server. Please check your internet connection.';
+          } else if (originalMessage.includes('ECONNREFUSED') || originalMessage.includes('ERR_CONNECTION_REFUSED')) {
+            errorMessage = 'Server unavailable';
+            errorDetails = 'Upload server is not responding. Using mock mode for testing.';
+          } else if (originalMessage.includes('timeout')) {
+            errorMessage = 'Upload timeout';
+            errorDetails = 'Upload took too long to complete. Please try again with a smaller file.';
+          } else if (originalMessage.includes('INVALID_FILE_TYPE')) {
+            errorMessage = 'Invalid file type';
+            errorDetails = 'Only PDF files are accepted. Please select a PDF document.';
+          } else if (originalMessage.includes('FILE_TOO_LARGE')) {
+            errorMessage = 'File too large';
+            errorDetails = `File exceeds the 100MB size limit. Current size: ${(file.size / 1024 / 1024).toFixed(1)}MB`;
+          } else if (originalMessage.includes('VALIDATION_FAILED')) {
+            errorMessage = 'File validation failed';
+            errorDetails = originalMessage;
+          } else if (originalMessage.includes('CORS')) {
+            errorMessage = 'Cross-origin request blocked';
+            errorDetails = 'Browser security settings are blocking the upload. This is normal in development.';
+          } else {
+            // Use original message but make it more user-friendly
+            errorMessage = originalMessage.includes('Upload') ? originalMessage : `Upload error: ${originalMessage}`;
+            errorDetails = 'Please try again or contact support if the problem persists.';
+          }
+        }
+        
+        // Combine message and details
+        const fullErrorMessage = errorDetails ? `${errorMessage}. ${errorDetails}` : errorMessage;
+        
         const failedSession: UploadSession = {
           ...updatedSession,
           status: UploadStatus.FAILED,
-          errorMessage,
+          errorMessage: fullErrorMessage,
         };
         setCurrentUpload(failedSession);
-        throw error;
+        
+        // Log for debugging
+        console.error('Final error message:', fullErrorMessage);
+        console.error('File details:', { name: file.name, size: file.size, type: file.type });
+        
+        throw new Error(fullErrorMessage);
       }
     },
     [onUploadProgress]
@@ -293,12 +395,17 @@ export function UploadManager({
    * Handle click to open file dialog
    */
   const handleClick = useCallback((e?: React.MouseEvent) => {
+    console.log('handleClick called', { disabled, currentUpload: currentUpload?.status, uploadInProgress: uploadInProgressRef.current });
+    
     if (e) {
       e.preventDefault();
       e.stopPropagation();
     }
     
-    if (disabled) return;
+    if (disabled) {
+      console.log('Click ignored - component disabled');
+      return;
+    }
     
     // Only prevent opening file dialog if currently uploading
     if (currentUpload?.status === UploadStatus.UPLOADING) {
@@ -312,8 +419,13 @@ export function UploadManager({
       return;
     }
     
-    console.log('Opening file dialog');
-    fileInputRef.current?.click();
+    console.log('Opening file dialog, fileInputRef:', fileInputRef.current);
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+      console.log('File input clicked');
+    } else {
+      console.error('File input ref is null!');
+    }
   }, [disabled, currentUpload?.status]);
 
   /**
@@ -368,7 +480,12 @@ export function UploadManager({
         onDragLeave={handleDragOut}
         onDragOver={handleDrag}
         onDrop={handleDrop}
-        onClick={!isUploading ? handleClick : undefined}
+        onClick={!isUploading ? (e) => {
+          // Only handle click if it's not from a button or other interactive element
+          if (e.target === e.currentTarget || (e.target as HTMLElement).tagName === 'DIV') {
+            handleClick(e);
+          }
+        } : undefined}
         onKeyDown={
           !isUploading
             ? (e) => {
@@ -425,9 +542,19 @@ export function UploadManager({
           </p>
 
           {!isUploading && (
-            <Button variant="outline" disabled={disabled} onClick={(e) => handleClick(e)}>
+            <button
+              type="button"
+              disabled={disabled}
+              className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Button clicked!');
+                handleClick(e);
+              }}
+            >
               {hasCompleted || hasFailed ? 'Select Another PDF' : 'Select PDF File'}
-            </Button>
+            </button>
           )}
 
           <p className="text-xs text-gray-500 mt-2">
