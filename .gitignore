@@ -57,3 +57,4 @@ next-env.d.ts
 /proprietary/
 /commercial/
 /internal/
+database/seed-documents.sql
