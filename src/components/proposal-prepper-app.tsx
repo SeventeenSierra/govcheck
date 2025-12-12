@@ -10,6 +10,7 @@ import { AlertCircle, FileText, Home, Settings } from 'lucide-react';
 import type React from 'react';
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import type { AnalysisResult, AnalysisSession } from '@/components/analysis/types';
+import type { NavigationStep } from '@/components/navigation/navigation-controller';
 import type { AnalysisResults } from '@/components/results/types';
 import { ComplianceStatus } from '@/components/results/types';
 import type { UploadSession } from '@/types/app';
@@ -32,6 +33,12 @@ const AnalysisCoordinator = lazy(() =>
 const ResultsPresenter = lazy(() =>
   import('@/components/results/results-presenter').then((module) => ({
     default: module.ResultsPresenter,
+  }))
+);
+
+const NavigationController = lazy(() =>
+  import('@/components/navigation/navigation-controller').then((module) => ({
+    default: module.NavigationController,
   }))
 );
 
@@ -77,9 +84,19 @@ export function ProposalPrepperApp(): React.JSX.Element {
     error: null,
   });
 
+  // Track if component has mounted to prevent hydration mismatches
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   // Performance monitoring for app initialization
   // Requirement 5.1: Load time performance
   useEffect(() => {
+    // Only run performance monitoring on client side
+    if (typeof window === 'undefined') return;
+
     PerformanceMonitor.mark('app-init-start');
 
     const handleLoad = () => {
@@ -229,6 +246,47 @@ export function ProposalPrepperApp(): React.JSX.Element {
   );
 
   /**
+   * Generate navigation steps based on current app state
+   * Requirement 4.2: Clear navigation and workflow
+   */
+  const getNavigationSteps = useCallback((): NavigationStep[] => {
+    return [
+      {
+        id: WorkflowState.UPLOAD,
+        label: 'Upload',
+        description: 'Upload proposal document',
+        isCompleted: !!appState.uploadSession,
+        isCurrent: appState.currentWorkflow === WorkflowState.UPLOAD,
+        isAccessible: true,
+      },
+      {
+        id: WorkflowState.ANALYSIS,
+        label: 'Analysis',
+        description: 'Analyze for compliance',
+        isCompleted: !!appState.analysisResults,
+        isCurrent: appState.currentWorkflow === WorkflowState.ANALYSIS,
+        isAccessible: !!appState.uploadSession,
+      },
+      {
+        id: WorkflowState.RESULTS,
+        label: 'Results',
+        description: 'View compliance results',
+        isCompleted: !!appState.analysisResults,
+        isCurrent: appState.currentWorkflow === WorkflowState.RESULTS,
+        isAccessible: !!appState.analysisResults,
+      },
+    ];
+  }, [appState]);
+
+  /**
+   * Handle navigation controller step changes
+   * Requirement 4.2: Clear navigation and workflow
+   */
+  const handleNavigationStepChange = useCallback((stepId: string) => {
+    navigateToStep(stepId as WorkflowState);
+  }, [navigateToStep]);
+
+  /**
    * Convert AnalysisResult to AnalysisResults for ResultsPresenter
    */
   const getAnalysisResults = useCallback((): AnalysisResults | undefined => {
@@ -290,56 +348,36 @@ export function ProposalPrepperApp(): React.JSX.Element {
         </div>
       </header>
 
-      {/* Simple Navigation Tabs */}
-      <nav className="bg-white border-b border-gray-200">
-        <div className="px-4 sm:px-6 lg:px-8">
+      {/* Navigation Controller */}
+      <div className="bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-4">
+        {isMounted ? (
+          <Suspense
+            fallback={
+              <div className="flex items-center space-x-8 py-3">
+                <div className="animate-pulse flex space-x-4">
+                  <div className="rounded-full bg-gray-200 h-8 w-8"></div>
+                  <div className="h-4 bg-gray-200 rounded w-20"></div>
+                </div>
+              </div>
+            }
+          >
+            <NavigationController
+              steps={getNavigationSteps()}
+              onNavigateToStep={handleNavigationStepChange}
+              onStartOver={startNewWorkflow}
+              disabled={appState.isLoading}
+              className="max-w-3xl mx-auto"
+            />
+          </Suspense>
+        ) : (
           <div className="flex items-center space-x-8 py-3">
-            {Object.values(WorkflowState).map((step, index) => {
-              const isCompleted =
-                (step === WorkflowState.UPLOAD && appState.uploadSession) ||
-                (step === WorkflowState.ANALYSIS && appState.analysisResults) ||
-                (step === WorkflowState.RESULTS && appState.analysisResults);
-
-              const isCurrent = appState.currentWorkflow === step;
-              const isAccessible =
-                step === WorkflowState.UPLOAD ||
-                (step === WorkflowState.ANALYSIS && appState.uploadSession) ||
-                (step === WorkflowState.RESULTS && appState.analysisResults);
-
-              return (
-                <button
-                  key={step}
-                  type="button"
-                  onClick={() => isAccessible && navigateToStep(step)}
-                  disabled={!isAccessible || appState.isLoading}
-                  className={`flex items-center space-x-2 pb-2 px-1 text-sm font-medium transition-colors ${
-                    isCurrent
-                      ? 'text-primary border-b-2 border-primary'
-                      : isCompleted
-                        ? 'text-slate-800 hover:text-primary'
-                        : isAccessible
-                          ? 'text-slate-600 hover:text-primary'
-                          : 'text-gray-400 cursor-not-allowed'
-                  }`}
-                >
-                  <span
-                    className={`flex items-center justify-center w-6 h-6 rounded-full text-xs ${
-                      isCompleted
-                        ? 'bg-green-100 text-green-600'
-                        : isCurrent
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-gray-100 text-gray-500'
-                    }`}
-                  >
-                    {index + 1}
-                  </span>
-                  <span className="capitalize">{step}</span>
-                </button>
-              );
-            })}
+            <div className="animate-pulse flex space-x-4">
+              <div className="rounded-full bg-gray-200 h-8 w-8"></div>
+              <div className="h-4 bg-gray-200 rounded w-20"></div>
+            </div>
           </div>
-        </div>
-      </nav>
+        )}
+      </div>
 
       {/* Main Content Area - Matching original layout */}
       <div className="flex flex-1 overflow-hidden h-[calc(100vh-112px)]">
@@ -370,20 +408,11 @@ export function ProposalPrepperApp(): React.JSX.Element {
                         Upload your PDF proposal document to begin compliance analysis
                       </p>
                     </div>
-                    <Suspense
-                      fallback={
-                        <div className="flex items-center justify-center py-12">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                          <span className="ml-3 text-gray-600">Loading upload interface...</span>
-                        </div>
-                      }
-                    >
-                      <UploadManager
-                        onUploadComplete={handleUploadComplete}
-                        onUploadError={handleUploadError}
-                        className="w-full"
-                      />
-                    </Suspense>
+                    <UploadManager
+                      onUploadComplete={handleUploadComplete}
+                      onUploadError={handleUploadError}
+                      className="w-full"
+                    />
                   </div>
                 )}
 
@@ -396,25 +425,16 @@ export function ProposalPrepperApp(): React.JSX.Element {
                         Analyzing "{appState.uploadSession.filename}" for FAR/DFARS compliance
                       </p>
                     </div>
-                    <Suspense
-                      fallback={
-                        <div className="flex items-center justify-center py-12">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                          <span className="ml-3 text-gray-600">Loading analysis interface...</span>
-                        </div>
-                      }
-                    >
-                      <AnalysisCoordinator
-                        proposalId={appState.uploadSession.id}
-                        fileContent={appState.uploadSession.filename} // Simplified for threshold
-                        onAnalysisStart={handleAnalysisStart}
-                        onProgressUpdate={handleAnalysisProgress}
-                        onAnalysisComplete={handleAnalysisComplete}
-                        onAnalysisError={handleAnalysisError}
-                        autoStart={true}
-                        className="w-full"
-                      />
-                    </Suspense>
+                    <AnalysisCoordinator
+                      proposalId={appState.uploadSession.id}
+                      fileContent={appState.uploadSession.filename} // Simplified for threshold
+                      onAnalysisStart={handleAnalysisStart}
+                      onProgressUpdate={handleAnalysisProgress}
+                      onAnalysisComplete={handleAnalysisComplete}
+                      onAnalysisError={handleAnalysisError}
+                      autoStart={true}
+                      className="w-full"
+                    />
                   </div>
                 )}
 
@@ -427,27 +447,18 @@ export function ProposalPrepperApp(): React.JSX.Element {
                         Compliance analysis complete for "{appState.uploadSession?.filename}"
                       </p>
                     </div>
-                    <Suspense
-                      fallback={
-                        <div className="flex items-center justify-center py-12">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                          <span className="ml-3 text-gray-600">Loading results interface...</span>
-                        </div>
-                      }
-                    >
-                      <ResultsPresenter
-                        results={getAnalysisResults()}
-                        isLoading={appState.isLoading}
-                        error={appState.error || undefined}
-                        onViewIssueDetails={(issue) => {
-                          console.log('View issue details:', issue);
-                        }}
-                        onDownloadResults={() => {
-                          console.log('Download results');
-                        }}
-                        onStartNewAnalysis={startNewWorkflow}
-                      />
-                    </Suspense>
+                    <ResultsPresenter
+                      results={getAnalysisResults()}
+                      isLoading={appState.isLoading}
+                      error={appState.error || undefined}
+                      onViewIssueDetails={(issue) => {
+                        console.log('View issue details:', issue);
+                      }}
+                      onDownloadResults={() => {
+                        console.log('Download results');
+                      }}
+                      onStartNewAnalysis={startNewWorkflow}
+                    />
                   </div>
                 )}
               </div>

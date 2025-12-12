@@ -9,6 +9,8 @@
  */
 
 export * from './property-testing';
+export * from './mock-strands-api';
+export * from './mock-strands-api-enhanced';
 
 /**
  * Common Test Helpers
