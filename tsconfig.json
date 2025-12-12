@@ -28,6 +28,8 @@
   "include": [
     "next-env.d.ts",
     "vite-env.d.ts",
+    "vitest-env.d.ts",
+    "src/test-utils/**/*.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
@@ -37,10 +39,6 @@
     "node_modules",
     "**/*.stories.tsx",
     "vitest.config.ts",
-    ".inbox/**/*",
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "**/*.spec.ts",
-    "**/*.spec.tsx"
+    ".inbox/**/*"
   ]
 }

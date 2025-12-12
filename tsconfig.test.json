@@ -34,7 +34,10 @@
     "**/*.spec.ts",
     "**/*.spec.tsx",
     "src/test-utils/**/*",
-    "vitest.setup.ts"
+    "vitest.setup.ts",
+    "vitest-env.d.ts",
+    "src/test-utils/vitest-dom.d.ts",
+    "src/test-utils/test-types.d.ts"
   ],
   "exclude": ["node_modules", ".next"]
 }
