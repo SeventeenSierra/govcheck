@@ -12,6 +12,7 @@ import { RegulatoryReferences } from './regulatory-references';
 
 import type { ResultsPresenterProps } from './types';
 import { ComplianceStatus } from './types';
+import { resultsService } from '@/services';
 
 /**
  * Results Presenter Component
@@ -27,6 +28,38 @@ export function ResultsPresenter({
   onDownloadResults,
   onStartNewAnalysis,
 }: ResultsPresenterProps) {
+  /**
+   * Handle downloading results using the results service
+   */
+  const handleDownloadResults = async () => {
+    if (!results) return;
+
+    try {
+      const exportResult = await resultsService.exportResults(results.proposalId, 'json');
+      
+      if (exportResult.success && exportResult.data) {
+        // Create and trigger download
+        const blob = new Blob([exportResult.data as string], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `compliance-results-${results.proposalId}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        // Call the provided callback if available
+        onDownloadResults?.();
+      } else {
+        console.error('Failed to export results:', exportResult.error);
+        // Could show a toast notification here
+      }
+    } catch (error) {
+      console.error('Download failed:', error);
+      // Could show a toast notification here
+    }
+  };
   // Loading state
   if (isLoading) {
     return (
@@ -113,7 +146,7 @@ export function ResultsPresenter({
           </p>
         </div>
         <div className="flex gap-3">
-          <Button onClick={onDownloadResults} variant="outline" size="sm">
+          <Button onClick={handleDownloadResults} variant="outline" size="sm">
             <Download className="h-4 w-4 mr-2" />
             Download
           </Button>
