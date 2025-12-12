@@ -9,7 +9,7 @@ export default {
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
-    '../../packages/ui/src/**/*.{js,ts,jsx,tsx}', // @17sierra/ui components
+    './node_modules/@17sierra/ui/**/*.{js,ts,jsx,tsx}', // @17sierra/ui components
   ],
   theme: {
     extend: {
