@@ -9,6 +9,18 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AnalysisCoordinator } from './analysis-coordinator';
 import { AnalysisStatus } from './types';
 
+// Mock the analysis service
+vi.mock('@/services', () => ({
+  analysisService: {
+    startAnalysis: vi.fn(),
+    getAnalysisStatus: vi.fn(),
+    setEventHandlers: vi.fn(),
+    validateAnalysisRequest: vi.fn(),
+  },
+}));
+
+import { analysisService } from '@/services';
+
 // Mock file content for testing
 const createMockFile = (content: string, name = 'test-proposal.pdf'): File => {
   const blob = new Blob([content], { type: 'application/pdf' });
@@ -33,6 +45,27 @@ describe('AnalysisCoordinator', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    
+    // Setup default mock responses
+    (analysisService.startAnalysis as any).mockResolvedValue({
+      success: true,
+      sessionId: 'test-session-123',
+    });
+    
+    (analysisService.getAnalysisStatus as any).mockResolvedValue({
+      id: 'test-session-123',
+      proposalId: 'test-proposal-123',
+      status: AnalysisStatus.QUEUED,
+      progress: 0,
+      startedAt: new Date(),
+      currentStep: 'Initializing analysis',
+    });
+    
+    (analysisService.validateAnalysisRequest as any).mockReturnValue({
+      isValid: true,
+    });
+    
+    (analysisService.setEventHandlers as any).mockImplementation(() => {});
   });
 
   describe('Component Rendering', () => {

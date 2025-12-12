@@ -100,6 +100,7 @@ describe('UploadService', () => {
 
   describe('Upload Management', () => {
     it('should upload a valid file successfully', async () => {
+      uploadService.clearAllSessions(); // Ensure clean state
       const file = new File(['test content'], 'test.pdf', { type: 'application/pdf' });
       const mockResponse = {
         success: true,
@@ -124,6 +125,7 @@ describe('UploadService', () => {
     });
 
     it('should handle upload failures', async () => {
+      uploadService.clearAllSessions(); // Ensure clean state
       const file = new File(['test content'], 'test.pdf', { type: 'application/pdf' });
       const mockResponse = {
         success: false,
@@ -139,6 +141,7 @@ describe('UploadService', () => {
     });
 
     it('should track upload progress', async () => {
+      uploadService.clearAllSessions(); // Ensure clean state
       const file = new File(['test content'], 'test.pdf', { type: 'application/pdf' });
       const progressCallback = vi.fn();
 
@@ -178,6 +181,7 @@ describe('UploadService', () => {
     });
 
     it('should handle upload exceptions', async () => {
+      uploadService.clearAllSessions(); // Ensure clean state
       const file = new File(['test content'], 'test.pdf', { type: 'application/pdf' });
 
       mockStrandsApi.uploadDocument.mockRejectedValueOnce(new Error('Network error'));

@@ -121,11 +121,15 @@ export class ResultsService {
     // Collect all regulatory references from issues
     results.issues.forEach((issue: LocalComplianceIssue) => {
       if (issue.regulation) {
-        const framework = issue.regulation;
+        // Extract framework (FAR, DFARS) and section from regulation
+        const parts = issue.regulation.split(' ');
+        const framework = parts[0]; // e.g., "FAR" or "DFARS"
+        const section = parts.slice(1).join(' '); // e.g., "52.204-1"
+        
         if (!references.has(framework)) {
           references.set(framework, new Set());
         }
-        references.get(framework)!.add(framework);
+        references.get(framework)!.add(section);
       }
     });
 
@@ -196,7 +200,8 @@ export class ResultsService {
 
       // Count by framework
       if (issue.regulation) {
-        const framework = issue.regulation;
+        // Extract framework (FAR, DFARS) from regulation
+        const framework = issue.regulation.split(' ')[0]; // e.g., "FAR" or "DFARS"
         frameworkCounts.set(framework, (frameworkCounts.get(framework) || 0) + 1);
       }
     });

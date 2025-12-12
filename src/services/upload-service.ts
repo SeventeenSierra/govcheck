@@ -82,6 +82,11 @@ export class UploadService {
           completedAt: new Date(),
         };
 
+        // Remove the original session if the ID changed
+        if (session.id !== completedSession.id) {
+          this.activeSessions.delete(session.id);
+        }
+        
         this.activeSessions.set(completedSession.id, completedSession);
         this.eventHandlers.onComplete?.(completedSession.id, completedSession);
 
