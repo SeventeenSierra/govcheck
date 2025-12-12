@@ -7,9 +7,12 @@
  * HTTP/REST and WebSocket client for communicating with the Strands service.
  * Provides document upload, analysis orchestration, and results retrieval.
  * Implements requirements 1.1, 2.1, and 3.1 for API integration.
+ *
+ * Performance optimizations for Requirement 5.1: Load time performance
  */
 
 import { apiConfig, errorConfig } from '../config/app';
+import { apiCache, PerformanceMonitor } from '../utils/performance';
 
 /**
  * API Response wrapper for consistent error handling
@@ -113,14 +116,29 @@ class HttpClient {
   }
 
   /**
-   * Make HTTP request with retry logic
+   * Make HTTP request with retry logic and caching
+   * Performance optimization for Requirement 5.1
    */
   private async makeRequest<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
+    cacheKey?: string,
+    cacheTTL?: number
   ): Promise<ApiResponse<T>> {
+    // Check cache for GET requests
+    if (options.method === 'GET' && cacheKey) {
+      const cached = apiCache.get(cacheKey);
+      if (cached) {
+        return { success: true, data: cached as T };
+      }
+    }
+
     const url = `${this.baseUrl}${endpoint}`;
     let lastError: Error | null = null;
+
+    // Performance monitoring
+    const requestId = `api-request-${Date.now()}`;
+    PerformanceMonitor.mark(`${requestId}-start`);
 
     for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
       try {
@@ -143,6 +161,23 @@ class HttpClient {
         }
 
         const data = await response.json();
+
+        // Cache successful GET responses
+        if (options.method === 'GET' && cacheKey && data) {
+          apiCache.set(cacheKey, data, cacheTTL);
+        }
+
+        // Performance monitoring
+        PerformanceMonitor.mark(`${requestId}-end`);
+        const duration = PerformanceMonitor.measure(
+          requestId,
+          `${requestId}-start`,
+          `${requestId}-end`
+        );
+        if (duration && duration > 1000) {
+          console.warn(`Slow API request: ${endpoint} took ${duration}ms`);
+        }
+
         return { success: true, data };
       } catch (error) {
         lastError = error as Error;
@@ -184,10 +219,11 @@ class HttpClient {
   }
 
   /**
-   * GET request
+   * GET request with caching
    */
-  async get<T>(endpoint: string): Promise<ApiResponse<T>> {
-    return this.makeRequest<T>(endpoint, { method: 'GET' });
+  async get<T>(endpoint: string, cacheTTL?: number): Promise<ApiResponse<T>> {
+    const cacheKey = `GET:${endpoint}`;
+    return this.makeRequest<T>(endpoint, { method: 'GET' }, cacheKey, cacheTTL);
   }
 
   /**
@@ -434,10 +470,10 @@ export class StrandsApiClient {
   }
 
   /**
-   * Get upload session status
+   * Get upload session status with short-term caching
    */
   async getUploadStatus(sessionId: string): Promise<ApiResponse<UploadSessionResponse>> {
-    return this.httpClient.get<UploadSessionResponse>(`/api/documents/upload/${sessionId}`);
+    return this.httpClient.get<UploadSessionResponse>(`/api/documents/upload/${sessionId}`, 30000); // 30 seconds cache
   }
 
   // Analysis Methods
@@ -454,10 +490,10 @@ export class StrandsApiClient {
   }
 
   /**
-   * Get analysis session status
+   * Get analysis session status with short-term caching
    */
   async getAnalysisStatus(sessionId: string): Promise<ApiResponse<AnalysisSessionResponse>> {
-    return this.httpClient.get<AnalysisSessionResponse>(`/api/analysis/${sessionId}`);
+    return this.httpClient.get<AnalysisSessionResponse>(`/api/analysis/${sessionId}`, 15000); // 15 seconds cache
   }
 
   /**
@@ -470,18 +506,18 @@ export class StrandsApiClient {
   // Results Methods
 
   /**
-   * Get compliance analysis results
+   * Get compliance analysis results with longer caching
    * Requirement 3.1: Show compliance status and findings
    */
   async getResults(proposalId: string): Promise<ApiResponse<ComplianceResultsResponse>> {
-    return this.httpClient.get<ComplianceResultsResponse>(`/api/results/${proposalId}`);
+    return this.httpClient.get<ComplianceResultsResponse>(`/api/results/${proposalId}`, 300000); // 5 minutes cache
   }
 
   /**
-   * Get specific compliance issue details
+   * Get specific compliance issue details with caching
    */
   async getIssueDetails(issueId: string): Promise<ApiResponse<ComplianceIssue>> {
-    return this.httpClient.get<ComplianceIssue>(`/api/results/issues/${issueId}`);
+    return this.httpClient.get<ComplianceIssue>(`/api/results/issues/${issueId}`, 600000); // 10 minutes cache
   }
 
   // WebSocket Methods

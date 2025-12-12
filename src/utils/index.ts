@@ -28,6 +28,20 @@ export {
   generateComplianceStatus,
   WARNING_VIOLATION_PATTERNS,
 } from './compliance-detection';
+// Performance utilities
+export {
+  apiCache,
+  BrowserCache,
+  debounce,
+  lazyLoadImage,
+  MemoryCache,
+  memoize,
+  PerformanceMonitor,
+  preloadResource,
+  resultsCache,
+  throttle,
+  uiStateCache,
+} from './performance';
 // Upload validation utilities
 export {
   type FileValidationResult,

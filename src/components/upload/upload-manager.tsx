@@ -60,6 +60,7 @@ export function UploadManager({
   const [currentUpload, setCurrentUpload] = useState<UploadSession | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const uploadInProgressRef = useRef<boolean>(false);
 
   /**
    * Validates uploaded file against requirements
@@ -173,21 +174,32 @@ export function UploadManager({
    */
   const handleFileUpload = useCallback(
     async (file: File) => {
-      const validation = validateFile(file);
-
-      if (!validation.isValid) {
-        const session = createUploadSession(file);
-        const failedSession = {
-          ...session,
-          status: UploadStatus.FAILED,
-          errorMessage: validation.error,
-        };
-        setCurrentUpload(failedSession);
-        onUploadError?.(validation.error!, failedSession);
+      // Prevent double uploads using ref
+      if (uploadInProgressRef.current) {
+        console.warn('Upload already in progress, ignoring duplicate request');
         return;
       }
-
+      
+      // Additional debug logging to track upload triggers
+      console.log('handleFileUpload called with file:', file.name, 'current status:', currentUpload?.status);
+      
+      uploadInProgressRef.current = true;
+      
       try {
+        const validation = validateFile(file);
+
+        if (!validation.isValid) {
+          const session = createUploadSession(file);
+          const failedSession = {
+            ...session,
+            status: UploadStatus.FAILED,
+            errorMessage: validation.error,
+          };
+          setCurrentUpload(failedSession);
+          onUploadError?.(validation.error!, failedSession);
+          return;
+        }
+
         const session = createUploadSession(file);
         const completedSession = await uploadFileToApi(file, session);
         onUploadComplete?.(completedSession);
@@ -201,9 +213,14 @@ export function UploadManager({
         };
         setCurrentUpload(failedSession);
         onUploadError?.(errorMessage, failedSession);
+      } finally {
+        // Reset the ref after a delay to allow for state updates
+        setTimeout(() => {
+          uploadInProgressRef.current = false;
+        }, 1000);
       }
     },
-    [validateFile, createUploadSession, uploadFileToApi, onUploadComplete, onUploadError]
+    [validateFile, createUploadSession, uploadFileToApi, onUploadComplete, onUploadError, currentUpload?.status]
   );
 
   /**
@@ -233,14 +250,24 @@ export function UploadManager({
       setDragActive(false);
 
       if (disabled) return;
+      
+      // Prevent double uploads by checking if we're already uploading or have completed
+      if (currentUpload?.status === UploadStatus.UPLOADING || currentUpload?.status === UploadStatus.COMPLETED) {
+        return;
+      }
 
       const files = Array.from(e.dataTransfer.files);
       if (files.length > 0) {
         handleFileUpload(files[0]);
       }
     },
-    [disabled, handleFileUpload]
+    [disabled, handleFileUpload, currentUpload?.status]
   );
+
+  // Component state checks
+  const isUploading = currentUpload?.status === UploadStatus.UPLOADING;
+  const hasCompleted = currentUpload?.status === UploadStatus.COMPLETED;
+  const hasFailed = currentUpload?.status === UploadStatus.FAILED;
 
   /**
    * Handle file input change
@@ -248,27 +275,60 @@ export function UploadManager({
   const handleFileInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (disabled) return;
+      
+      // Prevent double uploads by checking if we're already uploading or have completed
+      if (currentUpload?.status === UploadStatus.UPLOADING || currentUpload?.status === UploadStatus.COMPLETED) {
+        return;
+      }
 
       const files = Array.from(e.target.files || []);
       if (files.length > 0) {
         handleFileUpload(files[0]);
       }
     },
-    [disabled, handleFileUpload]
+    [disabled, handleFileUpload, currentUpload?.status]
   );
 
   /**
    * Handle click to open file dialog
    */
-  const handleClick = useCallback(() => {
+  const handleClick = useCallback((e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
     if (disabled) return;
+    
+    // Prevent opening file dialog if we're already uploading or have completed
+    if (currentUpload?.status === UploadStatus.UPLOADING || currentUpload?.status === UploadStatus.COMPLETED) {
+      console.log('Click ignored - upload in progress or completed:', currentUpload?.status);
+      return;
+    }
+    
+    // Additional check using the ref
+    if (uploadInProgressRef.current) {
+      console.log('Click ignored - upload in progress via ref');
+      return;
+    }
+    
+    console.log('Opening file dialog');
     fileInputRef.current?.click();
-  }, [disabled]);
+  }, [disabled, currentUpload?.status]);
 
   /**
    * Clear current upload
    */
-  const handleClear = useCallback(() => {
+  const handleClear = useCallback((e?: React.MouseEvent) => {
+    // Prevent event propagation to avoid triggering parent click handlers
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    // Reset the upload progress ref
+    uploadInProgressRef.current = false;
+    
     setCurrentUpload(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -278,18 +338,19 @@ export function UploadManager({
   /**
    * Retry failed upload
    */
-  const handleRetry = useCallback(() => {
+  const handleRetry = useCallback((e?: React.MouseEvent) => {
+    // Prevent event propagation to avoid triggering parent click handlers
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
     if (currentUpload && currentUpload.status === UploadStatus.FAILED) {
       // For retry, we need the user to select the file again
       // since we can't recreate the File object from session data
       handleClick();
     }
   }, [currentUpload, handleClick]);
-
-  // Component state checks
-  const isUploading = currentUpload?.status === UploadStatus.UPLOADING;
-  const hasCompleted = currentUpload?.status === UploadStatus.COMPLETED;
-  const hasFailed = currentUpload?.status === UploadStatus.FAILED;
 
   return (
     <div className={`upload-manager ${className}`}>
@@ -307,9 +368,9 @@ export function UploadManager({
         onDragLeave={handleDragOut}
         onDragOver={handleDrag}
         onDrop={handleDrop}
-        onClick={!isUploading && !hasCompleted ? handleClick : undefined}
+        onClick={!isUploading && !hasCompleted && !hasFailed ? handleClick : undefined}
         onKeyDown={
-          !isUploading && !hasCompleted
+          !isUploading && !hasCompleted && !hasFailed
             ? (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
@@ -318,7 +379,7 @@ export function UploadManager({
               }
             : undefined
         }
-        tabIndex={!isUploading && !hasCompleted && !disabled ? 0 : -1}
+        tabIndex={!isUploading && !hasCompleted && !hasFailed && !disabled ? 0 : -1}
       >
         <div className="w-full p-8 text-center">
           <input
@@ -363,8 +424,8 @@ export function UploadManager({
                   : 'Drag and drop your PDF file here, or click to browse'}
           </p>
 
-          {!isUploading && !hasCompleted && (
-            <Button variant="outline" disabled={disabled} onClick={handleClick}>
+          {!isUploading && !hasCompleted && !hasFailed && (
+            <Button variant="outline" disabled={disabled} onClick={(e) => handleClick(e)}>
               Select PDF File
             </Button>
           )}
@@ -399,7 +460,7 @@ export function UploadManager({
               Retry Upload
             </Button>
           )}
-          <Button onClick={handleClear} variant="outline" size="sm">
+          <Button onClick={(e) => handleClear(e)} variant="outline" size="sm">
             <X className="h-4 w-4 mr-1" />
             {hasCompleted ? 'Upload Another' : 'Clear'}
           </Button>

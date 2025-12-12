@@ -8,14 +8,32 @@
 import { Button } from '@17sierra/ui';
 import { AlertCircle, FileText, Home, Settings } from 'lucide-react';
 import type React from 'react';
-import { useCallback, useState } from 'react';
-import { AnalysisCoordinator } from '@/components/analysis/analysis-coordinator';
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import type { AnalysisResult, AnalysisSession } from '@/components/analysis/types';
-import { ResultsPresenter } from '@/components/results/results-presenter';
 import type { AnalysisResults } from '@/components/results/types';
 import { ComplianceStatus } from '@/components/results/types';
-import { UploadManager } from '@/components/upload/upload-manager';
 import type { UploadSession } from '@/types/app';
+import { PerformanceMonitor } from '@/utils/performance';
+
+// Lazy load non-critical components for better performance
+// Requirement 5.1: Load time performance optimization
+const UploadManager = lazy(() =>
+  import('@/components/upload/upload-manager').then((module) => ({
+    default: module.UploadManager,
+  }))
+);
+
+const AnalysisCoordinator = lazy(() =>
+  import('@/components/analysis/analysis-coordinator').then((module) => ({
+    default: module.AnalysisCoordinator,
+  }))
+);
+
+const ResultsPresenter = lazy(() =>
+  import('@/components/results/results-presenter').then((module) => ({
+    default: module.ResultsPresenter,
+  }))
+);
 
 /**
  * Application workflow states
@@ -47,6 +65,7 @@ interface AppState {
  * - Loading states and progress indicators (Requirement 5.5)
  * - Clear navigation and workflow (Requirement 4.2)
  * - Basic form validation and feedback (Requirement 4.3)
+ * - Performance optimizations (Requirement 5.1)
  */
 export function ProposalPrepperApp(): React.JSX.Element {
   const [appState, setAppState] = useState<AppState>({
@@ -58,17 +77,59 @@ export function ProposalPrepperApp(): React.JSX.Element {
     error: null,
   });
 
+  // Performance monitoring for app initialization
+  // Requirement 5.1: Load time performance
+  useEffect(() => {
+    PerformanceMonitor.mark('app-init-start');
+
+    const handleLoad = () => {
+      PerformanceMonitor.mark('app-init-end');
+      const initTime = PerformanceMonitor.measure('app-init', 'app-init-start', 'app-init-end');
+
+      if (initTime) {
+        console.log(`App initialization took ${initTime}ms`);
+
+        // Log performance metrics for monitoring
+        const navigationTiming = PerformanceMonitor.getNavigationTiming();
+        if (navigationTiming) {
+          console.log('Navigation timing:', navigationTiming);
+
+          // Warn if load time exceeds requirement (5 seconds)
+          if (navigationTiming.loadComplete > 5000) {
+            console.warn(
+              `Load time (${navigationTiming.loadComplete}ms) exceeds 5-second requirement`
+            );
+          }
+        }
+      }
+    };
+
+    // Check if already loaded
+    if (document.readyState === 'complete') {
+      handleLoad();
+    } else {
+      window.addEventListener('load', handleLoad);
+      return () => window.removeEventListener('load', handleLoad);
+    }
+  }, []);
+
   /**
    * Handle successful upload completion
    * Requirement 4.2: Clear navigation and workflow
    */
   const handleUploadComplete = useCallback((session: UploadSession) => {
-    setAppState((prev) => ({
-      ...prev,
-      uploadSession: session,
-      currentWorkflow: WorkflowState.ANALYSIS,
-      error: null,
-    }));
+    console.log('handleUploadComplete called with session:', session.id);
+    
+    // Add a small delay to ensure the upload component has finished processing
+    setTimeout(() => {
+      console.log('Setting app state to analysis workflow');
+      setAppState((prev) => ({
+        ...prev,
+        uploadSession: session,
+        currentWorkflow: WorkflowState.ANALYSIS,
+        error: null,
+      }));
+    }, 100);
   }, []);
 
   /**
@@ -309,11 +370,20 @@ export function ProposalPrepperApp(): React.JSX.Element {
                         Upload your PDF proposal document to begin compliance analysis
                       </p>
                     </div>
-                    <UploadManager
-                      onUploadComplete={handleUploadComplete}
-                      onUploadError={handleUploadError}
-                      className="w-full"
-                    />
+                    <Suspense
+                      fallback={
+                        <div className="flex items-center justify-center py-12">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                          <span className="ml-3 text-gray-600">Loading upload interface...</span>
+                        </div>
+                      }
+                    >
+                      <UploadManager
+                        onUploadComplete={handleUploadComplete}
+                        onUploadError={handleUploadError}
+                        className="w-full"
+                      />
+                    </Suspense>
                   </div>
                 )}
 
@@ -326,16 +396,25 @@ export function ProposalPrepperApp(): React.JSX.Element {
                         Analyzing "{appState.uploadSession.filename}" for FAR/DFARS compliance
                       </p>
                     </div>
-                    <AnalysisCoordinator
-                      proposalId={appState.uploadSession.id}
-                      fileContent={appState.uploadSession.filename} // Simplified for threshold
-                      onAnalysisStart={handleAnalysisStart}
-                      onProgressUpdate={handleAnalysisProgress}
-                      onAnalysisComplete={handleAnalysisComplete}
-                      onAnalysisError={handleAnalysisError}
-                      autoStart={true}
-                      className="w-full"
-                    />
+                    <Suspense
+                      fallback={
+                        <div className="flex items-center justify-center py-12">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                          <span className="ml-3 text-gray-600">Loading analysis interface...</span>
+                        </div>
+                      }
+                    >
+                      <AnalysisCoordinator
+                        proposalId={appState.uploadSession.id}
+                        fileContent={appState.uploadSession.filename} // Simplified for threshold
+                        onAnalysisStart={handleAnalysisStart}
+                        onProgressUpdate={handleAnalysisProgress}
+                        onAnalysisComplete={handleAnalysisComplete}
+                        onAnalysisError={handleAnalysisError}
+                        autoStart={true}
+                        className="w-full"
+                      />
+                    </Suspense>
                   </div>
                 )}
 
@@ -348,18 +427,27 @@ export function ProposalPrepperApp(): React.JSX.Element {
                         Compliance analysis complete for "{appState.uploadSession?.filename}"
                       </p>
                     </div>
-                    <ResultsPresenter
-                      results={getAnalysisResults()}
-                      isLoading={appState.isLoading}
-                      error={appState.error || undefined}
-                      onViewIssueDetails={(issue) => {
-                        console.log('View issue details:', issue);
-                      }}
-                      onDownloadResults={() => {
-                        console.log('Download results');
-                      }}
-                      onStartNewAnalysis={startNewWorkflow}
-                    />
+                    <Suspense
+                      fallback={
+                        <div className="flex items-center justify-center py-12">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                          <span className="ml-3 text-gray-600">Loading results interface...</span>
+                        </div>
+                      }
+                    >
+                      <ResultsPresenter
+                        results={getAnalysisResults()}
+                        isLoading={appState.isLoading}
+                        error={appState.error || undefined}
+                        onViewIssueDetails={(issue) => {
+                          console.log('View issue details:', issue);
+                        }}
+                        onDownloadResults={() => {
+                          console.log('Download results');
+                        }}
+                        onStartNewAnalysis={startNewWorkflow}
+                      />
+                    </Suspense>
                   </div>
                 )}
               </div>

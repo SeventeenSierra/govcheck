@@ -10,6 +10,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { apiCache } from '../utils/performance';
 import { StrandsApiClient, type UploadSessionResponse } from './strands-api-client';
 
 // Mock fetch globally
@@ -55,6 +56,8 @@ describe('StrandsApiClient', () => {
   beforeEach(() => {
     client = new StrandsApiClient('http://localhost:8080');
     mockFetch.mockClear();
+    // Clear API cache to ensure tests don't interfere with each other
+    apiCache.clear();
   });
 
   afterEach(() => {
