@@ -20,3 +20,24 @@ export {
   generateSessionId,
   type FileValidationResult,
 } from './upload-validation';
+
+// Analysis validation utilities
+export {
+  validateFARDFARS,
+  calculateComplianceScore,
+  hasBasicComplianceElements,
+  extractRegulatoryReferences,
+  CORE_VALIDATION_RULES,
+  type ValidationRule,
+} from './analysis-validation';
+
+// Compliance detection utilities
+export {
+  detectCriticalViolations,
+  detectWarningIssues,
+  generateComplianceStatus,
+  analyzeDocumentStructure,
+  findIssueLocations,
+  CRITICAL_VIOLATION_PATTERNS,
+  WARNING_VIOLATION_PATTERNS,
+} from './compliance-detection';
