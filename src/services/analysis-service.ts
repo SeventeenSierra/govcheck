@@ -9,7 +9,11 @@
  * Implements requirements 2.1, 2.2, 2.3, 2.4, and 2.5 for analysis functionality.
  */
 
-import { strandsApiClient, type ApiResponse, type AnalysisSessionResponse } from './strands-api-client';
+import {
+  strandsApiClient,
+  type ApiResponse,
+  type AnalysisSessionResponse,
+} from './strands-api-client';
 import { type AnalysisSession, AnalysisStatus } from '../components/analysis/types';
 import { analysisConfig, errorConfig } from '../config/app';
 
@@ -147,7 +151,10 @@ export class AnalysisService {
    */
   clearSession(sessionId: string): boolean {
     const session = this.activeSessions.get(sessionId);
-    if (session && (session.status === AnalysisStatus.COMPLETED || session.status === AnalysisStatus.FAILED)) {
+    if (
+      session &&
+      (session.status === AnalysisStatus.COMPLETED || session.status === AnalysisStatus.FAILED)
+    ) {
       this.activeSessions.delete(sessionId);
       return true;
     }
@@ -194,11 +201,13 @@ export class AnalysisService {
 
         // Continue polling if still in progress
         attempts++;
-        if (attempts < maxAttempts && 
-            (session.status === AnalysisStatus.QUEUED || 
-             session.status === AnalysisStatus.EXTRACTING || 
-             session.status === AnalysisStatus.ANALYZING || 
-             session.status === AnalysisStatus.VALIDATING)) {
+        if (
+          attempts < maxAttempts &&
+          (session.status === AnalysisStatus.QUEUED ||
+            session.status === AnalysisStatus.EXTRACTING ||
+            session.status === AnalysisStatus.ANALYZING ||
+            session.status === AnalysisStatus.VALIDATING)
+        ) {
           setTimeout(poll, pollInterval);
         } else if (attempts >= maxAttempts) {
           // Timeout
@@ -227,26 +236,30 @@ export class AnalysisService {
   async subscribeToRealTimeUpdates(): Promise<void> {
     try {
       await strandsApiClient.connectWebSocket();
-      
+
       strandsApiClient.subscribeToAnalysisProgress((message) => {
         const sessionId = message.sessionId;
         const session = this.activeSessions.get(sessionId);
-        
+
         if (session && message.data.progress !== undefined) {
-          const updatedSession = { 
-            ...session, 
+          const updatedSession = {
+            ...session,
             progress: message.data.progress,
             currentStep: message.data.currentStep || session.currentStep,
           };
           this.activeSessions.set(sessionId, updatedSession);
-          this.eventHandlers.onProgress?.(sessionId, message.data.progress, updatedSession.currentStep);
+          this.eventHandlers.onProgress?.(
+            sessionId,
+            message.data.progress,
+            updatedSession.currentStep
+          );
         }
       });
 
       strandsApiClient.subscribeToAnalysisComplete((message) => {
         const sessionId = message.sessionId;
         const session = this.activeSessions.get(sessionId);
-        
+
         if (session) {
           const completedSession = {
             ...session,
@@ -262,7 +275,7 @@ export class AnalysisService {
       strandsApiClient.subscribeToErrors((message) => {
         const sessionId = message.sessionId;
         const session = this.activeSessions.get(sessionId);
-        
+
         if (session) {
           const failedSession = {
             ...session,
@@ -307,7 +320,7 @@ export class AnalysisService {
     // Validate frameworks if specified
     if (request.frameworks) {
       const validFrameworks = ['FAR', 'DFARS'];
-      const invalidFrameworks = request.frameworks.filter(f => !validFrameworks.includes(f));
+      const invalidFrameworks = request.frameworks.filter((f) => !validFrameworks.includes(f));
       if (invalidFrameworks.length > 0) {
         return {
           isValid: false,
@@ -323,7 +336,9 @@ export class AnalysisService {
    * Retry failed analysis
    * Requirement 2.5: Error recovery options
    */
-  async retryAnalysis(sessionId: string): Promise<{ success: boolean; newSessionId?: string; error?: string }> {
+  async retryAnalysis(
+    sessionId: string
+  ): Promise<{ success: boolean; newSessionId?: string; error?: string }> {
     const session = this.activeSessions.get(sessionId);
     if (!session) {
       return { success: false, error: 'Session not found' };
@@ -361,7 +376,9 @@ export class AnalysisService {
       startedAt: new Date(apiResponse.startedAt),
       completedAt: apiResponse.completedAt ? new Date(apiResponse.completedAt) : undefined,
       currentStep: apiResponse.currentStep,
-      estimatedCompletion: apiResponse.estimatedCompletion ? new Date(apiResponse.estimatedCompletion) : undefined,
+      estimatedCompletion: apiResponse.estimatedCompletion
+        ? new Date(apiResponse.estimatedCompletion)
+        : undefined,
     };
   }
 

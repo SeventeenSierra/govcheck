@@ -61,10 +61,10 @@ describe('UploadService', () => {
 
     it('should reject files that are too large', () => {
       // Create a file larger than the max size (100MB)
-      const largeFile = new File(['x'.repeat(101 * 1024 * 1024)], 'large.pdf', { 
-        type: 'application/pdf' 
+      const largeFile = new File(['x'.repeat(101 * 1024 * 1024)], 'large.pdf', {
+        type: 'application/pdf',
       });
-      
+
       const result = uploadService.validateFile(largeFile);
 
       expect(result.isValid).toBe(false);
@@ -112,10 +112,7 @@ describe('UploadService', () => {
 
       expect(result.success).toBe(true);
       expect(result.sessionId).toBe('upload-123');
-      expect(mockStrandsApi.uploadDocument).toHaveBeenCalledWith(
-        file,
-        expect.any(Function)
-      );
+      expect(mockStrandsApi.uploadDocument).toHaveBeenCalledWith(file, expect.any(Function));
     });
 
     it('should handle upload failures', async () => {
@@ -136,31 +133,33 @@ describe('UploadService', () => {
     it('should track upload progress', async () => {
       const file = new File(['test content'], 'test.pdf', { type: 'application/pdf' });
       const progressCallback = vi.fn();
-      
+
       uploadService.setEventHandlers({
         onProgress: progressCallback,
       });
 
-      mockStrandsApi.uploadDocument.mockImplementationOnce((file: File, onProgress: (progress: number) => void) => {
-        // Simulate progress updates
-        onProgress(25);
-        onProgress(50);
-        onProgress(75);
-        onProgress(100);
-        
-        return Promise.resolve({
-          success: true,
-          data: {
-            id: 'upload-123',
-            filename: 'test.pdf',
-            fileSize: file.size,
-            mimeType: 'application/pdf',
-            status: 'completed',
-            progress: 100,
-            startedAt: new Date().toISOString(),
-          },
-        });
-      });
+      mockStrandsApi.uploadDocument.mockImplementationOnce(
+        (file: File, onProgress: (progress: number) => void) => {
+          // Simulate progress updates
+          onProgress(25);
+          onProgress(50);
+          onProgress(75);
+          onProgress(100);
+
+          return Promise.resolve({
+            success: true,
+            data: {
+              id: 'upload-123',
+              filename: 'test.pdf',
+              fileSize: file.size,
+              mimeType: 'application/pdf',
+              status: 'completed',
+              progress: 100,
+              startedAt: new Date().toISOString(),
+            },
+          });
+        }
+      );
 
       await uploadService.uploadDocument(file);
 
@@ -172,7 +171,7 @@ describe('UploadService', () => {
 
     it('should handle upload exceptions', async () => {
       const file = new File(['test content'], 'test.pdf', { type: 'application/pdf' });
-      
+
       mockStrandsApi.uploadDocument.mockRejectedValueOnce(new Error('Network error'));
 
       const result = await uploadService.uploadDocument(file);
@@ -186,7 +185,7 @@ describe('UploadService', () => {
     it('should track active sessions', async () => {
       const content = 'x'.repeat(2048); // Ensure file is large enough
       const file = new File([content], 'test.pdf', { type: 'application/pdf' });
-      
+
       mockStrandsApi.uploadDocument.mockResolvedValueOnce({
         success: true,
         data: {
@@ -295,7 +294,7 @@ describe('UploadService', () => {
 
     it('should handle WebSocket connection errors', async () => {
       mockStrandsApi.connectWebSocket.mockRejectedValueOnce(new Error('Connection failed'));
-      
+
       // Should not throw
       await expect(uploadService.subscribeToRealTimeUpdates()).resolves.toBeUndefined();
     });
@@ -320,22 +319,24 @@ describe('UploadService', () => {
       });
 
       const file = new File(['test content'], 'test.pdf', { type: 'application/pdf' });
-      
-      mockStrandsApi.uploadDocument.mockImplementationOnce((file: File, onProgress: (progress: number) => void) => {
-        onProgress(100);
-        return Promise.resolve({
-          success: true,
-          data: {
-            id: 'upload-123',
-            filename: 'test.pdf',
-            fileSize: file.size,
-            mimeType: 'application/pdf',
-            status: 'completed',
-            progress: 100,
-            startedAt: new Date().toISOString(),
-          },
-        });
-      });
+
+      mockStrandsApi.uploadDocument.mockImplementationOnce(
+        (file: File, onProgress: (progress: number) => void) => {
+          onProgress(100);
+          return Promise.resolve({
+            success: true,
+            data: {
+              id: 'upload-123',
+              filename: 'test.pdf',
+              fileSize: file.size,
+              mimeType: 'application/pdf',
+              status: 'completed',
+              progress: 100,
+              startedAt: new Date().toISOString(),
+            },
+          });
+        }
+      );
 
       await uploadService.uploadDocument(file);
 

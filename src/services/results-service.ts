@@ -9,15 +9,25 @@
  * Implements requirements 3.1, 3.2, 3.3, 3.4, and 3.5 for results functionality.
  */
 
-import { strandsApiClient, type ApiResponse, type ComplianceResultsResponse, type ComplianceIssue } from './strands-api-client';
-import { type ComplianceResults, ComplianceStatus, type ComplianceIssue as LocalComplianceIssue, IssueSeverity } from '../components/results/types';
+import {
+  strandsApiClient,
+  type ApiResponse,
+  type ComplianceResultsResponse,
+  type ComplianceIssue,
+} from './strands-api-client';
+import {
+  type AnalysisResults,
+  ComplianceStatus,
+  type ComplianceIssue as LocalComplianceIssue,
+  IssueSeverity,
+} from '../components/results/types';
 import { errorConfig } from '../config/app';
 
 /**
  * Results service events
  */
 export interface ResultsServiceEvents {
-  onResultsUpdate: (proposalId: string, results: ComplianceResults) => void;
+  onResultsUpdate: (proposalId: string, results: AnalysisResults) => void;
   onError: (proposalId: string, error: string) => void;
 }
 
@@ -28,7 +38,7 @@ export interface ResultsServiceEvents {
  * issue details, and regulatory reference capabilities.
  */
 export class ResultsService {
-  private resultsCache = new Map<string, ComplianceResults>();
+  private resultsCache = new Map<string, AnalysisResults>();
   private eventHandlers: Partial<ResultsServiceEvents> = {};
 
   /**
@@ -43,7 +53,10 @@ export class ResultsService {
    * Requirement 3.1: Show compliance status (pass/fail/warning)
    * Requirement 3.2: List identified compliance issues
    */
-  async getResults(proposalId: string, useCache: boolean = true): Promise<{ success: boolean; results?: ComplianceResults; error?: string }> {
+  async getResults(
+    proposalId: string,
+    useCache: boolean = true
+  ): Promise<{ success: boolean; results?: AnalysisResults; error?: string }> {
     // Check cache first if requested
     if (useCache && this.resultsCache.has(proposalId)) {
       const cachedResults = this.resultsCache.get(proposalId)!;
@@ -55,10 +68,10 @@ export class ResultsService {
 
       if (response.success && response.data) {
         const results = this.mapApiResponseToResults(response.data);
-        
+
         // Cache the results
         this.resultsCache.set(proposalId, results);
-        
+
         // Notify listeners
         this.eventHandlers.onResultsUpdate?.(proposalId, results);
 
@@ -79,7 +92,9 @@ export class ResultsService {
    * Get specific compliance issue details
    * Requirement 3.5: Allow users to see specific issue locations
    */
-  async getIssueDetails(issueId: string): Promise<{ success: boolean; issue?: ComplianceIssue; error?: string }> {
+  async getIssueDetails(
+    issueId: string
+  ): Promise<{ success: boolean; issue?: ComplianceIssue; error?: string }> {
     try {
       const response = await strandsApiClient.getIssueDetails(issueId);
 
@@ -90,7 +105,8 @@ export class ResultsService {
         return { success: false, error };
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Issue details retrieval failed';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Issue details retrieval failed';
       return { success: false, error: errorMessage };
     }
   }
@@ -99,17 +115,19 @@ export class ResultsService {
    * Get regulatory references for issues
    * Requirement 3.4: Reference specific FAR/DFARS sections
    */
-  getRegulatoryReferences(results: ComplianceResults): { framework: string; sections: string[]; count: number }[] {
+  getRegulatoryReferences(
+    results: AnalysisResults
+  ): { framework: string; sections: string[]; count: number }[] {
     const references = new Map<string, Set<string>>();
 
     // Collect all regulatory references from issues
-    results.issues.forEach(issue => {
+    results.issues.forEach((issue: LocalComplianceIssue) => {
       if (issue.regulation) {
-        const framework = issue.regulation.framework;
+        const framework = issue.regulation;
         if (!references.has(framework)) {
           references.set(framework, new Set());
         }
-        references.get(framework)!.add(issue.regulation.section);
+        references.get(framework)!.add(framework);
       }
     });
 
@@ -125,10 +143,10 @@ export class ResultsService {
    * Get remediation guidance for issues
    * Requirement 3.3: Include basic remediation recommendations
    */
-  getRemediationGuidance(issueId: string, results?: ComplianceResults): string | null {
+  getRemediationGuidance(issueId: string, results?: AnalysisResults): string | null {
     if (!results) return null;
 
-    const issue = results.issues.find(i => i.id === issueId);
+    const issue = results.issues.find((i: LocalComplianceIssue) => i.id === issueId);
     if (!issue || !issue.remediation) return null;
 
     return issue.remediation;
@@ -137,14 +155,17 @@ export class ResultsService {
   /**
    * Filter issues by severity
    */
-  filterIssuesBySeverity(results: ComplianceResults, severity: IssueSeverity): LocalComplianceIssue[] {
-    return results.issues.filter(issue => issue.severity === severity);
+  filterIssuesBySeverity(
+    results: AnalysisResults,
+    severity: IssueSeverity
+  ): LocalComplianceIssue[] {
+    return results.issues.filter((issue: LocalComplianceIssue) => issue.severity === severity);
   }
 
   /**
    * Get issue statistics
    */
-  getIssueStatistics(results: ComplianceResults): {
+  getIssueStatistics(results: AnalysisResults): {
     total: number;
     critical: number;
     warning: number;
@@ -161,7 +182,7 @@ export class ResultsService {
 
     const frameworkCounts = new Map<string, number>();
 
-    results.issues.forEach(issue => {
+    results.issues.forEach((issue: LocalComplianceIssue) => {
       // Count by severity
       switch (issue.severity) {
         case IssueSeverity.CRITICAL:
@@ -177,7 +198,7 @@ export class ResultsService {
 
       // Count by framework
       if (issue.regulation) {
-        const framework = issue.regulation.framework;
+        const framework = issue.regulation;
         frameworkCounts.set(framework, (frameworkCounts.get(framework) || 0) + 1);
       }
     });
@@ -194,9 +215,12 @@ export class ResultsService {
   /**
    * Export results to different formats
    */
-  async exportResults(proposalId: string, format: 'json' | 'csv' | 'pdf' = 'json'): Promise<{ success: boolean; data?: string | Blob; error?: string }> {
+  async exportResults(
+    proposalId: string,
+    format: 'json' | 'csv' | 'pdf' = 'json'
+  ): Promise<{ success: boolean; data?: string | Blob; error?: string }> {
     const resultsResponse = await this.getResults(proposalId);
-    
+
     if (!resultsResponse.success || !resultsResponse.results) {
       return { success: false, error: resultsResponse.error || 'No results to export' };
     }
@@ -249,7 +273,7 @@ export class ResultsService {
   /**
    * Get cached results
    */
-  getCachedResults(proposalId: string): ComplianceResults | null {
+  getCachedResults(proposalId: string): AnalysisResults | null {
     return this.resultsCache.get(proposalId) || null;
   }
 
@@ -274,19 +298,28 @@ export class ResultsService {
   /**
    * Convert results to CSV format
    */
-  private convertToCSV(results: ComplianceResults): string {
-    const headers = ['Issue ID', 'Severity', 'Title', 'Description', 'Framework', 'Section', 'Reference', 'Remediation'];
+  private convertToCSV(results: AnalysisResults): string {
+    const headers = [
+      'Issue ID',
+      'Severity',
+      'Title',
+      'Description',
+      'Framework',
+      'Section',
+      'Reference',
+      'Remediation',
+    ];
     const rows = [headers.join(',')];
 
-    results.issues.forEach(issue => {
+    results.issues.forEach((issue: LocalComplianceIssue) => {
       const row = [
         issue.id,
         issue.severity,
         `"${issue.title.replace(/"/g, '""')}"`,
         `"${issue.description.replace(/"/g, '""')}"`,
-        issue.regulation?.framework || '',
-        issue.regulation?.section || '',
-        issue.regulation?.reference || '',
+        issue.regulation || '',
+        issue.regulation || '',
+        issue.regulation || '',
         issue.remediation ? `"${issue.remediation.replace(/"/g, '""')}"` : '',
       ];
       rows.push(row.join(','));
@@ -298,9 +331,9 @@ export class ResultsService {
   /**
    * Map API response to internal results format
    */
-  private mapApiResponseToResults(apiResponse: ComplianceResultsResponse): ComplianceResults {
+  private mapApiResponseToResults(apiResponse: ComplianceResultsResponse): AnalysisResults {
     return {
-      id: apiResponse.id,
+      sessionId: apiResponse.id,
       proposalId: apiResponse.proposalId,
       status: this.mapApiStatusToLocal(apiResponse.status),
       overallScore: this.calculateOverallScore(apiResponse.issues),
@@ -313,7 +346,10 @@ export class ResultsService {
         issueCounts: {
           critical: apiResponse.summary.criticalIssues,
           warning: apiResponse.summary.warningIssues,
-          info: apiResponse.summary.totalIssues - apiResponse.summary.criticalIssues - apiResponse.summary.warningIssues,
+          info:
+            apiResponse.summary.totalIssues -
+            apiResponse.summary.criticalIssues -
+            apiResponse.summary.warningIssues,
         },
       },
     };
@@ -344,16 +380,14 @@ export class ResultsService {
       severity: this.mapApiSeverityToLocal(apiIssue.severity),
       title: apiIssue.title,
       description: apiIssue.description,
-      regulation: apiIssue.regulation ? {
-        framework: apiIssue.regulation.framework,
-        section: apiIssue.regulation.section,
-        reference: apiIssue.regulation.reference,
-      } : undefined,
-      location: apiIssue.location ? {
-        page: apiIssue.location.page,
-        section: apiIssue.location.section,
-        text: apiIssue.location.text,
-      } : undefined,
+      regulation: apiIssue.regulation ? apiIssue.regulation.reference : '',
+      location: apiIssue.location
+        ? {
+            page: apiIssue.location.page,
+            section: apiIssue.location.section,
+            lineNumber: 0, // Default line number since API has 'text' but local expects 'lineNumber'
+          }
+        : undefined,
       remediation: apiIssue.remediation,
     };
   };
@@ -380,9 +414,9 @@ export class ResultsService {
   private calculateOverallScore(issues: ComplianceIssue[]): number {
     if (issues.length === 0) return 100;
 
-    const criticalPenalty = issues.filter(i => i.severity === 'critical').length * 20;
-    const warningPenalty = issues.filter(i => i.severity === 'warning').length * 10;
-    const infoPenalty = issues.filter(i => i.severity === 'info').length * 5;
+    const criticalPenalty = issues.filter((i) => i.severity === 'critical').length * 20;
+    const warningPenalty = issues.filter((i) => i.severity === 'warning').length * 10;
+    const infoPenalty = issues.filter((i) => i.severity === 'info').length * 5;
 
     const totalPenalty = criticalPenalty + warningPenalty + infoPenalty;
     return Math.max(0, 100 - totalPenalty);
@@ -393,7 +427,7 @@ export class ResultsService {
    */
   private extractRulesChecked(issues: ComplianceIssue[]): string[] {
     const rules = new Set<string>();
-    issues.forEach(issue => {
+    issues.forEach((issue) => {
       if (issue.regulation) {
         rules.add(issue.regulation.reference);
       }

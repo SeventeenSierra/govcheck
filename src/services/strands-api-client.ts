@@ -146,7 +146,7 @@ class HttpClient {
         return { success: true, data };
       } catch (error) {
         lastError = error as Error;
-        
+
         // Don't retry on client errors (4xx)
         if (error instanceof Error && error.message.includes('HTTP 4')) {
           break;
@@ -154,7 +154,7 @@ class HttpClient {
 
         // Wait before retry (except on last attempt)
         if (attempt < this.maxRetries) {
-          await new Promise(resolve => setTimeout(resolve, this.retryDelay * (attempt + 1)));
+          await new Promise((resolve) => setTimeout(resolve, this.retryDelay * (attempt + 1)));
         }
       }
     }
@@ -171,15 +171,15 @@ class HttpClient {
    */
   private getErrorCode(error: Error | null): string {
     if (!error) return errorConfig.codes.NETWORK_ERROR;
-    
+
     if (error.name === 'AbortError') {
       return errorConfig.codes.TIMEOUT_ERROR;
     }
-    
+
     if (error.message.includes('HTTP 4')) {
       return errorConfig.codes.VALIDATION_FAILED;
     }
-    
+
     return errorConfig.codes.NETWORK_ERROR;
   }
 
@@ -372,7 +372,7 @@ class WebSocketClient {
   private notifyListeners(type: string, message: WebSocketMessage) {
     const typeListeners = this.listeners.get(type);
     if (typeListeners) {
-      typeListeners.forEach(callback => callback(message));
+      typeListeners.forEach((callback) => callback(message));
     }
   }
 
@@ -405,7 +405,7 @@ class WebSocketClient {
 
 /**
  * Main Strands API Client
- * 
+ *
  * Provides HTTP/REST and WebSocket communication with the Strands service.
  * Implements error handling, retry logic, and real-time updates.
  */

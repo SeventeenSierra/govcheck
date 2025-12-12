@@ -228,7 +228,7 @@ export const AnalysisCoordinator: React.FC<AnalysisCoordinatorProps> = ({
       // Set up event handlers for analysis service
       analysisService.setEventHandlers({
         onProgress: (sessionId, progress, currentStep) => {
-          setSession(prev => prev ? { ...prev, progress, currentStep } : null);
+          setSession((prev) => (prev ? { ...prev, progress, currentStep } : null));
           if (session) {
             onProgressUpdate?.({ ...session, progress, currentStep });
           }
@@ -236,7 +236,7 @@ export const AnalysisCoordinator: React.FC<AnalysisCoordinatorProps> = ({
         onComplete: (sessionId, completedSession) => {
           setSession(completedSession);
           setIsAnalyzing(false);
-          
+
           // Create analysis result from completed session
           const analysisResult: AnalysisResult = {
             sessionId: completedSession.id,
@@ -247,26 +247,30 @@ export const AnalysisCoordinator: React.FC<AnalysisCoordinatorProps> = ({
             extractedText: '', // Will be populated by results service
             analysisMetadata: {
               totalPages: 1,
-              processingTime: completedSession.completedAt 
+              processingTime: completedSession.completedAt
                 ? completedSession.completedAt.getTime() - completedSession.startedAt.getTime()
                 : 0,
               rulesChecked: ['FAR', 'DFARS'],
               completedAt: completedSession.completedAt || new Date(),
             },
           };
-          
+
           setResult(analysisResult);
           onAnalysisComplete?.(analysisResult);
         },
         onError: (sessionId, error) => {
-          setSession(prev => prev ? { 
-            ...prev, 
-            status: AnalysisStatus.FAILED, 
-            errorMessage: error,
-            currentStep: 'Analysis failed'
-          } : null);
+          setSession((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  status: AnalysisStatus.FAILED,
+                  errorMessage: error,
+                  currentStep: 'Analysis failed',
+                }
+              : null
+          );
           setIsAnalyzing(false);
-          
+
           if (session) {
             onAnalysisError?.(error, session);
           }
@@ -285,7 +289,7 @@ export const AnalysisCoordinator: React.FC<AnalysisCoordinatorProps> = ({
       };
 
       const result = await analysisService.startAnalysis(request);
-      
+
       if (result.success) {
         // Get initial session state
         const initialSession = await analysisService.getAnalysisStatus(result.sessionId);
@@ -298,7 +302,7 @@ export const AnalysisCoordinator: React.FC<AnalysisCoordinatorProps> = ({
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Analysis failed';
-      
+
       const failedSession: AnalysisSession = {
         id: generateSessionId(),
         proposalId,
@@ -308,7 +312,7 @@ export const AnalysisCoordinator: React.FC<AnalysisCoordinatorProps> = ({
         currentStep: 'Analysis failed',
         errorMessage,
       };
-      
+
       setSession(failedSession);
       setIsAnalyzing(false);
       onAnalysisError?.(errorMessage, failedSession);

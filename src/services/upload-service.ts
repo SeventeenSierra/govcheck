@@ -9,7 +9,11 @@
  * Implements requirements 1.1, 1.2, 1.3, 1.4, and 1.5 for upload functionality.
  */
 
-import { strandsApiClient, type ApiResponse, type UploadSessionResponse } from './strands-api-client';
+import {
+  strandsApiClient,
+  type ApiResponse,
+  type UploadSessionResponse,
+} from './strands-api-client';
 import { type UploadSession, UploadStatus } from '../types/app';
 import { uploadConfig, errorConfig } from '../config/app';
 
@@ -49,17 +53,18 @@ export class UploadService {
     sessionId?: string
   ): Promise<{ success: boolean; sessionId: string; error?: string }> {
     // Create or update session
-    const session: UploadSession = sessionId && this.activeSessions.has(sessionId)
-      ? { ...this.activeSessions.get(sessionId)!, status: UploadStatus.UPLOADING }
-      : {
-          id: sessionId || `upload_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
-          filename: file.name,
-          fileSize: file.size,
-          mimeType: file.type,
-          status: UploadStatus.UPLOADING,
-          progress: 0,
-          startedAt: new Date(),
-        };
+    const session: UploadSession =
+      sessionId && this.activeSessions.has(sessionId)
+        ? { ...this.activeSessions.get(sessionId)!, status: UploadStatus.UPLOADING }
+        : {
+            id: sessionId || `upload_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+            filename: file.name,
+            fileSize: file.size,
+            mimeType: file.type,
+            status: UploadStatus.UPLOADING,
+            progress: 0,
+            startedAt: new Date(),
+          };
 
     this.activeSessions.set(session.id, session);
 
@@ -166,7 +171,10 @@ export class UploadService {
    */
   clearSession(sessionId: string): boolean {
     const session = this.activeSessions.get(sessionId);
-    if (session && (session.status === UploadStatus.COMPLETED || session.status === UploadStatus.FAILED)) {
+    if (
+      session &&
+      (session.status === UploadStatus.COMPLETED || session.status === UploadStatus.FAILED)
+    ) {
       this.activeSessions.delete(sessionId);
       return true;
     }
@@ -268,11 +276,11 @@ export class UploadService {
   async subscribeToRealTimeUpdates(): Promise<void> {
     try {
       await strandsApiClient.connectWebSocket();
-      
+
       strandsApiClient.subscribeToUploadProgress((message) => {
         const sessionId = message.sessionId;
         const session = this.activeSessions.get(sessionId);
-        
+
         if (session && message.data.progress !== undefined) {
           const updatedSession = { ...session, progress: message.data.progress };
           this.activeSessions.set(sessionId, updatedSession);

@@ -208,7 +208,7 @@ describe('ResultsService', () => {
   describe('Regulatory References', () => {
     it('should extract regulatory references from results', () => {
       const mockResults = {
-        id: 'results-123',
+        sessionId: 'results-123',
         proposalId: 'proposal-456',
         status: ComplianceStatus.WARNING,
         overallScore: 75,
@@ -218,33 +218,21 @@ describe('ResultsService', () => {
             severity: IssueSeverity.CRITICAL,
             title: 'FAR Issue',
             description: 'FAR compliance issue',
-            regulation: {
-              framework: 'FAR',
-              section: '52.204-1',
-              reference: 'FAR 52.204-1',
-            },
+            regulation: 'FAR 52.204-1',
           },
           {
             id: 'issue-2',
             severity: IssueSeverity.WARNING,
             title: 'DFARS Issue',
             description: 'DFARS compliance issue',
-            regulation: {
-              framework: 'DFARS',
-              section: '252.204-7012',
-              reference: 'DFARS 252.204-7012',
-            },
+            regulation: 'DFARS 252.204-7012',
           },
           {
             id: 'issue-3',
             severity: IssueSeverity.CRITICAL,
             title: 'Another FAR Issue',
             description: 'Another FAR compliance issue',
-            regulation: {
-              framework: 'FAR',
-              section: '52.219-8',
-              reference: 'FAR 52.219-8',
-            },
+            regulation: 'FAR 52.219-8',
           },
         ],
         metadata: {
@@ -263,13 +251,13 @@ describe('ResultsService', () => {
       const references = resultsService.getRegulatoryReferences(mockResults);
 
       expect(references).toHaveLength(2);
-      
-      const farRef = references.find(r => r.framework === 'FAR');
+
+      const farRef = references.find((r) => r.framework === 'FAR');
       expect(farRef).toBeTruthy();
       expect(farRef?.sections).toEqual(['52.204-1', '52.219-8']);
       expect(farRef?.count).toBe(2);
 
-      const dfarsRef = references.find(r => r.framework === 'DFARS');
+      const dfarsRef = references.find((r) => r.framework === 'DFARS');
       expect(dfarsRef).toBeTruthy();
       expect(dfarsRef?.sections).toEqual(['252.204-7012']);
       expect(dfarsRef?.count).toBe(1);
@@ -279,7 +267,7 @@ describe('ResultsService', () => {
   describe('Issue Statistics', () => {
     it('should calculate issue statistics correctly', () => {
       const mockResults = {
-        id: 'results-123',
+        sessionId: 'results-123',
         proposalId: 'proposal-456',
         status: ComplianceStatus.FAIL,
         overallScore: 60,
@@ -289,28 +277,28 @@ describe('ResultsService', () => {
             severity: IssueSeverity.CRITICAL,
             title: 'Critical Issue',
             description: 'Critical compliance issue',
-            regulation: { framework: 'FAR', section: '52.204-1', reference: 'FAR 52.204-1' },
+            regulation: 'FAR 52.204-1',
           },
           {
             id: 'issue-2',
             severity: IssueSeverity.CRITICAL,
             title: 'Another Critical Issue',
             description: 'Another critical compliance issue',
-            regulation: { framework: 'FAR', section: '52.219-8', reference: 'FAR 52.219-8' },
+            regulation: 'FAR 52.219-8',
           },
           {
             id: 'issue-3',
             severity: IssueSeverity.WARNING,
             title: 'Warning Issue',
             description: 'Warning compliance issue',
-            regulation: { framework: 'DFARS', section: '252.204-7012', reference: 'DFARS 252.204-7012' },
+            regulation: 'DFARS 252.204-7012',
           },
           {
             id: 'issue-4',
             severity: IssueSeverity.INFO,
             title: 'Info Issue',
             description: 'Info compliance issue',
-            regulation: { framework: 'FAR', section: '52.204-1', reference: 'FAR 52.204-1' },
+            regulation: 'FAR 52.204-1',
           },
         ],
         metadata: {
@@ -329,11 +317,11 @@ describe('ResultsService', () => {
       expect(stats.warning).toBe(1);
       expect(stats.info).toBe(1);
       expect(stats.byFramework).toHaveLength(2);
-      
-      const farStats = stats.byFramework.find(f => f.framework === 'FAR');
+
+      const farStats = stats.byFramework.find((f) => f.framework === 'FAR');
       expect(farStats?.count).toBe(3);
-      
-      const dfarsStats = stats.byFramework.find(f => f.framework === 'DFARS');
+
+      const dfarsStats = stats.byFramework.find((f) => f.framework === 'DFARS');
       expect(dfarsStats?.count).toBe(1);
     });
   });
@@ -341,7 +329,7 @@ describe('ResultsService', () => {
   describe('Issue Filtering', () => {
     it('should filter issues by severity', () => {
       const mockResults = {
-        id: 'results-123',
+        sessionId: 'results-123',
         proposalId: 'proposal-456',
         status: ComplianceStatus.WARNING,
         overallScore: 75,
@@ -351,18 +339,21 @@ describe('ResultsService', () => {
             severity: IssueSeverity.CRITICAL,
             title: 'Critical Issue',
             description: 'Critical compliance issue',
+            regulation: 'FAR 52.204-1',
           },
           {
             id: 'issue-2',
             severity: IssueSeverity.WARNING,
             title: 'Warning Issue',
             description: 'Warning compliance issue',
+            regulation: 'DFARS 252.204-7012',
           },
           {
             id: 'issue-3',
             severity: IssueSeverity.INFO,
             title: 'Info Issue',
             description: 'Info compliance issue',
+            regulation: 'FAR 52.219-8',
           },
         ],
         metadata: {
@@ -374,11 +365,17 @@ describe('ResultsService', () => {
         },
       };
 
-      const criticalIssues = resultsService.filterIssuesBySeverity(mockResults, IssueSeverity.CRITICAL);
+      const criticalIssues = resultsService.filterIssuesBySeverity(
+        mockResults,
+        IssueSeverity.CRITICAL
+      );
       expect(criticalIssues).toHaveLength(1);
       expect(criticalIssues[0].id).toBe('issue-1');
 
-      const warningIssues = resultsService.filterIssuesBySeverity(mockResults, IssueSeverity.WARNING);
+      const warningIssues = resultsService.filterIssuesBySeverity(
+        mockResults,
+        IssueSeverity.WARNING
+      );
       expect(warningIssues).toHaveLength(1);
       expect(warningIssues[0].id).toBe('issue-2');
 

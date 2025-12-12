@@ -273,7 +273,7 @@ describe('AnalysisService', () => {
   describe('Analysis Retry', () => {
     it('should retry failed analysis', async () => {
       const sessionId = 'analysis-456';
-      
+
       // Set up a failed session
       analysisService['activeSessions'].set(sessionId, {
         id: sessionId,
@@ -307,7 +307,7 @@ describe('AnalysisService', () => {
 
     it('should not retry non-failed analysis', async () => {
       const sessionId = 'analysis-456';
-      
+
       analysisService['activeSessions'].set(sessionId, {
         id: sessionId,
         proposalId: 'proposal-123',
@@ -348,7 +348,7 @@ describe('AnalysisService', () => {
 
     it('should handle WebSocket connection errors', async () => {
       mockStrandsApi.connectWebSocket.mockRejectedValueOnce(new Error('Connection failed'));
-      
+
       // Should not throw
       await expect(analysisService.subscribeToRealTimeUpdates()).resolves.toBeUndefined();
     });
@@ -395,7 +395,7 @@ describe('AnalysisService', () => {
         const mockResponse = {
           id: 'test-id',
           proposalId: 'test-proposal',
-          status: testCase.api,
+          status: testCase.api as any,
           progress: 0,
           startedAt: new Date().toISOString(),
           currentStep: 'test',

@@ -36,7 +36,7 @@ export function ResultsPresenter({
 
     try {
       const exportResult = await resultsService.exportResults(results.proposalId, 'json');
-      
+
       if (exportResult.success && exportResult.data) {
         // Create and trigger download
         const blob = new Blob([exportResult.data as string], { type: 'application/json' });
@@ -48,7 +48,7 @@ export function ResultsPresenter({
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
-        
+
         // Call the provided callback if available
         onDownloadResults?.();
       } else {

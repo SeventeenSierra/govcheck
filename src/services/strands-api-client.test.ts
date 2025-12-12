@@ -9,7 +9,11 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { StrandsApiClient, type ApiResponse, type UploadSessionResponse } from './strands-api-client';
+import {
+  StrandsApiClient,
+  type ApiResponse,
+  type UploadSessionResponse,
+} from './strands-api-client';
 
 // Mock fetch globally
 const mockFetch = vi.fn();
@@ -84,14 +88,14 @@ describe('StrandsApiClient', () => {
         };
 
         const originalXHR = global.XMLHttpRequest;
-        global.XMLHttpRequest = function() {
+        global.XMLHttpRequest = function () {
           return mockXHR;
         } as any;
 
         // Simulate successful upload
         setTimeout(() => {
           const loadHandler = mockXHR.addEventListener.mock.calls.find(
-            call => call[0] === 'load'
+            (call) => call[0] === 'load'
           )?.[1];
           if (loadHandler) loadHandler();
         }, 0);
@@ -100,7 +104,10 @@ describe('StrandsApiClient', () => {
 
         expect(result.success).toBe(true);
         expect(result.data).toEqual(mockResponse);
-        expect(mockXHR.open).toHaveBeenCalledWith('POST', 'http://localhost:8080/api/documents/upload');
+        expect(mockXHR.open).toHaveBeenCalledWith(
+          'POST',
+          'http://localhost:8080/api/documents/upload'
+        );
 
         global.XMLHttpRequest = originalXHR;
       });
@@ -120,14 +127,14 @@ describe('StrandsApiClient', () => {
         };
 
         const originalXHR = global.XMLHttpRequest;
-        global.XMLHttpRequest = function() {
+        global.XMLHttpRequest = function () {
           return mockXHR;
         } as any;
 
         // Simulate progress events
         setTimeout(() => {
           const progressHandler = mockXHR.upload.addEventListener.mock.calls.find(
-            call => call[0] === 'progress'
+            (call) => call[0] === 'progress'
           )?.[1];
           if (progressHandler) {
             progressHandler({ lengthComputable: true, loaded: 50, total: 100 });
@@ -135,7 +142,7 @@ describe('StrandsApiClient', () => {
           }
 
           const loadHandler = mockXHR.addEventListener.mock.calls.find(
-            call => call[0] === 'load'
+            (call) => call[0] === 'load'
           )?.[1];
           if (loadHandler) loadHandler();
         }, 0);
