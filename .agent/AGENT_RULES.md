@@ -47,16 +47,18 @@ These rules apply to ALL sessions in this repository for the **Proposal Prepper*
 ```
 
 ## AI Must Follow Human Standards
-- ✅ Use commitlint format with microservice scopes (see `/commit-standards`)
-- ✅ Include required trailers: `AI-Agent` and `Human-Involvement`
-- ✅ Pass all CI checks (pre-commit hooks, tests, linting)
-- ✅ Follow code style (Biome configuration)
-- ✅ Respect AI zones (see `.ai-zones.yaml`)
-- ✅ Human signs off (AI cannot use `-s`)
-- ✅ **Use Nix environment**: All development tools available via `nix develop`
-- ✅ **Environment awareness**: Don't run tools outside Nix shell
+- ✅ **Strictly follow all commit standards**: You MUST read `/commit-standards` and `commitlint.config.mjs` at the start of every session. All generated commits MUST perfectly match the standard, including:
+  - Conventional Commit `type` and `scope`.
+  - Body line length (max 100 characters).
+  - A blank line between subject and body.
+  - ALL required trailers: `AI-Agent` and `Human-Involvement`.
+- ✅ Pass all CI checks (pre-commit hooks, tests, linting).
+- ✅ Follow code style (Biome configuration).
+- ✅ Respect AI zones (see `.ai-zones.yaml`).
+- ✅ Human signs off (AI cannot use `-s`).
+- ✅ **Use Nix environment**: All development tools available via `nix develop`.
+- ✅ **Environment awareness**: Don't run tools outside Nix shell.
 
-**Read `/commit-standards` for format, microservice scopes, and trailers.**
 
 ## Blocking Review
 ⛔ **AI CANNOT proceed until human explicitly confirms EACH item.**
@@ -81,14 +83,14 @@ After completing a section, AI presents this and **WAITS**:
 ⛔ Waiting for human to check ALL items before proceeding...
 
 ### Ready to Commit (copy and run)
-```bash
+\`\`\`bash
 git commit -s -m '<type>(<scope>): description
 
 Body.
 
 Human-Involvement: reviewed
 AI-Agent: <model>'
-```
+\`\`\`
 ```
 
 **Human checks items → copies command → runs it.**
