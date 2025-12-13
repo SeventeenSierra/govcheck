@@ -8,6 +8,8 @@ services:
   web:
     # Production build configuration
     build:
+      context: ..
+      dockerfile: containers/web.prod.Dockerfile
       target: production
     environment:
       - NODE_ENV=production

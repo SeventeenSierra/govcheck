@@ -147,14 +147,14 @@ export const StrandsIntegrationHandlers = {
           );
           
           if (analysisResult.success && analysisResult.data) {
-            console.log(`Analysis started, session ID: ${analysisResult.data.session_id}`);
+            console.log(`Analysis started, session ID: ${analysisResult.data.id}`);
             
             // Return combined upload and analysis information
             return NextResponse.json({
               success: true,
               data: {
                 ...uploadResult.data,
-                analysisSessionId: analysisResult.data.session_id,
+                analysisSessionId: analysisResult.data.id,
                 analysisStatus: analysisResult.data.status,
                 message: 'Upload completed and analysis started'
               }
@@ -226,7 +226,7 @@ export const StrandsIntegrationHandlers = {
         );
         
         if (result.success) {
-          console.log(`Analysis started successfully, session ID: ${result.data?.session_id}`);
+          console.log(`Analysis started successfully, session ID: ${result.data?.id}`);
         } else {
           console.error('Strands analysis start failed:', result.error);
         }

@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getStrandsApiClient } from '@/services/strands-api-client';
+import { strandsApiClient } from '@/services/strands-api-client';
 
 /**
  * GET /api/seed - Get seeded documents status and list
@@ -14,12 +14,12 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const action = searchParams.get('action') || 'status';
 
-    const strandsClient = getStrandsApiClient();
+    const strandsClient = strandsApiClient;
 
     switch (action) {
       case 'status':
         // Get seeding status
-        const statusResponse = await fetch(`${strandsClient.baseUrl}/api/seed/status`);
+        const statusResponse = await fetch(`${strandsClient.getBaseUrl()}/api/seed/status`);
         if (!statusResponse.ok) {
           throw new Error(`Failed to get seeding status: ${statusResponse.statusText}`);
         }
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
 
       case 'documents':
         // Get list of seeded documents
-        const documentsResponse = await fetch(`${strandsClient.baseUrl}/api/seed/documents`);
+        const documentsResponse = await fetch(`${strandsClient.getBaseUrl()}/api/seed/documents`);
         if (!documentsResponse.ok) {
           throw new Error(`Failed to get seeded documents: ${documentsResponse.statusText}`);
         }
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
 
       case 'verify':
         // Verify seeded files
-        const verifyResponse = await fetch(`${strandsClient.baseUrl}/api/seed/verify`);
+        const verifyResponse = await fetch(`${strandsClient.getBaseUrl()}/api/seed/verify`);
         if (!verifyResponse.ok) {
           throw new Error(`Failed to verify seeded files: ${verifyResponse.statusText}`);
         }
@@ -83,10 +83,10 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const strandsClient = getStrandsApiClient();
+    const strandsClient = strandsApiClient;
 
     // Trigger database reseeding
-    const reseedResponse = await fetch(`${strandsClient.baseUrl}/api/seed/reseed`, {
+    const reseedResponse = await fetch(`${strandsClient.getBaseUrl()}/api/seed/reseed`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
