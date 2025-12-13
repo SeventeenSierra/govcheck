@@ -95,7 +95,7 @@ function shouldUseMockApi(): boolean {
 
   // Development mode defaults to mock
   if (getEnvVar('NODE_ENV') === 'development') {
-    return true;
+    return false; // Changed to false to prioritize real service in Docker
   }
 
   // Browser-based detection for client-side
@@ -136,16 +136,17 @@ function getApiBaseUrl(): string {
     }
   }
 
-  // Real Strands API URL - prioritize Docker container networking
-  const realUrl = getEnvVar(ENV_VARS.STRANDS_API_URL) || getEnvVar('STRANDS_SERVICE_URL');
+  // Real Strands API URL
+  const realUrl = process.env.NEXT_PUBLIC_STRANDS_URL || 
+                  getEnvVar(ENV_VARS.STRANDS_API_URL) || 
+                  getEnvVar('STRANDS_SERVICE_URL');
+
   if (realUrl) return realUrl;
 
-  // Default real API URL - use Docker service name for server-side, localhost for client-side
+  // Default real API URL - use localhost for browser, service name for server
   if (typeof window !== 'undefined') {
-    // Browser environment - use localhost
     return 'http://localhost:8080';
   } else {
-    // Server environment - use Docker service name
     return 'http://strands:8080';
   }
 }

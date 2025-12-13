@@ -340,7 +340,17 @@ class WebSocketClient {
   private listeners: Map<string, Set<(message: WebSocketMessage) => void>> = new Map();
 
   constructor(baseUrl: string) {
-    this.url = `${baseUrl.replace('http', 'ws')}/ws`;
+    // Correctly construct WebSocket URL for browser environments
+    if (typeof window !== 'undefined') {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const host = window.location.host;
+      const port = apiConfig.strandsBaseUrl.split(':').pop();
+      const wsHost = host.split(':')[0];
+      this.url = `${protocol}//${wsHost}:${port}/ws`;
+    } else {
+      // Fallback for server-side, though WS is client-side
+      this.url = `${baseUrl.replace('http', 'ws')}/ws`;
+    }
     this.maxReconnectAttempts = apiConfig.websocket.maxReconnectAttempts;
     this.reconnectInterval = apiConfig.websocket.reconnectInterval;
   }
@@ -741,3 +751,5 @@ export function createStrandsApiClientWithConfig(baseUrl: string, useMock: boole
  * Automatically switches between real and mock APIs based on environment
  */
 export const strandsApiClient = createStrandsApiClient();
+
+    

@@ -5,13 +5,8 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   output: 'standalone', // For container support
-  transpilePackages: ['@17sierra/ui', '@17sierra/lib', '@17sierra/ai-flows'],
+  transpilePackages: ['@17sierra/ui', '@17sierra/lib', '@17sierra/ai-flows', 'lucide-react'],
   serverExternalPackages: ['genkit', '@genkit-ai/googleai', 'express'],
-
-  // Performance optimizations for Requirement 5.1: Load time performance
-  experimental: {
-    optimizePackageImports: ['@17sierra/ui', 'lucide-react', '@radix-ui/react-accordion'],
-  },
 
   // Turbopack configuration for Next.js 16
   turbopack: {

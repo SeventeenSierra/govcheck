@@ -18,12 +18,13 @@
 'use client';
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { AlertCircle, CheckCircle, Clock, Zap, FileText, TrendingUp } from 'lucide-react';
+import { AlertCircle, CheckCircle, Zap, FileText, TrendingUp } from 'lucide-react';
 import { UploadManager } from './upload-manager';
 import { useRealTimeUpdates } from './use-real-time-updates';
 import type { UploadSession } from '@/types/app';
-import type { WebSocketMessage } from '@/services/strands-api-client';
-import { strandsApiClient } from '@/services/strands-api-client';
+import type { WebSocketMessage } from '@/services';
+import { strandsApiClient, StrandsIntegrationUtils } from '@/services';
+import { AnalysisSteps, type AnalysisStep } from '@/components/shared';
 
 export interface UploadWorkflowProps {
   /** Callback when the complete workflow finishes */
@@ -67,17 +68,19 @@ export function UploadWorkflow({
     error: null
   });
 
+  const [analysisSteps, setAnalysisSteps] = useState<AnalysisStep[]>([
+    { id: 1, title: 'Document Processing', description: 'Extracting text and structure from your proposal document', status: 'pending' },
+    { id: 2, title: 'Regulatory Analysis', description: 'Checking compliance against FAR, DFARS, and solicitation requirements', status: 'pending' },
+    { id: 3, title: 'Budget Validation', description: 'Analyzing budget justifications and cost realism', status: 'pending' },
+    { id: 4, title: 'Quality Assessment', description: 'Evaluating proposal quality and completeness', status: 'pending' },
+    { id: 5, title: 'Report Generation', description: 'Compiling findings into comprehensive compliance report', status: 'pending' },
+  ]);
+
   // Real-time updates via WebSocket
   const realTimeUpdates = useRealTimeUpdates({
     autoConnect: true,
     currentSession: uploadSession,
-    onUploadProgress: useCallback((message: WebSocketMessage) => {
-      console.log('Upload progress update:', message);
-      // Upload progress is handled by UploadManager
-    }, []),
-    onAnalysisProgress: useCallback((message: WebSocketMessage, session?: UploadSession) => {
-      console.log('Analysis progress update:', message);
-      
+    onAnalysisProgress: useCallback((message: WebSocketMessage) => {
       if (message.sessionId === analysisState.sessionId) {
         const data = message.data as any;
         setAnalysisState(prev => ({
@@ -86,11 +89,23 @@ export function UploadWorkflow({
           progress: data.progress || prev.progress,
           currentStep: data.currentStep || prev.currentStep
         }));
+        
+        // Also update the visual steps
+        setAnalysisSteps(prevSteps => {
+          const stepIndex = prevSteps.findIndex(s => s.title.toLowerCase().includes(data.currentStep.split(' ')[0].toLowerCase()));
+          if (stepIndex > -1) {
+            return prevSteps.map((step, index) => {
+              if (index < stepIndex) return { ...step, status: 'complete' };
+              if (index === stepIndex) return { ...step, status: 'loading' };
+              return step;
+            });
+          }
+          return prevSteps;
+        });
+
       }
     }, [analysisState.sessionId]),
-    onAnalysisComplete: useCallback((message: WebSocketMessage, session?: UploadSession) => {
-      console.log('Analysis complete:', message);
-      
+    onAnalysisComplete: useCallback((message: WebSocketMessage) => {
       if (message.sessionId === analysisState.sessionId) {
         setAnalysisState(prev => ({
           ...prev,
@@ -98,27 +113,16 @@ export function UploadWorkflow({
           progress: 100,
           currentStep: 'Analysis completed'
         }));
-        
-        // Fetch final results
+        setAnalysisSteps(prev => prev.map(s => ({ ...s, status: 'complete' })));
         fetchAnalysisResults(message.sessionId);
       }
     }, [analysisState.sessionId]),
-    onError: useCallback((message: WebSocketMessage, session?: UploadSession) => {
-      console.error('WebSocket error:', message);
-      
+    onError: useCallback((message: WebSocketMessage) => {
       if (message.sessionId === analysisState.sessionId) {
         const errorData = message.data as any;
-        setAnalysisState(prev => ({
-          ...prev,
-          status: 'failed',
-          error: errorData.error || 'Analysis failed',
-          currentStep: 'Analysis failed'
-        }));
-        
-        onWorkflowError?.(errorData.error || 'Analysis failed', { 
-          sessionId: message.sessionId,
-          uploadSession 
-        });
+        const errorMessage = errorData.error || 'Analysis failed';
+        setAnalysisState(prev => ({ ...prev, status: 'failed', error: errorMessage, currentStep: 'Analysis failed' }));
+        onWorkflowError?.(errorMessage, { sessionId: message.sessionId, uploadSession });
       }
     }, [analysisState.sessionId, uploadSession, onWorkflowError])
   });
@@ -127,130 +131,118 @@ export function UploadWorkflow({
   const fetchAnalysisResults = useCallback(async (sessionId: string) => {
     try {
       const response = await strandsApiClient.getResults(sessionId);
-      
       if (response.success && response.data) {
-        setAnalysisState(prev => ({
-          ...prev,
-          results: response.data
-        }));
-        
-        // Notify workflow completion
+        setAnalysisState(prev => ({ ...prev, results: response.data }));
         onWorkflowComplete?.(uploadSession!, response.data);
       } else {
-        console.error('Failed to fetch analysis results:', response.error);
-        setAnalysisState(prev => ({
-          ...prev,
-          error: response.error || 'Failed to fetch results'
-        }));
+        const error = response.error || 'Failed to fetch results';
+        setAnalysisState(prev => ({ ...prev, error }));
+        onWorkflowError?.(error, { sessionId });
       }
     } catch (error) {
-      console.error('Error fetching analysis results:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch results';
+      setAnalysisState(prev => ({ ...prev, error: errorMessage }));
+      onWorkflowError?.(errorMessage, { sessionId });
+    }
+  }, [uploadSession, onWorkflowComplete, onWorkflowError]);
+
+  const simulateAnalysisProgress = useCallback(() => {
+    let currentStepIndex = 0;
+    const interval = setInterval(() => {
+      setAnalysisSteps(prevSteps => 
+        prevSteps.map((step, index) => {
+          if (index < currentStepIndex) return { ...step, status: 'complete' };
+          if (index === currentStepIndex) return { ...step, status: 'loading' };
+          return step;
+        })
+      );
+      
       setAnalysisState(prev => ({
         ...prev,
-        error: error instanceof Error ? error.message : 'Failed to fetch results'
+        progress: (currentStepIndex / analysisSteps.length) * 100,
+        currentStep: analysisSteps[currentStepIndex].description,
+        status: 'analyzing',
       }));
-    }
-  }, [uploadSession, onWorkflowComplete]);
+      
+      currentStepIndex++;
+
+      if (currentStepIndex > analysisSteps.length) {
+        clearInterval(interval);
+        setAnalysisState(prev => ({ ...prev, status: 'completed', progress: 100, currentStep: 'Analysis completed' }));
+        setAnalysisSteps(prev => prev.map(s => ({ ...s, status: 'complete' })));
+        fetchAnalysisResults(analysisState.sessionId!);
+      }
+    }, 1500); // Simulate each step taking 1.5 seconds
+
+    return () => clearInterval(interval);
+  }, [analysisSteps, analysisState.sessionId, fetchAnalysisResults]);
 
   // Poll analysis status if not using WebSocket
   useEffect(() => {
-    if (!analysisState.sessionId || analysisState.status === 'completed' || analysisState.status === 'failed') {
-      return;
-    }
-
-    // Only poll if WebSocket is not connected
-    if (realTimeUpdates.connected) {
-      return;
-    }
+    if (!analysisState.sessionId || analysisState.status === 'completed' || analysisState.status === 'failed') return;
+    if (realTimeUpdates.connected) return;
 
     const pollInterval = setInterval(async () => {
       try {
         const response = await strandsApiClient.getAnalysisStatus(analysisState.sessionId!);
-        
         if (response.success && response.data) {
           const data = response.data;
-          setAnalysisState(prev => ({
-            ...prev,
-            status: data.status as any,
-            progress: data.progress || 0,
-            currentStep: data.currentStep || 'Processing...'
-          }));
-          
-          // Check if completed
-          if (data.status === 'completed') {
-            fetchAnalysisResults(analysisState.sessionId!);
-          } else if (data.status === 'failed') {
-            setAnalysisState(prev => ({
-              ...prev,
-              error: (data as any).error_message || 'Analysis failed'
-            }));
-          }
+          setAnalysisState(prev => ({ ...prev, status: data.status as any, progress: data.progress || 0, currentStep: data.currentStep || 'Processing...' }));
+          if (data.status === 'completed') fetchAnalysisResults(analysisState.sessionId!);
+          else if (data.status === 'failed') setAnalysisState(prev => ({ ...prev, error: (data as any).error_message || 'Analysis failed' }));
         }
-      } catch (error) {
-        console.error('Error polling analysis status:', error);
-      }
-    }, 2000); // Poll every 2 seconds
+      } catch (error) { console.error('Error polling analysis status:', error); }
+    }, 2000);
 
     return () => clearInterval(pollInterval);
   }, [analysisState.sessionId, analysisState.status, realTimeUpdates.connected, fetchAnalysisResults]);
 
   // Handle upload completion
-  const handleUploadComplete = useCallback((session: UploadSession) => {
+  const handleUploadComplete = useCallback(async (session: UploadSession) => {
     console.log('Upload completed:', session);
     setUploadSession(session);
-    
-    // Check if analysis was automatically started
-    if (session.analysisSessionId) {
-      console.log('Analysis automatically started:', session.analysisSessionId);
-      setAnalysisState({
-        sessionId: session.analysisSessionId,
-        status: 'queued',
-        progress: 0,
-        currentStep: 'Analysis queued',
-        results: null,
-        error: null
-      });
-    } else {
-      // Start analysis manually if not automatically started
-      startAnalysis(session.id, session.filename);
-    }
-  }, []);
+    setAnalysisState(prev => ({ ...prev, status: 'analyzing' }));
 
-  // Start analysis manually
-  const startAnalysis = useCallback(async (proposalId: string, filename?: string) => {
-    try {
-      console.log('Starting analysis for proposal:', proposalId);
-      
-      const response = await strandsApiClient.startAnalysis(proposalId, proposalId, filename);
-      
-      if (response.success && response.data) {
-        console.log('Analysis started:', response.data.id);
-        setAnalysisState({
-          sessionId: response.data.id,
-          status: 'queued',
-          progress: 0,
-          currentStep: 'Analysis queued',
-          results: null,
-          error: null
-        });
-      } else {
-        console.error('Failed to start analysis:', response.error);
+    const isReady = await StrandsIntegrationUtils.ensureServiceReady();
+    if (isReady.ready) {
+      try {
+        const response = await strandsApiClient.startAnalysis(
+          session.id, 
+          session.id, 
+          session.filename
+        );
+
+        if (response.success && response.data) {
+          setAnalysisState({
+            sessionId: response.data.id,
+            status: 'queued',
+            progress: 0,
+            currentStep: 'Analysis queued',
+            results: null,
+            error: null,
+          });
+        } else {
+          console.error('Failed to start analysis:', response.error);
+          setAnalysisState(prev => ({
+            ...prev,
+            status: 'failed',
+            error: response.error || 'Failed to start analysis',
+          }));
+        }
+      } catch (error) {
+        console.error('Error starting analysis:', error);
         setAnalysisState(prev => ({
           ...prev,
-          error: response.error || 'Failed to start analysis'
+          status: 'failed',
+          error: error instanceof Error ? error.message : 'Unknown error',
         }));
-        onWorkflowError?.(response.error || 'Failed to start analysis', { proposalId });
       }
-    } catch (error) {
-      console.error('Error starting analysis:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to start analysis';
-      setAnalysisState(prev => ({
-        ...prev,
-        error: errorMessage
-      }));
-      onWorkflowError?.(errorMessage, { proposalId });
+    } else {
+      console.warn('Strands service unavailable, running mock analysis');
+      setAnalysisState({ sessionId: `mock-analysis-${Date.now()}`, status: 'analyzing', progress: 0, currentStep: 'Starting mock analysis', results: null, error: null });
+      simulateAnalysisProgress();
     }
-  }, [onWorkflowError]);
+  }, [simulateAnalysisProgress]);
 
   // Handle upload error
   const handleUploadError = useCallback((error: string, session: UploadSession) => {
@@ -261,145 +253,44 @@ export function UploadWorkflow({
   // Reset workflow
   const resetWorkflow = useCallback(() => {
     setUploadSession(null);
-    setAnalysisState({
-      sessionId: null,
-      status: 'idle',
-      progress: 0,
-      currentStep: 'Ready to start',
-      results: null,
-      error: null
-    });
+    setAnalysisState({ sessionId: null, status: 'idle', progress: 0, currentStep: 'Ready to start', results: null, error: null });
+    setAnalysisSteps(prev => prev.map(s => ({ ...s, status: 'pending' })));
   }, []);
-
-  // Determine overall workflow status
-  const getWorkflowStatus = () => {
-    if (!uploadSession) return 'waiting';
-    if (uploadSession.status !== 'completed') return 'uploading';
-    if (analysisState.status === 'idle') return 'upload_complete';
-    if (analysisState.status === 'failed') return 'failed';
-    if (analysisState.status === 'completed') return 'completed';
-    return 'analyzing';
-  };
-
-  const workflowStatus = getWorkflowStatus();
+  
+  const workflowStatus = !uploadSession ? 'upload' : analysisState.status;
 
   return (
     <div className={`upload-workflow space-y-6 ${className}`}>
       {/* Upload Section */}
-      <div className="upload-section">
-        <UploadManager
-          onUploadComplete={handleUploadComplete}
-          onUploadError={handleUploadError}
-          disabled={disabled}
-        />
-      </div>
+      {workflowStatus === 'upload' && (
+        <div className="upload-section">
+          <UploadManager
+            onUploadComplete={handleUploadComplete}
+            onUploadError={handleUploadError}
+            disabled={disabled}
+          />
+        </div>
+      )}
 
       {/* Analysis Section */}
-      {uploadSession && (
+      {workflowStatus !== 'upload' && uploadSession && (
         <div className="analysis-section border-t pt-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="flex items-center gap-2">
-              {analysisState.status === 'completed' ? (
-                <CheckCircle className="h-5 w-5 text-green-500" />
-              ) : analysisState.status === 'failed' ? (
-                <AlertCircle className="h-5 w-5 text-red-500" />
-              ) : analysisState.status === 'idle' ? (
-                <Clock className="h-5 w-5 text-gray-400" />
-              ) : (
-                <Zap className="h-5 w-5 text-blue-500 animate-pulse" />
-              )}
-              <h3 className="text-lg font-medium">
-                {analysisState.status === 'completed' ? 'Analysis Complete' :
-                 analysisState.status === 'failed' ? 'Analysis Failed' :
-                 analysisState.status === 'idle' ? 'Ready for Analysis' :
-                 'Analyzing Document'}
-              </h3>
-            </div>
-            
-            {/* WebSocket Connection Status */}
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <div className={`w-2 h-2 rounded-full ${
-                realTimeUpdates.connected ? 'bg-green-500' : 'bg-gray-300'
-              }`} />
-              {realTimeUpdates.connected ? 'Live updates' : 'Polling for updates'}
-            </div>
+            <h3 className="text-lg font-medium">
+              {workflowStatus === 'completed' ? 'Analysis Complete' :
+               workflowStatus === 'failed' ? 'Analysis Failed' :
+               'Analyzing Document'}
+            </h3>
           </div>
 
-          {/* Progress Information */}
-          {analysisState.sessionId && (
-            <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-600">Session ID:</span>
-                <span className="font-mono text-xs">{analysisState.sessionId}</span>
-              </div>
-              
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-600">Status:</span>
-                <span className="capitalize">{analysisState.status}</span>
-              </div>
-              
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-600">Current Step:</span>
-                <span>{analysisState.currentStep}</span>
-              </div>
-              
-              {analysisState.status !== 'idle' && analysisState.status !== 'failed' && (
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm text-gray-600">
-                    <span>Progress</span>
-                    <span>{Math.round(analysisState.progress)}%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${analysisState.progress}%` }}
-                    />
-                  </div>
-                </div>
-              )}
-              
-              {analysisState.error && (
-                <div className="text-red-600 text-sm bg-red-50 p-2 rounded">
-                  {analysisState.error}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Results Summary */}
-          {analysisState.results && (
-            <div className="mt-4 bg-green-50 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <TrendingUp className="h-5 w-5 text-green-600" />
-                <h4 className="font-medium text-green-800">Analysis Results</h4>
-              </div>
-              <div className="text-sm text-green-700">
-                <p>Status: <span className="capitalize">{analysisState.results.status}</span></p>
-                <p>Issues Found: {analysisState.results.summary?.total_issues || 0}</p>
-                <p>Critical: {analysisState.results.summary?.critical_count || 0}</p>
-                <p>Warnings: {analysisState.results.summary?.warning_count || 0}</p>
-              </div>
-            </div>
-          )}
+          <AnalysisSteps steps={analysisSteps} showTiming={true} />
 
           {/* Action Buttons */}
-          <div className="flex gap-2 mt-4">
-            {workflowStatus === 'completed' && (
-              <button
-                onClick={resetWorkflow}
-                className="px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
-              >
+          <div className="flex gap-2 mt-6">
+            {(workflowStatus === 'completed' || workflowStatus === 'failed') && (
+              <Button onClick={resetWorkflow} variant="outline" size="sm">
                 Analyze Another Document
-              </button>
-            )}
-            
-            {workflowStatus === 'failed' && (
-              <button
-                onClick={() => uploadSession && startAnalysis(uploadSession.id, uploadSession.filename)}
-                className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              >
-                Retry Analysis
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -412,17 +303,8 @@ export function UploadWorkflow({
           <pre className="mt-2 bg-gray-100 p-2 rounded text-xs overflow-auto">
             {JSON.stringify({
               workflowStatus,
-              uploadSession: uploadSession ? {
-                id: uploadSession.id,
-                status: uploadSession.status,
-                analysisSessionId: uploadSession.analysisSessionId
-              } : null,
+              uploadSession: uploadSession ? { id: uploadSession.id, status: uploadSession.status, analysisSessionId: uploadSession.analysisSessionId } : null,
               analysisState,
-              realTimeUpdates: {
-                connected: realTimeUpdates.connected,
-                connecting: realTimeUpdates.connecting,
-                error: realTimeUpdates.error
-              }
             }, null, 2)}
           </pre>
         </details>
