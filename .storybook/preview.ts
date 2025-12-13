@@ -18,7 +18,7 @@ const preview: Preview = {
       autodocs: "tag",
     },
     viewport: {
-      viewports: {
+      options: {
         mobile: {
           name: "Mobile",
           styles: {

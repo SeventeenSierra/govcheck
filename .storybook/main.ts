@@ -1,3 +1,4 @@
+// This file has been automatically migrated to valid ESM format by Storybook.
 // SPDX-License-Identifier: PolyForm-Perimeter-1.0.0
 // SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
 
@@ -17,14 +18,10 @@ const config: StorybookConfig = {
   ],
   addons: [
     "@storybook/addon-links",
-    "@storybook/addon-controls",
-    "@storybook/addon-actions",
     "@storybook/addon-docs",
-    "@storybook/addon-viewport",
     "@storybook/addon-a11y",
-    "@storybook/addon-interactions",
     "@storybook/addon-themes",
-    "@chromatic-com/storybook",
+    "@chromatic-com/storybook"
   ],
   viteFinal: async (config) => {
     // Enable React fast refresh
