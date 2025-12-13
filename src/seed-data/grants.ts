@@ -62,7 +62,7 @@ export const seedGrants: SeedGrant[] = [
         {
           id: 'issue-1',
           type: 'compliance',
-          severity: IssueSeverity.INFO,
+          severity: IssueSeverity.INFO as IssueSeverity,
           title: 'Budget justification format',
           description: 'Budget justification follows standard format but could include more detail on equipment costs',
           location: { page: 8, section: 'Budget Justification' },
@@ -118,7 +118,7 @@ export const seedGrants: SeedGrant[] = [
         {
           id: 'issue-2',
           type: 'compliance',
-          severity: IssueSeverity.WARNING,
+          severity: IssueSeverity.WARNING as IssueSeverity,
           title: 'Missing cost-sharing documentation',
           description: 'Cost-sharing commitments mentioned but supporting documentation not clearly referenced',
           location: { page: 12, section: 'Budget and Cost Sharing' },
@@ -128,7 +128,7 @@ export const seedGrants: SeedGrant[] = [
         {
           id: 'issue-3',
           type: 'compliance',
-          severity: IssueSeverity.INFO,
+          severity: IssueSeverity.INFO as IssueSeverity,
           title: 'Data management plan completeness',
           description: 'Data management plan is present but could benefit from more specific technical details',
           location: { page: 15, section: 'Data Management Plan' },
@@ -362,30 +362,30 @@ export function generateMockAnalysisResults(complianceStatus?: 'pass' | 'fail' |
       result.issues = [];
     } else if (complianceStatus === 'fail') {
       // Ensure at least one critical issue for fail status
-      if (!result.issues.some(issue => issue.severity === 'critical')) {
+      if (!result.issues.some(issue => issue.severity === IssueSeverity.CRITICAL)) {
         result.issues.push({
           id: 'critical-issue-1',
           title: 'Critical Compliance Issue',
           description: 'This is a critical compliance issue for testing',
-          severity: 'critical' as const,
-          category: 'compliance',
+          severity: IssueSeverity.CRITICAL,
+          regulation: 'compliance',
           location: { page: 1, section: 'Section 1' },
-          recommendation: 'Fix this critical issue'
+          remediation: 'Fix this critical issue'
         });
       }
     } else if (complianceStatus === 'warning') {
       // Filter out critical issues for warning status
-      result.issues = result.issues.filter(issue => issue.severity !== 'critical');
+      result.issues = result.issues.filter(issue => issue.severity !== IssueSeverity.CRITICAL);
       // Ensure at least one warning if no issues exist
       if (result.issues.length === 0) {
         result.issues.push({
           id: 'warning-issue-1',
           title: 'Warning Issue',
           description: 'This is a warning issue for testing',
-          severity: 'warning' as const,
-          category: 'formatting',
+          severity: IssueSeverity.WARNING,
+          regulation: 'formatting',
           location: { page: 1, section: 'Section 1' },
-          recommendation: 'Consider addressing this warning'
+          remediation: 'Consider addressing this warning'
         });
       }
     }

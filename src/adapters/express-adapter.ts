@@ -93,7 +93,7 @@ export const ExpressApiHandlers = {
       }
 
       // Convert multer file to File object
-      const fileObj = new File([file.buffer], file.originalname, {
+        const fileObj = new File([file.buffer as BlobPart], file.originalname, {
         type: file.mimetype
       });
 

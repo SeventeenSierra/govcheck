@@ -25,6 +25,7 @@ import type { UploadSession } from '@/types/app';
 import type { WebSocketMessage } from '@/services';
 import { strandsApiClient, StrandsIntegrationUtils } from '@/services';
 import { AnalysisSteps, type AnalysisStep } from '@/components/shared';
+import { Button } from '@/components/ui';
 
 export interface UploadWorkflowProps {
   /** Callback when the complete workflow finishes */
