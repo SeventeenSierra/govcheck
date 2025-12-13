@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
 
 {
-  description = "Proposal Prepper (Contract Checker) - NSF PAPPG Compliance Validation";
+  description = "Proposal Prepper (Contract Checker)";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -56,25 +56,7 @@
 
           shellHook = ''
             echo "🚀 Proposal Prepper Dev Environment"
-            echo "📋 NSF PAPPG Compliance Validation System"
-            echo "Node: $(node --version)"
-            echo "pnpm: $(pnpm --version)"
-            echo "Docker: $(docker --version 2>/dev/null || echo 'Not available')"
-            echo "Podman: $(podman --version 2>/dev/null || echo 'Not available')"
-            echo ""
-            echo "Services:"
-            echo "  • Web (Next.js): Port 3000"
-            echo "  • Strands (Python): Port 8080"
-            echo "  • Genkit (Node.js): Port 8081"
-            echo ""
-            echo "Container Commands:"
-            echo "  • Start all services: cd containers && ./start.sh"
-            echo "  • Development mode: cd containers && ./start.sh -d"
-            echo "  • Production mode: cd containers && ./start.sh -e production -d"
-            echo ""
-            echo "Container Runtime Setup:"
-            echo "  • For Docker: Start Docker Desktop application"
-            echo "  • For Podman: Run 'podman machine init && podman machine start'"
+            echo "(pnpm $(pnpm --version), node $(node --version))"
           '';
         };
       }
