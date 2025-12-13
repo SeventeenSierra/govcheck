@@ -22,6 +22,10 @@ These rules apply to ALL sessions in this repository for the **Proposal Prepper*
 3. **Check environment**: Acknowledge if Nix development shell is needed
 4. **Default workflow**: `/design-first` — NO CODE without design.md and task.md
 5. **Follow** blocking review before any commit
+3.  **Blocking review**: Present checklist before commits, WAIT for human approval
+4.  **Human signs off**: Only human runs `git commit -s`
+5.  **Session record**: Create `.agent/sessions/<N>/session-record.md`
+
 
 ### Alternative Modes (human must explicitly request)
 - **Dialogue** - Exploring requirements, clarifying ambiguity
