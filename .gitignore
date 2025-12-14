@@ -59,3 +59,4 @@ next-env.d.ts
 /internal/
 database/seed-documents.sql
 .env
+.direnv/
