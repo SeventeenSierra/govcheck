@@ -27,14 +27,14 @@ export default function TestUploadPage() {
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-2xl mx-auto space-y-8">
         <h1 className="text-2xl font-bold">Upload Test Page</h1>
-        
+
         <div className="bg-white p-6 rounded-lg shadow">
           <h2 className="text-lg font-semibold mb-4">Test Upload Manager</h2>
           <p className="text-sm text-gray-600 mb-4">
-            This page tests the upload functionality with console logging.
-            Open browser dev tools to see debug messages.
+            This page tests the upload functionality with console logging. Open browser dev tools to
+            see debug messages.
           </p>
-          
+
           <UploadManager
             onUploadComplete={handleUploadComplete}
             onUploadError={handleUploadError}

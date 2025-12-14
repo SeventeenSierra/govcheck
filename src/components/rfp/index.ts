@@ -5,7 +5,7 @@
 
 /**
  * RFP Analysis Components
- * 
+ *
  * Consolidated components for RFP proposal analysis and compliance checking.
  */
 

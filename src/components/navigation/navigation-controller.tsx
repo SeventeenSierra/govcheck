@@ -6,7 +6,7 @@
 'use client';
 
 import { Button } from '@17sierra/ui';
-import { ChevronLeft, ChevronRight, Home } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Home } from '@17sierra/ui';
 import type React from 'react';
 import { useCallback, useMemo } from 'react';
 

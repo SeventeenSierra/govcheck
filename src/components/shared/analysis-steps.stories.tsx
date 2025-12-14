@@ -13,7 +13,8 @@ const meta: Meta<typeof AnalysisSteps> = {
     layout: 'padded',
     docs: {
       description: {
-        component: 'Displays a list of analysis steps with visual status indicators and smooth animations.',
+        component:
+          'Displays a list of analysis steps with visual status indicators and smooth animations.',
       },
     },
   },
@@ -86,7 +87,7 @@ export const Default: Story = {
 
 export const AllComplete: Story = {
   args: {
-    steps: sampleSteps.map(step => ({ ...step, status: 'complete' as const })),
+    steps: sampleSteps.map((step) => ({ ...step, status: 'complete' as const })),
     showCompletionMessage: true,
   },
 };
@@ -94,7 +95,7 @@ export const AllComplete: Story = {
 export const WithErrors: Story = {
   args: {
     steps: [
-      ...sampleSteps.slice(0, 2).map(step => ({ ...step, status: 'complete' as const })),
+      ...sampleSteps.slice(0, 2).map((step) => ({ ...step, status: 'complete' as const })),
       {
         ...sampleSteps[2],
         status: 'error' as const,
@@ -107,8 +108,8 @@ export const WithErrors: Story = {
 
 export const WithTiming: Story = {
   args: {
-    steps: sampleSteps.map(step => ({ 
-      ...step, 
+    steps: sampleSteps.map((step) => ({
+      ...step,
       status: 'complete' as const,
       startedAt: new Date(Date.now() - Math.random() * 10000),
       completedAt: new Date(Date.now() - Math.random() * 5000),
@@ -119,14 +120,14 @@ export const WithTiming: Story = {
 
 export const CustomCompletionMessage: Story = {
   args: {
-    steps: sampleSteps.map(step => ({ ...step, status: 'complete' as const })),
+    steps: sampleSteps.map((step) => ({ ...step, status: 'complete' as const })),
     completionMessage: 'All validation checks passed successfully!',
   },
 };
 
 export const NoCompletionMessage: Story = {
   args: {
-    steps: sampleSteps.map(step => ({ ...step, status: 'complete' as const })),
+    steps: sampleSteps.map((step) => ({ ...step, status: 'complete' as const })),
     showCompletionMessage: false,
   },
 };

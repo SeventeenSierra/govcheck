@@ -6,7 +6,7 @@
 'use client';
 
 import { Badge, Button } from '@17sierra/ui';
-import { CheckCircle2, Download, Maximize2, ExternalLink } from 'lucide-react';
+import { CheckCircle2, Download, Maximize2, ExternalLink } from '@17sierra/ui';
 import type { AnalysisResults } from '@/components/results/types';
 
 /**
@@ -54,7 +54,7 @@ export interface ReportPreviewProps {
  *
  * Displays a live preview of the compliance analysis report with
  * options for download, fullscreen viewing, and sharing.
- * 
+ *
  * Features:
  * - Real-time report generation preview
  * - Multiple export formats (PDF, DOCX, HTML)
@@ -62,14 +62,14 @@ export interface ReportPreviewProps {
  * - Professional report formatting
  * - Compliance score visualization
  */
-const ReportPreview: React.FC<ReportPreviewProps> = ({ 
-  isVisible, 
+const ReportPreview: React.FC<ReportPreviewProps> = ({
+  isVisible,
   reportData,
   isGenerating = false,
   onDownload,
   onFullscreen,
   onShare,
-  className = ''
+  className = '',
 }) => {
   if (!isVisible) return null;
 

@@ -4,7 +4,7 @@
 'use client';
 
 import { Button } from '@17sierra/ui';
-import { MoreHorizontal, Plus } from 'lucide-react';
+import { MoreHorizontal, Plus } from '@17sierra/ui';
 import { useState } from 'react';
 
 type SidebarProps = {

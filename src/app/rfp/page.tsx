@@ -12,7 +12,7 @@ import { ReportPreview } from '@/components/reports';
 
 /**
  * RFP Analysis Page - Consolidated interface for proposal processing
- * 
+ *
  * This page provides the unified interface for:
  * 1. Document upload and validation
  * 2. AI-powered compliance analysis
@@ -20,7 +20,7 @@ import { ReportPreview } from '@/components/reports';
  * 4. Real-time chat assistance
  * 5. Comprehensive results review
  * 6. Report generation and export
- * 
+ *
  * Combines the best features from both agent and proposal interfaces.
  */
 export default function RFPPage() {
@@ -42,10 +42,10 @@ export default function RFPPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <AppHeader 
-        mode="proposals" 
+      <AppHeader
+        mode="proposals"
         title="RFP Compliance Analyzer"
-        subtitle={activeProject ? "Analysis in progress..." : "Ready to analyze your proposal"}
+        subtitle={activeProject ? 'Analysis in progress...' : 'Ready to analyze your proposal'}
       />
 
       <TwoPanelLayout
@@ -57,9 +57,7 @@ export default function RFPPage() {
             onStartNew={handleStartNew}
           />
         }
-        rightPanel={
-          <ReportPreview isVisible={!!analysisResults} />
-        }
+        rightPanel={<ReportPreview isVisible={!!analysisResults} />}
         isRightPanelVisible={!!analysisResults}
         resizable={true}
         leftPanelSize="medium"

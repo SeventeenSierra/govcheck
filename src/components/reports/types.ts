@@ -5,7 +5,7 @@
 
 /**
  * Report Generation Types
- * 
+ *
  * Type definitions for compliance report generation and management.
  */
 
@@ -141,16 +141,16 @@ export interface ReportService {
     analysisResults: AnalysisResults,
     options: ReportGenerationOptions
   ) => Promise<ReportData>;
-  
+
   /** Get report status */
   getReportStatus: (reportId: string) => Promise<ReportStatus>;
-  
+
   /** Download report */
   downloadReport: (reportId: string, format?: ReportFormat) => Promise<Blob>;
-  
+
   /** Delete report */
   deleteReport: (reportId: string) => Promise<void>;
-  
+
   /** List user reports */
   listReports: (userId?: string) => Promise<ReportData[]>;
 }

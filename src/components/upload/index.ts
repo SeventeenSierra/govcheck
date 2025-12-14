@@ -13,6 +13,10 @@ export { UploadManager, type UploadManagerProps } from './upload-manager';
 // Upload Workflow component (end-to-end integration)
 export { UploadWorkflow, type UploadWorkflowProps } from './upload-workflow';
 // Real-time updates hook
-export { useRealTimeUpdates, type UseRealTimeUpdatesOptions, type RealTimeUpdateState } from './use-real-time-updates';
+export {
+  useRealTimeUpdates,
+  type UseRealTimeUpdatesOptions,
+  type RealTimeUpdateState,
+} from './use-real-time-updates';
 // Upload types
 export * from './types';

@@ -5,7 +5,7 @@
 
 /**
  * Layout Components
- * 
+ *
  * Components for application layout and structure.
  */
 

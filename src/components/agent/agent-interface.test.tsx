@@ -33,6 +33,12 @@ vi.mock('@17sierra/ui', () => ({
       {...props}
     />
   ),
+  // Mock icons
+  Bot: (props: any) => <div data-testid="icon-bot" {...props} />,
+  CheckCircle2: (props: any) => <div data-testid="icon-check-circle-2" {...props} />,
+  ChevronRight: (props: any) => <div data-testid="icon-chevron-right" {...props} />,
+  FileCheck: (props: any) => <div data-testid="icon-file-check" {...props} />,
+  Loader2: (props: any) => <div data-testid="icon-loader-2" {...props} />,
 }));
 
 describe('AgentInterface', () => {

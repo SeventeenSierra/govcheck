@@ -6,7 +6,7 @@
 'use client';
 
 import React from 'react';
-import { CheckCircle2, Loader2 } from 'lucide-react';
+import { CheckCircle2, Loader2 } from '@17sierra/ui';
 
 /**
  * Analysis step status enumeration
@@ -66,29 +66,29 @@ export interface AnalysisStepsProps {
  *   { id: 1, title: 'Upload', description: 'Uploading file...', status: 'complete' },
  *   { id: 2, title: 'Analysis', description: 'Analyzing content...', status: 'loading' }
  * ];
- * 
- * <AnalysisSteps 
- *   steps={steps} 
+ *
+ * <AnalysisSteps
+ *   steps={steps}
  *   showCompletionMessage={true}
  *   onStepStatusChange={(id, status) => console.log(`Step ${id}: ${status}`)}
  * />
  * ```
  */
-export const AnalysisSteps: React.FC<AnalysisStepsProps> = ({ 
-  steps, 
+export const AnalysisSteps: React.FC<AnalysisStepsProps> = ({
+  steps,
   className = '',
   showCompletionMessage = true,
   completionMessage = 'Analysis Complete. Report generated.',
   onStepStatusChange,
-  showTiming = false
+  showTiming = false,
 }) => {
-  const isAnalysisComplete = steps.length > 0 && steps.every(step => step.status === 'complete');
-  const hasErrors = steps.some(step => step.status === 'error');
+  const isAnalysisComplete = steps.length > 0 && steps.every((step) => step.status === 'complete');
+  const hasErrors = steps.some((step) => step.status === 'error');
 
   // Notify parent of status changes
   React.useEffect(() => {
     if (onStepStatusChange) {
-      steps.forEach(step => {
+      steps.forEach((step) => {
         // This would be called when status actually changes in a real implementation
         // For now, we just ensure the callback is properly typed
       });
@@ -134,9 +134,7 @@ export const AnalysisSteps: React.FC<AnalysisStepsProps> = ({
     <div className={`space-y-4 animate-in fade-in duration-300 ${className}`}>
       {steps.map((step) => (
         <div key={step.id} className="flex gap-3">
-          <div className="mt-1 shrink-0">
-            {getStepIcon(step)}
-          </div>
+          <div className="mt-1 shrink-0">{getStepIcon(step)}</div>
           <div className="flex-1">
             <div className={`text-sm font-medium ${getStepTextColor(step)}`}>
               {step.title}
@@ -152,13 +150,13 @@ export const AnalysisSteps: React.FC<AnalysisStepsProps> = ({
           </div>
         </div>
       ))}
-      
+
       {showCompletionMessage && isAnalysisComplete && !hasErrors && (
         <div className="mt-4 p-3 bg-green-50 border border-green-100 rounded-lg text-sm text-green-800 flex items-center gap-2 animate-in fade-in zoom-in-95 duration-300">
           <CheckCircle2 size={16} /> {completionMessage}
         </div>
       )}
-      
+
       {hasErrors && (
         <div className="mt-4 p-3 bg-red-50 border border-red-100 rounded-lg text-sm text-red-800 flex items-center gap-2 animate-in fade-in zoom-in-95 duration-300">
           <div className="w-4 h-4 rounded-full bg-red-500 flex items-center justify-center">

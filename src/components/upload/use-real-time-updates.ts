@@ -5,7 +5,7 @@
 
 /**
  * Real-time Updates Hook
- * 
+ *
  * React hook for managing WebSocket connections and real-time progress updates
  * for the end-to-end workflow integration.
  */
@@ -46,14 +46,14 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
     onAnalysisProgress,
     onAnalysisComplete,
     onError,
-    currentSession
+    currentSession,
   } = options;
 
   const [state, setState] = useState<RealTimeUpdateState>({
     connected: false,
     connecting: false,
     error: null,
-    lastMessage: null
+    lastMessage: null,
   });
 
   // Use refs to avoid stale closures in WebSocket callbacks
@@ -61,7 +61,7 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
     onUploadProgress,
     onAnalysisProgress,
     onAnalysisComplete,
-    onError
+    onError,
   });
 
   const currentSessionRef = useRef(currentSession);
@@ -72,7 +72,7 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
       onUploadProgress,
       onAnalysisProgress,
       onAnalysisComplete,
-      onError
+      onError,
     };
   }, [onUploadProgress, onAnalysisProgress, onAnalysisComplete, onError]);
 
@@ -86,51 +86,50 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
       return state.connected;
     }
 
-    setState(prev => ({ ...prev, connecting: true, error: null }));
+    setState((prev) => ({ ...prev, connecting: true, error: null }));
 
     try {
       await strandsApiClient.connectWebSocket();
 
       // Set up message handlers
       strandsApiClient.subscribeToUploadProgress((message: WebSocketMessage) => {
-        setState(prev => ({ ...prev, lastMessage: message }));
+        setState((prev) => ({ ...prev, lastMessage: message }));
         callbacksRef.current.onUploadProgress?.(message, currentSessionRef.current || undefined);
       });
 
       strandsApiClient.subscribeToAnalysisProgress((message: WebSocketMessage) => {
-        setState(prev => ({ ...prev, lastMessage: message }));
+        setState((prev) => ({ ...prev, lastMessage: message }));
         callbacksRef.current.onAnalysisProgress?.(message, currentSessionRef.current || undefined);
       });
 
       strandsApiClient.subscribeToAnalysisComplete((message: WebSocketMessage) => {
-        setState(prev => ({ ...prev, lastMessage: message }));
+        setState((prev) => ({ ...prev, lastMessage: message }));
         callbacksRef.current.onAnalysisComplete?.(message, currentSessionRef.current || undefined);
       });
 
       strandsApiClient.subscribeToErrors((message: WebSocketMessage) => {
-        setState(prev => ({ ...prev, lastMessage: message }));
+        setState((prev) => ({ ...prev, lastMessage: message }));
         callbacksRef.current.onError?.(message, currentSessionRef.current || undefined);
       });
 
-      setState(prev => ({ 
-        ...prev, 
-        connected: true, 
-        connecting: false, 
-        error: null 
+      setState((prev) => ({
+        ...prev,
+        connected: true,
+        connecting: false,
+        error: null,
       }));
 
       console.log('WebSocket connected successfully');
       return true;
-
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'WebSocket connection failed';
       console.error('WebSocket connection failed:', errorMessage);
-      
-      setState(prev => ({ 
-        ...prev, 
-        connected: false, 
-        connecting: false, 
-        error: errorMessage 
+
+      setState((prev) => ({
+        ...prev,
+        connected: false,
+        connecting: false,
+        error: errorMessage,
       }));
 
       return false;
@@ -140,11 +139,11 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
   const disconnect = () => {
     if (state.connected) {
       strandsApiClient.disconnectWebSocket();
-      setState(prev => ({ 
-        ...prev, 
-        connected: false, 
-        connecting: false, 
-        error: null 
+      setState((prev) => ({
+        ...prev,
+        connected: false,
+        connecting: false,
+        error: null,
       }));
       console.log('WebSocket disconnected');
     }
@@ -153,7 +152,7 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
   const reconnect = async (): Promise<boolean> => {
     disconnect();
     // Brief delay before reconnecting
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     return connect();
   };
 
@@ -176,10 +175,10 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
     const checkConnection = () => {
       const isConnected = strandsApiClient.isWebSocketConnected();
       if (!isConnected && state.connected) {
-        setState(prev => ({ 
-          ...prev, 
-          connected: false, 
-          error: 'Connection lost' 
+        setState((prev) => ({
+          ...prev,
+          connected: false,
+          error: 'Connection lost',
         }));
       }
     };
@@ -193,6 +192,6 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
     connect,
     disconnect,
     reconnect,
-    isConnected: state.connected && strandsApiClient.isWebSocketConnected()
+    isConnected: state.connected && strandsApiClient.isWebSocketConnected(),
   };
 }

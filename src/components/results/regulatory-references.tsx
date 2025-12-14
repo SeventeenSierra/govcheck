@@ -5,7 +5,7 @@
 
 'use client';
 
-import { AlertCircle, CheckCircle, FileText, XCircle } from 'lucide-react';
+import { AlertCircle, CheckCircle, FileText, XCircle } from '@17sierra/ui';
 import type { ExtendedComplianceIssue } from './types';
 import { IssueSeverity } from './types';
 

@@ -5,7 +5,7 @@
 
 /**
  * Upload Workflow Component Tests
- * 
+ *
  * Tests for the end-to-end workflow integration component.
  */
 
@@ -28,8 +28,8 @@ vi.mock('@/services/strands-api-client', () => ({
     subscribeToAnalysisProgress: vi.fn(),
     subscribeToAnalysisComplete: vi.fn(),
     subscribeToErrors: vi.fn(),
-    disconnectWebSocket: vi.fn()
-  }
+    disconnectWebSocket: vi.fn(),
+  },
 }));
 
 // Mock the real-time updates hook
@@ -42,8 +42,8 @@ vi.mock('./use-real-time-updates', () => ({
     connect: vi.fn(),
     disconnect: vi.fn(),
     reconnect: vi.fn(),
-    isConnected: false
-  }))
+    isConnected: false,
+  })),
 }));
 
 // Mock the upload manager
@@ -61,7 +61,7 @@ vi.mock('./upload-manager', () => ({
             progress: 100,
             startedAt: new Date(),
             completedAt: new Date(),
-            analysisSessionId: 'analysis-session-456'
+            analysisSessionId: 'analysis-session-456',
           };
           onUploadComplete?.(mockSession);
         }}
@@ -69,7 +69,7 @@ vi.mock('./upload-manager', () => ({
         Mock Upload Complete
       </button>
     </div>
-  ))
+  )),
 }));
 
 describe('UploadWorkflow', () => {
@@ -113,7 +113,7 @@ describe('UploadWorkflow', () => {
 
   it('handles workflow completion correctly', async () => {
     const { strandsApiClient } = await import('@/services/strands-api-client');
-    
+
     // Mock successful analysis results
     vi.mocked(strandsApiClient.getResults).mockResolvedValue({
       success: true,
@@ -123,9 +123,9 @@ describe('UploadWorkflow', () => {
         summary: {
           total_issues: 2,
           critical_count: 0,
-          warning_count: 2
-        }
-      }
+          warning_count: 2,
+        },
+      },
     });
 
     render(

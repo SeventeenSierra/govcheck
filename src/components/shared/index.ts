@@ -5,10 +5,15 @@
 
 /**
  * Shared Components
- * 
+ *
  * Components shared between different pages and interfaces.
  */
 
-export { AnalysisSteps, type AnalysisStep, type AnalysisStepStatus, type AnalysisStepsProps } from './analysis-steps';
+export {
+  AnalysisSteps,
+  type AnalysisStep,
+  type AnalysisStepStatus,
+  type AnalysisStepsProps,
+} from './analysis-steps';
 export { ChatInput, type ChatInputProps } from './chat-input';
 export * from './types';

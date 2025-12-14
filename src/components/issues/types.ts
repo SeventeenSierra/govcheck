@@ -5,7 +5,7 @@
 
 /**
  * Issue Management Types
- * 
+ *
  * Type definitions for compliance issue management and display.
  */
 
@@ -19,10 +19,10 @@ export type {
 export { IssueSeverity } from '@/components/results/types';
 
 // Import for local use
-import { 
-  IssueSeverity, 
-  type ExtendedComplianceIssue, 
-  type ExtendedIssueLocation 
+import {
+  IssueSeverity,
+  type ExtendedComplianceIssue,
+  type ExtendedIssueLocation,
 } from '@/components/results/types';
 
 /**

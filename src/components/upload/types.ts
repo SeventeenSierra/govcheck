@@ -5,7 +5,7 @@
 
 /**
  * Upload Management Types
- * 
+ *
  * Type definitions for document upload functionality and validation.
  */
 
@@ -130,16 +130,16 @@ export interface UploadProgress {
 export interface UploadService {
   /** Upload a file */
   uploadFile: (file: File, options?: UploadOptions) => Promise<UploadSession>;
-  
+
   /** Cancel an upload */
   cancelUpload: (sessionId: string) => Promise<void>;
-  
+
   /** Get upload progress */
   getUploadProgress: (sessionId: string) => Promise<UploadProgress>;
-  
+
   /** Validate a file before upload */
   validateFile: (file: File) => FileValidationResult;
-  
+
   /** Get upload configuration */
   getUploadConfig: () => Promise<UploadConfig>;
 }

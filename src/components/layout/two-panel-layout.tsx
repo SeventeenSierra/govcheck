@@ -83,7 +83,7 @@ export const TwoPanelLayout: React.FC<TwoPanelLayoutProps> = ({
   minPanelWidth = 300,
   onPanelVisibilityChange,
   showDivider = true,
-  divider
+  divider,
 }) => {
   const [leftWidth, setLeftWidth] = React.useState<number | null>(null);
   const [isResizing, setIsResizing] = React.useState(false);
@@ -92,7 +92,7 @@ export const TwoPanelLayout: React.FC<TwoPanelLayoutProps> = ({
   // Panel size mappings
   const getSizeClass = (size: PanelSize, isVisible: boolean) => {
     if (!isVisible) return 'w-full';
-    
+
     switch (size) {
       case 'small':
         return 'w-full md:w-1/3';
@@ -115,36 +115,39 @@ export const TwoPanelLayout: React.FC<TwoPanelLayoutProps> = ({
   }, [isRightPanelVisible, onPanelVisibilityChange]);
 
   // Resizing logic
-  const handleMouseDown = React.useCallback((e: React.MouseEvent) => {
-    if (!resizable || !containerRef.current) return;
-    
-    setIsResizing(true);
-    const startX = e.clientX;
-    const containerRect = containerRef.current.getBoundingClientRect();
-    const startLeftWidth = leftWidth || containerRect.width / 2;
+  const handleMouseDown = React.useCallback(
+    (e: React.MouseEvent) => {
+      if (!resizable || !containerRef.current) return;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!containerRef.current) return;
-      
+      setIsResizing(true);
+      const startX = e.clientX;
       const containerRect = containerRef.current.getBoundingClientRect();
-      const deltaX = e.clientX - startX;
-      const newLeftWidth = Math.max(
-        minPanelWidth,
-        Math.min(containerRect.width - minPanelWidth, startLeftWidth + deltaX)
-      );
-      
-      setLeftWidth(newLeftWidth);
-    };
+      const startLeftWidth = leftWidth || containerRect.width / 2;
 
-    const handleMouseUp = () => {
-      setIsResizing(false);
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
+      const handleMouseMove = (e: MouseEvent) => {
+        if (!containerRef.current) return;
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  }, [resizable, leftWidth, minPanelWidth]);
+        const containerRect = containerRef.current.getBoundingClientRect();
+        const deltaX = e.clientX - startX;
+        const newLeftWidth = Math.max(
+          minPanelWidth,
+          Math.min(containerRect.width - minPanelWidth, startLeftWidth + deltaX)
+        );
+
+        setLeftWidth(newLeftWidth);
+      };
+
+      const handleMouseUp = () => {
+        setIsResizing(false);
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    },
+    [resizable, leftWidth, minPanelWidth]
+  );
 
   const transitionStyle = {
     transitionDuration: `${transition.duration}ms`,
@@ -152,16 +155,11 @@ export const TwoPanelLayout: React.FC<TwoPanelLayoutProps> = ({
   };
 
   return (
-    <div 
-      ref={containerRef}
-      className={`flex flex-1 overflow-hidden ${className}`}
-    >
+    <div ref={containerRef} className={`flex flex-1 overflow-hidden ${className}`}>
       {/* Left Panel */}
       <div
         className={`bg-white flex flex-col h-full relative transition-all ${
-          isRightPanelVisible 
-            ? getSizeClass(leftPanelSize, true)
-            : 'w-full'
+          isRightPanelVisible ? getSizeClass(leftPanelSize, true) : 'w-full'
         } ${showDivider && isRightPanelVisible ? 'border-r border-gray-200' : ''}`}
         style={{
           ...(leftWidth && isRightPanelVisible ? { width: `${leftWidth}px` } : {}),
@@ -170,7 +168,7 @@ export const TwoPanelLayout: React.FC<TwoPanelLayoutProps> = ({
       >
         {leftPanel}
       </div>
-      
+
       {/* Resizer */}
       {resizable && isRightPanelVisible && rightPanel && (
         <div
@@ -181,13 +179,14 @@ export const TwoPanelLayout: React.FC<TwoPanelLayoutProps> = ({
           title="Drag to resize panels"
         />
       )}
-      
+
       {/* Right Panel */}
       {isRightPanelVisible && rightPanel && (
-        <div 
-          className={`bg-gray-50 h-full flex flex-col animate-in slide-in-from-right duration-300 ${
-            getSizeClass(rightPanelSize, true)
-          } ${showDivider ? 'border-l border-gray-200' : ''}`}
+        <div
+          className={`bg-gray-50 h-full flex flex-col animate-in slide-in-from-right duration-300 ${getSizeClass(
+            rightPanelSize,
+            true
+          )} ${showDivider ? 'border-l border-gray-200' : ''}`}
           style={{
             ...(leftWidth ? { width: `calc(100% - ${leftWidth}px)` } : {}),
             ...transitionStyle,

@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { Button } from '@17sierra/ui';
-import { Settings, User, HelpCircle } from 'lucide-react';
+import { Settings, User, HelpCircle } from '@17sierra/ui';
 
 /**
  * Application mode types
@@ -78,7 +78,7 @@ export interface AppHeaderProps {
  * />
  * ```
  */
-export const AppHeader: React.FC<AppHeaderProps> = ({ 
+export const AppHeader: React.FC<AppHeaderProps> = ({
   mode = 'proposals',
   title = 'Proposal Prepper',
   subtitle,
@@ -88,7 +88,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
   actions = [],
   showDefaultActions = true,
   onModeClick,
-  sticky = false
+  sticky = false,
 }) => {
   const defaultActions: HeaderAction[] = [
     {
@@ -135,7 +135,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
   };
 
   return (
-    <header 
+    <header
       className={`bg-white border-b border-gray-200 h-16 flex items-center px-4 justify-between shadow-sm ${
         sticky ? 'sticky top-0 z-50' : ''
       } ${className}`}
@@ -149,9 +149,9 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
             </svg>
           </div>
         )}
-        
+
         <span className="truncate">{title}</span>
-        
+
         {showModeBadge && (
           <button
             onClick={handleModeClick}
@@ -165,9 +165,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 
       {/* Center - Subtitle */}
       {subtitle && (
-        <div className="hidden md:block text-sm text-gray-500 truncate max-w-md">
-          {subtitle}
-        </div>
+        <div className="hidden md:block text-sm text-gray-500 truncate max-w-md">{subtitle}</div>
       )}
 
       {/* Right side - Actions */}

@@ -5,7 +5,7 @@
 
 /**
  * Issue Management Components
- * 
+ *
  * Components for displaying, managing, and interacting with compliance issues.
  */
 

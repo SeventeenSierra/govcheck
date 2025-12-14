@@ -12,7 +12,7 @@
 'use client';
 
 import { Button } from '@17sierra/ui';
-import { AlertCircle, CheckCircle, FileText, Upload, X } from 'lucide-react';
+import { AlertCircle, CheckCircle, FileText, Upload, X } from '@17sierra/ui';
 import type React from 'react';
 import { useCallback, useRef, useState } from 'react';
 import { errorConfig, uploadConfig, validationConfig } from '@/config/app';
@@ -160,7 +160,7 @@ export function UploadManager({
 
       try {
         let response;
-        
+
         try {
           // Try real API first
           console.log('Attempting upload to real API...');
@@ -172,16 +172,21 @@ export function UploadManager({
           console.log('Real API upload successful');
         } catch (realApiError) {
           console.log('Real API failed, attempting mock fallback:', realApiError);
-          
+
           // Provide detailed error context
-          const apiErrorMessage = realApiError instanceof Error ? realApiError.message : 'Unknown API error';
+          const apiErrorMessage =
+            realApiError instanceof Error ? realApiError.message : 'Unknown API error';
           console.log(`API Error Details: ${apiErrorMessage}`);
-          
+
           // Check if it's a network connectivity issue
-          if (apiErrorMessage.includes('fetch') || apiErrorMessage.includes('network') || apiErrorMessage.includes('ECONNREFUSED')) {
+          if (
+            apiErrorMessage.includes('fetch') ||
+            apiErrorMessage.includes('network') ||
+            apiErrorMessage.includes('ECONNREFUSED')
+          ) {
             console.log('Network connectivity issue detected, using mock client');
           }
-          
+
           // Fallback to mock client
           const mockClient = new MockStrandsClient();
           response = await mockClient.uploadDocument(file, (progress: number) => {
@@ -215,24 +220,29 @@ export function UploadManager({
         }
       } catch (error) {
         console.error('Upload error caught:', error);
-        
+
         // Create detailed error message based on error type
         let errorMessage = 'Upload failed';
         let errorDetails = '';
-        
+
         if (error instanceof Error) {
           const originalMessage = error.message;
-          
+
           // Network/connectivity errors
           if (originalMessage.includes('fetch') || originalMessage.includes('NetworkError')) {
             errorMessage = 'Network connection failed';
-            errorDetails = 'Unable to connect to upload server. Please check your internet connection.';
-          } else if (originalMessage.includes('ECONNREFUSED') || originalMessage.includes('ERR_CONNECTION_REFUSED')) {
+            errorDetails =
+              'Unable to connect to upload server. Please check your internet connection.';
+          } else if (
+            originalMessage.includes('ECONNREFUSED') ||
+            originalMessage.includes('ERR_CONNECTION_REFUSED')
+          ) {
             errorMessage = 'Server unavailable';
             errorDetails = 'Upload server is not responding. Using mock mode for testing.';
           } else if (originalMessage.includes('timeout')) {
             errorMessage = 'Upload timeout';
-            errorDetails = 'Upload took too long to complete. Please try again with a smaller file.';
+            errorDetails =
+              'Upload took too long to complete. Please try again with a smaller file.';
           } else if (originalMessage.includes('INVALID_FILE_TYPE')) {
             errorMessage = 'Invalid file type';
             errorDetails = 'Only PDF files are accepted. Please select a PDF document.';
@@ -244,28 +254,31 @@ export function UploadManager({
             errorDetails = originalMessage;
           } else if (originalMessage.includes('CORS')) {
             errorMessage = 'Cross-origin request blocked';
-            errorDetails = 'Browser security settings are blocking the upload. This is normal in development.';
+            errorDetails =
+              'Browser security settings are blocking the upload. This is normal in development.';
           } else {
             // Use original message but make it more user-friendly
-            errorMessage = originalMessage.includes('Upload') ? originalMessage : `Upload error: ${originalMessage}`;
+            errorMessage = originalMessage.includes('Upload')
+              ? originalMessage
+              : `Upload error: ${originalMessage}`;
             errorDetails = 'Please try again or contact support if the problem persists.';
           }
         }
-        
+
         // Combine message and details
         const fullErrorMessage = errorDetails ? `${errorMessage}. ${errorDetails}` : errorMessage;
-        
+
         const failedSession: UploadSession = {
           ...updatedSession,
           status: UploadStatus.FAILED,
           errorMessage: fullErrorMessage,
         };
         setCurrentUpload(failedSession);
-        
+
         // Log for debugging
         console.error('Final error message:', fullErrorMessage);
         console.error('File details:', { name: file.name, size: file.size, type: file.type });
-        
+
         throw new Error(fullErrorMessage);
       }
     },
@@ -283,12 +296,17 @@ export function UploadManager({
         console.warn('Upload already in progress, ignoring duplicate request');
         return;
       }
-      
+
       // Additional debug logging to track upload triggers
-      console.log('handleFileUpload called with file:', file.name, 'current status:', currentUpload?.status);
-      
+      console.log(
+        'handleFileUpload called with file:',
+        file.name,
+        'current status:',
+        currentUpload?.status
+      );
+
       uploadInProgressRef.current = true;
-      
+
       try {
         const validation = validateFile(file);
 
@@ -324,7 +342,14 @@ export function UploadManager({
         }, 1000);
       }
     },
-    [validateFile, createUploadSession, uploadFileToApi, onUploadComplete, onUploadError, currentUpload?.status]
+    [
+      validateFile,
+      createUploadSession,
+      uploadFileToApi,
+      onUploadComplete,
+      onUploadError,
+      currentUpload?.status,
+    ]
   );
 
   /**
@@ -354,7 +379,7 @@ export function UploadManager({
       setDragActive(false);
 
       if (disabled) return;
-      
+
       // Only prevent if currently uploading
       if (currentUpload?.status === UploadStatus.UPLOADING) {
         return;
@@ -379,7 +404,7 @@ export function UploadManager({
   const handleFileInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (disabled) return;
-      
+
       // Only prevent if currently uploading
       if (currentUpload?.status === UploadStatus.UPLOADING) {
         return;
@@ -396,39 +421,46 @@ export function UploadManager({
   /**
    * Handle click to open file dialog
    */
-  const handleClick = useCallback((e?: React.MouseEvent) => {
-    console.log('handleClick called', { disabled, currentUpload: currentUpload?.status, uploadInProgress: uploadInProgressRef.current });
-    
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    
-    if (disabled) {
-      console.log('Click ignored - component disabled');
-      return;
-    }
-    
-    // Only prevent opening file dialog if currently uploading
-    if (currentUpload?.status === UploadStatus.UPLOADING) {
-      console.log('Click ignored - upload in progress:', currentUpload?.status);
-      return;
-    }
-    
-    // Additional check using the ref
-    if (uploadInProgressRef.current) {
-      console.log('Click ignored - upload in progress via ref');
-      return;
-    }
-    
-    console.log('Opening file dialog, fileInputRef:', fileInputRef.current);
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-      console.log('File input clicked');
-    } else {
-      console.error('File input ref is null!');
-    }
-  }, [disabled, currentUpload?.status]);
+  const handleClick = useCallback(
+    (e?: React.MouseEvent) => {
+      console.log('handleClick called', {
+        disabled,
+        currentUpload: currentUpload?.status,
+        uploadInProgress: uploadInProgressRef.current,
+      });
+
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      if (disabled) {
+        console.log('Click ignored - component disabled');
+        return;
+      }
+
+      // Only prevent opening file dialog if currently uploading
+      if (currentUpload?.status === UploadStatus.UPLOADING) {
+        console.log('Click ignored - upload in progress:', currentUpload?.status);
+        return;
+      }
+
+      // Additional check using the ref
+      if (uploadInProgressRef.current) {
+        console.log('Click ignored - upload in progress via ref');
+        return;
+      }
+
+      console.log('Opening file dialog, fileInputRef:', fileInputRef.current);
+      if (fileInputRef.current) {
+        fileInputRef.current.click();
+        console.log('File input clicked');
+      } else {
+        console.error('File input ref is null!');
+      }
+    },
+    [disabled, currentUpload?.status]
+  );
 
   /**
    * Clear current upload
@@ -439,10 +471,10 @@ export function UploadManager({
       e.preventDefault();
       e.stopPropagation();
     }
-    
+
     // Reset the upload progress ref
     uploadInProgressRef.current = false;
-    
+
     setCurrentUpload(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -452,19 +484,22 @@ export function UploadManager({
   /**
    * Retry failed upload
    */
-  const handleRetry = useCallback((e?: React.MouseEvent) => {
-    // Prevent event propagation to avoid triggering parent click handlers
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    
-    if (currentUpload && currentUpload.status === UploadStatus.FAILED) {
-      // For retry, we need the user to select the file again
-      // since we can't recreate the File object from session data
-      handleClick();
-    }
-  }, [currentUpload, handleClick]);
+  const handleRetry = useCallback(
+    (e?: React.MouseEvent) => {
+      // Prevent event propagation to avoid triggering parent click handlers
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      if (currentUpload && currentUpload.status === UploadStatus.FAILED) {
+        // For retry, we need the user to select the file again
+        // since we can't recreate the File object from session data
+        handleClick();
+      }
+    },
+    [currentUpload, handleClick]
+  );
 
   return (
     <div className={`upload-manager ${className}`} data-testid="upload-manager">
@@ -482,12 +517,16 @@ export function UploadManager({
         onDragLeave={handleDragOut}
         onDragOver={handleDrag}
         onDrop={handleDrop}
-        onClick={!isUploading ? (e) => {
-          // Only handle click if it's not from a button or other interactive element
-          if (e.target === e.currentTarget || (e.target as HTMLElement).tagName === 'DIV') {
-            handleClick(e);
-          }
-        } : undefined}
+        onClick={
+          !isUploading
+            ? (e) => {
+                // Only handle click if it's not from a button or other interactive element
+                if (e.target === e.currentTarget || (e.target as HTMLElement).tagName === 'DIV') {
+                  handleClick(e);
+                }
+              }
+            : undefined
+        }
         onKeyDown={
           !isUploading
             ? (e) => {

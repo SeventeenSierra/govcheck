@@ -7,7 +7,7 @@
 
 import React from 'react';
 import { Button, Textarea } from '@17sierra/ui';
-import { ChevronRight, Loader2 } from 'lucide-react';
+import { ChevronRight, Loader2 } from '@17sierra/ui';
 
 /**
  * Chat Input Component Props
@@ -65,7 +65,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   value,
   onChange,
   onSubmit,
-  placeholder = "Ask follow-up questions...",
+  placeholder = 'Ask follow-up questions...',
   disabled = false,
   loading = false,
   className = '',
@@ -74,7 +74,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   autoFocus = false,
   submitButtonText,
   multiline = true,
-  maxRows = 4
+  maxRows = 4,
 }) => {
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
   const [rows, setRows] = React.useState(1);
@@ -88,39 +88,45 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     }
   }, [value, onSubmit, onChange, disabled, loading]);
 
-  const handleKeyDown = React.useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter') {
-      if (multiline && e.shiftKey) {
-        // Allow new line with Shift+Enter
-        return;
-      } else {
-        // Submit with Enter
-        e.preventDefault();
-        handleSubmit();
+  const handleKeyDown = React.useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === 'Enter') {
+        if (multiline && e.shiftKey) {
+          // Allow new line with Shift+Enter
+          return;
+        } else {
+          // Submit with Enter
+          e.preventDefault();
+          handleSubmit();
+        }
       }
-    }
-  }, [handleSubmit, multiline]);
+    },
+    [handleSubmit, multiline]
+  );
 
-  const handleChange = React.useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newValue = e.target.value;
-    
-    // Apply max length if specified
-    if (maxLength && newValue.length > maxLength) {
-      return;
-    }
+  const handleChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const newValue = e.target.value;
 
-    onChange(newValue);
+      // Apply max length if specified
+      if (maxLength && newValue.length > maxLength) {
+        return;
+      }
 
-    // Auto-resize textarea
-    if (multiline && textareaRef.current) {
-      const textarea = textareaRef.current;
-      textarea.style.height = 'auto';
-      const scrollHeight = textarea.scrollHeight;
-      const lineHeight = 20; // Approximate line height
-      const newRows = Math.min(Math.max(1, Math.ceil(scrollHeight / lineHeight)), maxRows);
-      setRows(newRows);
-    }
-  }, [onChange, maxLength, multiline, maxRows]);
+      onChange(newValue);
+
+      // Auto-resize textarea
+      if (multiline && textareaRef.current) {
+        const textarea = textareaRef.current;
+        textarea.style.height = 'auto';
+        const scrollHeight = textarea.scrollHeight;
+        const lineHeight = 20; // Approximate line height
+        const newRows = Math.min(Math.max(1, Math.ceil(scrollHeight / lineHeight)), maxRows);
+        setRows(newRows);
+      }
+    },
+    [onChange, maxLength, multiline, maxRows]
+  );
 
   // Auto-focus on mount if requested
   React.useEffect(() => {
@@ -134,7 +140,9 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   const isNearLimit = maxLength && characterCount > maxLength * 0.8;
 
   return (
-    <div className={`absolute bottom-0 left-0 right-0 bg-white/50 backdrop-blur-sm p-4 border-t border-gray-200 ${className}`}>
+    <div
+      className={`absolute bottom-0 left-0 right-0 bg-white/50 backdrop-blur-sm p-4 border-t border-gray-200 ${className}`}
+    >
       <div className="max-w-3xl mx-auto w-full">
         <div className="relative">
           <Textarea
@@ -148,28 +156,30 @@ export const ChatInput: React.FC<ChatInputProps> = ({
               multiline ? 'min-h-[50px]' : 'h-[50px]'
             }`}
             rows={multiline ? rows : 1}
-            style={{ 
-              height: multiline ? `${Math.max(50, rows * 20 + 16)}px` : '50px'
+            style={{
+              height: multiline ? `${Math.max(50, rows * 20 + 16)}px` : '50px',
             }}
           />
-          
+
           {/* Character count */}
           {showCharacterCount && maxLength && (
-            <div className={`absolute bottom-1 left-3 text-xs transition-colors ${
-              isNearLimit ? 'text-orange-500' : 'text-gray-400'
-            }`}>
+            <div
+              className={`absolute bottom-1 left-3 text-xs transition-colors ${
+                isNearLimit ? 'text-orange-500' : 'text-gray-400'
+              }`}
+            >
               {characterCount}/{maxLength}
             </div>
           )}
-          
+
           {/* Submit button */}
           <div className="absolute bottom-2.5 right-2.5">
-            <Button 
-              size="icon" 
-              className="h-8 w-8" 
+            <Button
+              size="icon"
+              className="h-8 w-8"
               disabled={isSubmitDisabled}
               onClick={handleSubmit}
-              title={multiline ? "Send message (Enter)" : "Send message"}
+              title={multiline ? 'Send message (Enter)' : 'Send message'}
             >
               {loading ? (
                 <Loader2 size={16} className="animate-spin" />
@@ -181,7 +191,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             </Button>
           </div>
         </div>
-        
+
         {/* Help text */}
         {multiline && !disabled && (
           <div className="mt-1 text-xs text-gray-400 text-center">

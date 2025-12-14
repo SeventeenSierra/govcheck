@@ -72,12 +72,12 @@ export interface AccessibilityProps {
 /**
  * Combined props for comprehensive component interfaces
  */
-export interface ComprehensiveComponentProps 
-  extends BaseComponentProps, 
-          LoadingProps, 
-          ErrorProps, 
-          ValidationProps, 
-          AccessibilityProps {}
+export interface ComprehensiveComponentProps
+  extends BaseComponentProps,
+    LoadingProps,
+    ErrorProps,
+    ValidationProps,
+    AccessibilityProps {}
 
 /**
  * Animation and transition types
@@ -94,30 +94,30 @@ export type ComponentSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 /**
  * Color variants for theming
  */
-export type ComponentVariant = 
-  | 'default' 
-  | 'primary' 
-  | 'secondary' 
-  | 'success' 
-  | 'warning' 
-  | 'error' 
+export type ComponentVariant =
+  | 'default'
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'warning'
+  | 'error'
   | 'info';
 
 /**
  * Position types for floating components
  */
-export type Position = 
-  | 'top' 
-  | 'top-start' 
+export type Position =
+  | 'top'
+  | 'top-start'
   | 'top-end'
-  | 'bottom' 
-  | 'bottom-start' 
+  | 'bottom'
+  | 'bottom-start'
   | 'bottom-end'
-  | 'left' 
-  | 'left-start' 
+  | 'left'
+  | 'left-start'
   | 'left-end'
-  | 'right' 
-  | 'right-start' 
+  | 'right'
+  | 'right-start'
   | 'right-end';
 
 /**

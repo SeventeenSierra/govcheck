@@ -14,7 +14,8 @@ const meta: Meta<typeof ChatInput> = {
     layout: 'fullscreen',
     docs: {
       description: {
-        component: 'A sophisticated chat input component with multiline support, character counting, and keyboard shortcuts.',
+        component:
+          'A sophisticated chat input component with multiline support, character counting, and keyboard shortcuts.',
       },
     },
   },
@@ -60,7 +61,7 @@ type Story = StoryObj<typeof ChatInput>;
 // Wrapper component to handle state
 const ChatInputWrapper = (args: any) => {
   const [value, setValue] = useState(args.value || '');
-  
+
   return (
     <div className="h-screen bg-gray-50 relative">
       <div className="p-4">

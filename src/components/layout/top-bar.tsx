@@ -4,7 +4,7 @@
 'use client';
 
 import { Avatar, AvatarFallback, Button } from '@17sierra/ui';
-import { Bot, PanelLeftClose, PanelLeftOpen, Settings } from 'lucide-react';
+import { Bot, PanelLeftClose, PanelLeftOpen, Settings } from '@17sierra/ui';
 
 type TopBarProps = {
   toggleSidebar: () => void;

@@ -7,7 +7,7 @@
 
 import React, { useCallback, useState, useEffect } from 'react';
 import { Button } from '@17sierra/ui';
-import { Bot, FileCheck, Sparkles, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
+import { Bot, FileCheck, Sparkles, CheckCircle, AlertCircle, XCircle } from '@17sierra/ui';
 import { AnalysisSteps, ChatInput, type AnalysisStep } from '@/components/shared';
 import { UploadWorkflow } from '@/components/upload/upload-workflow';
 import { strandsApiClient, StrandsIntegrationUtils } from '@/services';
@@ -52,18 +52,20 @@ const ServiceStatusIndicator: React.FC = () => {
       try {
         const config = StrandsIntegrationUtils.getServiceConfig();
         const serviceReady = await StrandsIntegrationUtils.ensureServiceReady();
-        
+
         setServiceStatus({
           healthy: serviceReady.ready,
-          message: serviceReady.ready ? 'Analysis service is ready' : (serviceReady.message || 'Service unavailable'),
+          message: serviceReady.ready
+            ? 'Analysis service is ready'
+            : serviceReady.message || 'Service unavailable',
           baseUrl: config.baseUrl,
-          version: config.version
+          version: config.version,
         });
       } catch (error) {
         setServiceStatus({
           healthy: false,
           message: 'Unable to check service status',
-          baseUrl: 'Unknown'
+          baseUrl: 'Unknown',
         });
       } finally {
         setIsLoading(false);
@@ -71,7 +73,7 @@ const ServiceStatusIndicator: React.FC = () => {
     };
 
     checkServiceStatus();
-    
+
     // Check status every 30 seconds
     const interval = setInterval(checkServiceStatus, 30000);
     return () => clearInterval(interval);
@@ -96,7 +98,7 @@ const ServiceStatusIndicator: React.FC = () => {
     <XCircle className="w-4 h-4 text-red-600" />
   );
 
-  const statusColor = serviceStatus.healthy 
+  const statusColor = serviceStatus.healthy
     ? 'bg-green-50 border-green-200 text-green-800'
     : 'bg-red-50 border-red-200 text-red-800';
 
@@ -110,9 +112,7 @@ const ServiceStatusIndicator: React.FC = () => {
         )}
       </div>
       {!serviceStatus.healthy && (
-        <div className="mt-2 text-xs opacity-75">
-          Service URL: {serviceStatus.baseUrl}
-        </div>
+        <div className="mt-2 text-xs opacity-75">Service URL: {serviceStatus.baseUrl}</div>
       )}
     </div>
   );
@@ -123,7 +123,7 @@ const ServiceStatusIndicator: React.FC = () => {
  *
  * A comprehensive interface that combines document upload, AI-powered analysis,
  * interactive chat, and results presentation in a single, cohesive experience.
- * 
+ *
  * Features:
  * - Smart welcome screen with guided actions
  * - Drag-and-drop document upload
@@ -136,13 +136,15 @@ export const RFPInterface: React.FC<RFPInterfaceProps> = ({
   onProjectStart,
   onAnalysisComplete,
   onStartNew,
-  className = ''
+  className = '',
 }) => {
   const [workflowState, setWorkflowState] = useState<WorkflowState>('welcome');
   const [inputValue, setInputValue] = useState('');
   const [uploadSession, setUploadSession] = useState<UploadSession | null>(null);
-  const [chatHistory, setChatHistory] = useState<Array<{id: string, type: 'user' | 'assistant', content: string, timestamp: Date}>>([]);
-  
+  const [chatHistory, setChatHistory] = useState<
+    Array<{ id: string; type: 'user' | 'assistant'; content: string; timestamp: Date }>
+  >([]);
+
   const [steps, setSteps] = useState<AnalysisStep[]>([
     {
       id: 1,
@@ -177,40 +179,52 @@ export const RFPInterface: React.FC<RFPInterfaceProps> = ({
   ]);
 
   // Handle workflow completion (upload + analysis)
-  const handleWorkflowComplete = useCallback(async (session: UploadSession, analysisResults?: any) => {
-    console.log('Workflow completed:', { session, analysisResults });
-    
-    setUploadSession(session);
-    setWorkflowState('chat');
-    onProjectStart(session.id);
+  const handleWorkflowComplete = useCallback(
+    async (session: UploadSession, analysisResults?: any) => {
+      console.log('Workflow completed:', { session, analysisResults });
 
-    if (onAnalysisComplete && analysisResults) {
-      onAnalysisComplete(analysisResults);
-    }
-    
-    // Add initial AI message
-    setChatHistory([{
-      id: Date.now().toString(),
-      type: 'assistant',
-      content: "I've completed the compliance analysis of your proposal. The document has been thoroughly reviewed against current federal regulations. How can I help you understand the results?",
-      timestamp: new Date()
-    }]);
-  }, [onProjectStart, onAnalysisComplete]);
+      setUploadSession(session);
+      setWorkflowState('chat');
+      onProjectStart(session.id);
+
+      if (onAnalysisComplete && analysisResults) {
+        onAnalysisComplete(analysisResults);
+      }
+
+      // Add initial AI message
+      setChatHistory([
+        {
+          id: Date.now().toString(),
+          type: 'assistant',
+          content:
+            "I've completed the compliance analysis of your proposal. The document has been thoroughly reviewed against current federal regulations. How can I help you understand the results?",
+          timestamp: new Date(),
+        },
+      ]);
+    },
+    [onProjectStart, onAnalysisComplete]
+  );
 
   // Handle workflow errors
-  const handleWorkflowError = useCallback((error: string, context?: any) => {
-    console.error('Workflow error:', error, context);
-    
-    // Add error message to chat if we're in chat mode
-    if (workflowState === 'chat') {
-      setChatHistory(prev => [...prev, {
-        id: Date.now().toString(),
-        type: 'assistant',
-        content: `I encountered an error: ${error}. Please try uploading your document again or contact support if the issue persists.`,
-        timestamp: new Date()
-      }]);
-    }
-  }, [workflowState]);
+  const handleWorkflowError = useCallback(
+    (error: string, context?: any) => {
+      console.error('Workflow error:', error, context);
+
+      // Add error message to chat if we're in chat mode
+      if (workflowState === 'chat') {
+        setChatHistory((prev) => [
+          ...prev,
+          {
+            id: Date.now().toString(),
+            type: 'assistant',
+            content: `I encountered an error: ${error}. Please try uploading your document again or contact support if the issue persists.`,
+            timestamp: new Date(),
+          },
+        ]);
+      }
+    },
+    [workflowState]
+  );
 
   // Handle chat submission
   const handleChatSubmit = useCallback(async (message: string) => {
@@ -218,20 +232,20 @@ export const RFPInterface: React.FC<RFPInterfaceProps> = ({
       id: Date.now().toString(),
       type: 'user' as const,
       content: message,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
-    
-    setChatHistory(prev => [...prev, userMessage]);
-    
+
+    setChatHistory((prev) => [...prev, userMessage]);
+
     // Simulate AI response (in real implementation, this would call strands API)
     setTimeout(() => {
       const aiResponse = {
         id: (Date.now() + 1).toString(),
         type: 'assistant' as const,
         content: `I understand you're asking about "${message}". Based on the analysis, I can provide specific guidance on this aspect of your proposal. Would you like me to elaborate on any particular compliance requirement?`,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-      setChatHistory(prev => [...prev, aiResponse]);
+      setChatHistory((prev) => [...prev, aiResponse]);
     }, 1000);
   }, []);
 
@@ -240,7 +254,7 @@ export const RFPInterface: React.FC<RFPInterfaceProps> = ({
     setWorkflowState('welcome');
     setUploadSession(null);
     setChatHistory([]);
-    setSteps(prev => prev.map(s => ({ ...s, status: 'pending', error: undefined })));
+    setSteps((prev) => prev.map((s) => ({ ...s, status: 'pending', error: undefined })));
     if (onStartNew) {
       onStartNew();
     }
@@ -249,7 +263,6 @@ export const RFPInterface: React.FC<RFPInterfaceProps> = ({
   return (
     <div className={`flex-1 overflow-y-auto p-4 md:p-8 pb-32 ${className}`}>
       <div className="max-w-3xl mx-auto w-full">
-        
         {/* Welcome State */}
         {workflowState === 'welcome' && (
           <>
@@ -259,9 +272,7 @@ export const RFPInterface: React.FC<RFPInterfaceProps> = ({
                   <Sparkles className="w-8 h-8 text-primary" />
                 </div>
               </div>
-              <h1 className="text-3xl font-bold text-slate-900 mb-3">
-                RFP Compliance Analyzer
-              </h1>
+              <h1 className="text-3xl font-bold text-slate-900 mb-3">RFP Compliance Analyzer</h1>
               <p className="text-lg text-gray-600 mb-4">
                 AI-powered proposal analysis for federal procurement compliance
               </p>
@@ -279,12 +290,13 @@ export const RFPInterface: React.FC<RFPInterfaceProps> = ({
                       Upload & Analyze Proposal
                     </h3>
                     <p className="text-gray-600 mb-4">
-                      Upload your proposal document for comprehensive compliance analysis against FAR, DFARS, and solicitation requirements.
+                      Upload your proposal document for comprehensive compliance analysis against
+                      FAR, DFARS, and solicitation requirements.
                     </p>
                   </div>
                 </div>
-                
-                <UploadWorkflow 
+
+                <UploadWorkflow
                   onWorkflowComplete={handleWorkflowComplete}
                   onWorkflowError={handleWorkflowError}
                 />
@@ -300,7 +312,7 @@ export const RFPInterface: React.FC<RFPInterfaceProps> = ({
                       AI-Powered Analysis
                     </h3>
                     <p className="text-gray-600 mb-3">
-                      Our advanced AI analyzes your proposal against the latest federal regulations, 
+                      Our advanced AI analyzes your proposal against the latest federal regulations,
                       identifying compliance issues and providing actionable recommendations.
                     </p>
                     <ul className="text-sm text-gray-500 space-y-1">
@@ -320,16 +332,14 @@ export const RFPInterface: React.FC<RFPInterfaceProps> = ({
         {workflowState === 'analysis' && (
           <>
             <div className="mb-6">
-              <h1 className="text-2xl font-bold text-slate-900 mb-2">
-                Analyzing Your Proposal
-              </h1>
+              <h1 className="text-2xl font-bold text-slate-900 mb-2">Analyzing Your Proposal</h1>
               <p className="text-gray-500 text-sm">
                 Processing "{uploadSession?.filename}" for compliance validation...
               </p>
             </div>
 
-            <AnalysisSteps 
-              steps={steps} 
+            <AnalysisSteps
+              steps={steps}
               showTiming={true}
               completionMessage="Analysis complete! Transitioning to interactive mode..."
             />
@@ -340,9 +350,7 @@ export const RFPInterface: React.FC<RFPInterfaceProps> = ({
         {workflowState === 'chat' && (
           <>
             <div className="mb-6">
-              <h1 className="text-2xl font-bold text-slate-900 mb-2">
-                Analysis Complete
-              </h1>
+              <h1 className="text-2xl font-bold text-slate-900 mb-2">Analysis Complete</h1>
               <p className="text-gray-500 text-sm">
                 Your proposal has been analyzed. Ask me anything about the results!
               </p>
@@ -359,11 +367,13 @@ export const RFPInterface: React.FC<RFPInterfaceProps> = ({
                     )}
                   </div>
                   <div className="flex-1">
-                    <div className={`p-4 rounded-2xl text-sm leading-relaxed ${
-                      message.type === 'assistant' 
-                        ? 'bg-slate-50 border border-gray-200 rounded-tl-none text-slate-800'
-                        : 'bg-primary text-primary-foreground rounded-tr-none'
-                    }`}>
+                    <div
+                      className={`p-4 rounded-2xl text-sm leading-relaxed ${
+                        message.type === 'assistant'
+                          ? 'bg-slate-50 border border-gray-200 rounded-tl-none text-slate-800'
+                          : 'bg-primary text-primary-foreground rounded-tr-none'
+                      }`}
+                    >
                       {message.content}
                     </div>
                     {message.type === 'assistant' && (
@@ -371,9 +381,9 @@ export const RFPInterface: React.FC<RFPInterfaceProps> = ({
                         <Button variant="outline" size="sm" className="text-xs h-auto py-1.5">
                           View Details
                         </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
+                        <Button
+                          variant="outline"
+                          size="sm"
                           className="text-xs h-auto py-1.5"
                           onClick={handleStartNew}
                         >
@@ -396,9 +406,9 @@ export const RFPInterface: React.FC<RFPInterfaceProps> = ({
           onChange={setInputValue}
           onSubmit={handleChatSubmit}
           placeholder={
-            workflowState === 'analysis' 
-              ? "Analysis in progress... Chat will be available when complete"
-              : "Ask questions about your proposal analysis..."
+            workflowState === 'analysis'
+              ? 'Analysis in progress... Chat will be available when complete'
+              : 'Ask questions about your proposal analysis...'
           }
           disabled={workflowState === 'analysis'}
           maxLength={500}

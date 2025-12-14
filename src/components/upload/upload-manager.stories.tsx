@@ -5,11 +5,7 @@
 
 import type { Meta, StoryObj } from '@storybook/react';
 import { UploadManager } from './upload-manager';
-import { 
-  withMockData, 
-  mockDataConfigs,
-  ErrorScenario,
-} from '@/test-utils';
+import { withMockData, mockDataConfigs, ErrorScenario } from '@/test-utils';
 import { UploadStatus } from '@/types/app';
 
 const meta: Meta<typeof UploadManager> = {
@@ -19,7 +15,8 @@ const meta: Meta<typeof UploadManager> = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Upload Manager component with comprehensive mock data support for testing various upload scenarios.',
+        component:
+          'Upload Manager component with comprehensive mock data support for testing various upload scenarios.',
       },
     },
   },
@@ -120,10 +117,12 @@ export const FileTooLarge: Story = {
   args: {
     disabled: false,
   },
-  decorators: [withMockData({
-    errorScenario: ErrorScenario.FILE_TOO_LARGE,
-    delay: 100,
-  })],
+  decorators: [
+    withMockData({
+      errorScenario: ErrorScenario.FILE_TOO_LARGE,
+      delay: 100,
+    }),
+  ],
   parameters: {
     docs: {
       description: {
@@ -140,10 +139,12 @@ export const InvalidFileType: Story = {
   args: {
     disabled: false,
   },
-  decorators: [withMockData({
-    errorScenario: ErrorScenario.INVALID_FILE,
-    delay: 100,
-  })],
+  decorators: [
+    withMockData({
+      errorScenario: ErrorScenario.INVALID_FILE,
+      delay: 100,
+    }),
+  ],
   parameters: {
     docs: {
       description: {

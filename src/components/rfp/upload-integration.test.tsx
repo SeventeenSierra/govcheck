@@ -30,7 +30,7 @@ describe('RFPInterface - Upload Integration', () => {
 
   it('should handle complete upload-to-analysis workflow', async () => {
     const { strandsApiClient } = await import('@/services');
-    
+
     // Mock successful upload
     vi.mocked(strandsApiClient.uploadDocument).mockImplementation((file, onProgress) => {
       // Simulate progress updates
@@ -38,25 +38,25 @@ describe('RFPInterface - Upload Integration', () => {
       setTimeout(() => onProgress?.(50), 200);
       setTimeout(() => onProgress?.(75), 300);
       setTimeout(() => onProgress?.(100), 400);
-      
+
       return Promise.resolve({
         success: true,
         data: {
           id: 'upload-session-123',
           filename: file.name,
           status: 'completed',
-        }
+        },
       });
     });
 
     // Mock successful analysis start
     vi.mocked(strandsApiClient.startAnalysis).mockResolvedValue({
       success: true,
-      data: { 
+      data: {
         id: 'analysis-session-456',
         status: 'analyzing',
-        progress: 0
-      }
+        progress: 0,
+      },
     });
 
     // Mock successful results
@@ -65,25 +65,26 @@ describe('RFPInterface - Upload Integration', () => {
       data: {
         complianceScore: 92,
         issues: [],
-        status: 'completed'
-      }
+        status: 'completed',
+      },
     });
 
     render(<RFPInterface {...mockProps} />);
-    
+
     // Should start in welcome state
     expect(screen.getByText('RFP Compliance Analyzer')).toBeInTheDocument();
-    
+
     // Find the upload manager (it should be rendered)
-    const uploadManager = screen.getByTestId('upload-manager') || 
-                         document.querySelector('[data-testid="upload-manager"]') ||
-                         screen.getByText(/Upload & Analyze Proposal/);
-    
+    const uploadManager =
+      screen.getByTestId('upload-manager') ||
+      document.querySelector('[data-testid="upload-manager"]') ||
+      screen.getByText(/Upload & Analyze Proposal/);
+
     expect(uploadManager).toBeInTheDocument();
-    
+
     // Create a test file
     const testFile = new File(['test pdf content'], 'test-proposal.pdf', {
-      type: 'application/pdf'
+      type: 'application/pdf',
     });
 
     // Simulate file upload (this would normally be done through drag/drop or file input)
@@ -113,25 +114,25 @@ describe('RFPInterface - Upload Integration', () => {
 
   it('should handle upload errors gracefully', async () => {
     const { strandsApiClient } = await import('@/services');
-    
+
     // Mock upload failure
     vi.mocked(strandsApiClient.uploadDocument).mockRejectedValue(
       new Error('Upload failed: Network error')
     );
 
     render(<RFPInterface {...mockProps} />);
-    
+
     // Should show error handling capabilities
     expect(screen.getByText('RFP Compliance Analyzer')).toBeInTheDocument();
   });
 
   it('should handle analysis errors gracefully', async () => {
     const { strandsApiClient } = await import('@/services');
-    
+
     // Mock successful upload but failed analysis
     vi.mocked(strandsApiClient.uploadDocument).mockResolvedValue({
       success: true,
-      data: { id: 'upload-123', status: 'completed' }
+      data: { id: 'upload-123', status: 'completed' },
     });
 
     vi.mocked(strandsApiClient.startAnalysis).mockRejectedValue(
@@ -139,7 +140,7 @@ describe('RFPInterface - Upload Integration', () => {
     );
 
     render(<RFPInterface {...mockProps} />);
-    
+
     // Component should handle analysis errors
     expect(screen.getByText('RFP Compliance Analyzer')).toBeInTheDocument();
   });

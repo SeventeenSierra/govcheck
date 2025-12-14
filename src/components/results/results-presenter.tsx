@@ -6,7 +6,7 @@
 'use client';
 
 import { Button } from '@17sierra/ui';
-import { AlertCircle, CheckCircle, Download, FileText, RefreshCw, XCircle } from 'lucide-react';
+import { AlertCircle, CheckCircle, Download, FileText, RefreshCw, XCircle } from '@17sierra/ui';
 import { resultsService } from '@/services';
 import { IssueList } from '@/components/issues';
 import { RegulatoryReferences } from './regulatory-references';

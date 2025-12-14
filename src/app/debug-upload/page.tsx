@@ -26,7 +26,7 @@ export default function DebugUploadPage() {
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-2xl mx-auto space-y-8">
         <h1 className="text-2xl font-bold">Upload Debug Page</h1>
-        
+
         {/* Test 1: Direct file input */}
         <div className="bg-white p-6 rounded-lg shadow">
           <h2 className="text-lg font-semibold mb-4">Test 1: Direct File Input</h2>
@@ -53,7 +53,7 @@ export default function DebugUploadPage() {
         {/* Test 3: Upload Manager Component */}
         <div className="bg-white p-6 rounded-lg shadow">
           <h2 className="text-lg font-semibold mb-4">Test 3: Upload Manager Component</h2>
-          <UploadManager 
+          <UploadManager
             onUploadComplete={(session) => {
               console.log('Upload completed:', session);
               alert(`Upload completed: ${session.filename}`);

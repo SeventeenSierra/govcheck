@@ -5,11 +5,15 @@
 
 'use client';
 
-import { AlertCircle, ChevronDown, ChevronRight, MapPin, XCircle } from 'lucide-react';
+import { AlertCircle, ChevronDown, ChevronRight, MapPin, XCircle } from '@17sierra/ui';
 import { useState } from 'react';
 import { IssueDetails } from './issue-details';
 import { generateRemediationRecommendation } from '@/components/results/remediation-utils';
-import { type ExtendedComplianceIssue, type IssueListProps, IssueSeverity } from '@/components/results/types';
+import {
+  type ExtendedComplianceIssue,
+  type IssueListProps,
+  IssueSeverity,
+} from '@/components/results/types';
 
 /**
  * Issue List Component

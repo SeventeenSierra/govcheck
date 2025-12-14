@@ -5,7 +5,7 @@
 
 /**
  * Agent Interface Types
- * 
+ *
  * Type definitions for AI agent components and interactions.
  */
 

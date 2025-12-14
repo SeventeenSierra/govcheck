@@ -5,7 +5,7 @@
 
 /**
  * Agent Interface Components
- * 
+ *
  * Components for AI agent interaction and interface management.
  */
 

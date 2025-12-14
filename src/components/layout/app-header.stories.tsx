@@ -4,7 +4,7 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react';
-import { Download, Share, Star } from 'lucide-react';
+import { Download, Share, Star } from '@17sierra/ui';
 import { AppHeader } from './app-header';
 
 const meta: Meta<typeof AppHeader> = {
@@ -14,7 +14,8 @@ const meta: Meta<typeof AppHeader> = {
     layout: 'fullscreen',
     docs: {
       description: {
-        component: 'A comprehensive application header with branding, mode indicators, and customizable actions.',
+        component:
+          'A comprehensive application header with branding, mode indicators, and customizable actions.',
       },
     },
   },
@@ -134,8 +135,8 @@ export const Sticky: Story = {
           <div key={i} className="p-4 bg-gray-100 rounded">
             <h3 className="font-semibold">Content Block {i + 1}</h3>
             <p className="text-gray-600">
-              This is some sample content to demonstrate the sticky header behavior.
-              Scroll down to see the header stick to the top of the viewport.
+              This is some sample content to demonstrate the sticky header behavior. Scroll down to
+              see the header stick to the top of the viewport.
             </p>
           </div>
         ))}

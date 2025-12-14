@@ -4,7 +4,7 @@
 'use client';
 
 import Link from 'next/link';
-import { FileText } from 'lucide-react';
+import { FileText } from '@17sierra/ui';
 
 export default function HomePage() {
   return (
@@ -18,7 +18,7 @@ export default function HomePage() {
           <p className="text-gray-600">AI-powered federal proposal compliance analysis</p>
         </div>
 
-        <Link 
+        <Link
           href="/rfp"
           className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
         >

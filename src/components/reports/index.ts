@@ -5,7 +5,7 @@
 
 /**
  * Report Components
- * 
+ *
  * Components for displaying analysis reports and results.
  */
 
