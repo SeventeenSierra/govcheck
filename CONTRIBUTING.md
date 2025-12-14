@@ -63,10 +63,9 @@ Signed-off-by: Name <email>
 | `test` | Adding tests |
 | `chore` | Maintenance tasks |
 
-**Microservice Scopes:**
+- **Microservice Scopes:**
 - `web` - Next.js web app
 - `strands` - Python compliance service
-- `genkit` - Node.js AI orchestration
 - `ui`, `lib` - Shared packages
 - `compliance` - NSF PAPPG validation logic
 - `orchestration` - Federated mesh patterns
@@ -76,7 +75,6 @@ Signed-off-by: Name <email>
 ```bash
 git commit -s -m "feat(strands): add NSF PAPPG Section 2.B validation"
 git commit -s -m "fix(web): handle proposal upload timeout"
-git commit -s -m "feat(genkit): implement document processing workflow"
 git commit -s -m "docs(compliance): update validation rules documentation"
 ```
 

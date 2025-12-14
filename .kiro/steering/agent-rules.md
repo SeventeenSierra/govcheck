@@ -25,13 +25,12 @@ At the start of each session, identify yourself:
 ### 3. Microservice Architecture
 This project uses **Federated Mesh** architecture with these services:
 - **web** (Next.js) - Port 3000
-- **strands** (Python) - Port 8080  
-- **genkit** (Node.js) - Port 8081
+- **strands** (Python) - Port 8080
 
 ### 4. Commit Standards (CRITICAL)
 Use these scopes in ALL commits:
 
-**Services:** web, strands, genkit
+**Services:** web, strands
 **Packages:** ui, lib
 **Infrastructure:** docker, ci, deps
 **Areas:** compliance, orchestration, api, components, docs, config, security, tests, seed, schemas

@@ -22,7 +22,7 @@ This document defines the requirements for restructuring the Proposal Prepper re
 
 1. WHEN the repository is restructured, THE Repository_Structure SHALL organize code into apps/, services/, and packages/ directories
 2. WHEN moving the Next.js application, THE Repository_Structure SHALL relocate all source code from src/ to apps/web/src/
-3. WHEN creating service directories, THE Repository_Structure SHALL establish services/strands-agent/ and services/genkit-service/ with proper scaffolding
+3. WHEN creating service directories, THE Repository_Structure SHALL establish services/strands-agent/ with proper scaffolding
 4. WHEN updating workspace configuration, THE Workspace_Configuration SHALL include "apps/*", "services/*", and "packages/*" in pnpm-workspace.yaml
 5. WHERE configuration files reference the old structure, THE Repository_Structure SHALL update all paths to match the new Federated Mesh layout
 

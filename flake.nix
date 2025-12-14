@@ -58,6 +58,10 @@
             echo "🚀 Proposal Prepper Dev Environment"
             echo "Node: $(node --version)"
             echo "pnpm: $(pnpm --version)"
+            
+            # Mimic IDX web preview command
+            alias web='pnpm run dev -- --port ''${PORT:-3000} --hostname 0.0.0.0'
+            echo "💡 Run 'web' to start the dev server (host: 0.0.0.0, port: \''${PORT:-3000})"
           '';
         };
 

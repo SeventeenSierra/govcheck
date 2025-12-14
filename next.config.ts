@@ -6,7 +6,7 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   output: 'standalone', // For container support
   transpilePackages: ['@17sierra/ui', '@17sierra/lib', '@17sierra/ai-flows'],
-  serverExternalPackages: ['genkit', '@genkit-ai/googleai', 'express'],
+  serverExternalPackages: ['express'],
 
   // Performance optimizations for Requirement 5.1: Load time performance
   experimental: {

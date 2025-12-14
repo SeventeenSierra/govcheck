@@ -34,7 +34,7 @@ export default {
         // Services
         "web", // Next.js web app
         "strands", // Python strands-agent service
-        "genkit", // Node.js genkit service
+
 
         // Packages
         "ui", // @aatb/ui package

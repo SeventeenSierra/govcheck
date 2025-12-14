@@ -23,7 +23,7 @@ This document outlines the patterns and best practices for integrating AI agents
 
 - **Respect AI Zones:** Follow `.ai-zones.yaml` permissions for autonomous operations
 - **Human Involvement Levels:** Use appropriate involvement (full, reviewed, approved, automated)
-- **Microservice Awareness:** Understand which service (web, strands, genkit) you're working on
+- **Microservice Awareness:** Understand which service (web, strands) you're working on
 - **Compliance Focus:** All changes must support NSF PAPPG validation requirements
 
 ## Integration Patterns
@@ -43,7 +43,6 @@ AI agents work together to ensure NSF PAPPG compliance across the microservice a
 3.  **Service Implementation:** 
     - **Strands Service:** Implements core validation logic (Python/AWS Bedrock)
     - **Web Service:** Updates UI to display validation results
-    - **Genkit Service:** Orchestrates document processing workflow
 4.  **Human Review:** All changes require human review per AI zones configuration
 5.  **Integration Testing:** Validates end-to-end compliance checking
 
@@ -56,12 +55,11 @@ AI agents coordinate across microservices while respecting service boundaries.
 **Workflow:**
 
 1.  **Web Service:** Receives proposal upload, validates format
-2.  **Orchestration Layer:** Routes document to appropriate services
-3.  **Genkit Service:** Processes document structure and extracts sections
-4.  **Strands Service:** Validates each section against NSF PAPPG requirements
-5.  **Result Aggregation:** Web service displays comprehensive validation report
+2.  **Orchestration Layer:** Routes document to Strands service
+3.  **Strands Service:** Processes document structure, extracts sections, and validates against NSF PAPPG requirements
+4.  **Result Aggregation:** Web service displays comprehensive validation report
 
 **AI Agent Responsibilities:**
 - Respect service boundaries (don't modify other services directly)
-- Use proper commit scopes (web, strands, genkit)
+- Use proper commit scopes (web, strands)
 - Follow blocking review protocol for cross-service changes

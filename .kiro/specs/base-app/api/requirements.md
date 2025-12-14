@@ -13,7 +13,7 @@ This document defines the requirements for the API component of the Proposal Pre
 
 - **REST_API**: RESTful endpoints for proposal submission, validation requests, and result retrieval
 - **GraphQL_Schema**: Type-safe API schema for complex data queries and real-time updates
-- **Service_Integration**: API patterns for communication between web, strands (Python), and genkit (Node.js) services
+- **Service_Integration**: API patterns for communication between web and strands (Python) services
 - **API_Security**: Authentication, authorization, and data protection for API endpoints
 - **Rate_Limiting**: Request throttling and quota management for API usage
 - **API_Documentation**: OpenAPI specifications and developer documentation
@@ -68,7 +68,7 @@ This document defines the requirements for the API component of the Proposal Pre
 
 #### Acceptance Criteria
 
-1. WHEN orchestrating services, THE Service_Integration SHALL provide internal APIs for web-to-strands and web-to-genkit communication
+1. WHEN orchestrating services, THE Service_Integration SHALL provide internal APIs for web-to-strands communication
 2. WHEN handling async operations, THE Service_Integration SHALL implement job queues and status tracking for long-running validations
 3. WHEN managing data flow, THE Service_Integration SHALL coordinate proposal data between services while maintaining consistency
 4. WHEN ensuring reliability, THE Service_Integration SHALL implement retry logic and circuit breakers for service calls

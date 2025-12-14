@@ -16,7 +16,7 @@ The App-Base component provides the threshold (must-have) core application funct
 The Threshold App-Base follows a layered architecture pattern designed for the Proposal Prepper federated mesh system. The architecture emphasizes separation of concerns, maintainability, and integration with the broader microservice ecosystem.
 
 **Key Architectural Decisions:**
-- **Federated Mesh Integration**: Designed to work within the existing microservice architecture (web, strands, genkit services)
+- **Federated Mesh Integration**: Designed to work within the existing microservice architecture (web, strands services)
 - **Threshold-First Approach**: Focuses on minimum viable functionality with clear upgrade paths
 - **Component-Based Design**: Modular components that can be independently developed and tested
 - **API-First Integration**: Clean separation between frontend and backend services through well-defined APIs

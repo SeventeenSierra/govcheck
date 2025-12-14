@@ -72,11 +72,11 @@ Signed-off-by: Human Sponsor <human@seventeensierra.com>
 
 | Type | Purpose | Common Scopes | Example |
 |------|---------|---------------|---------|
-| `feat` | New feature | web, strands, genkit, ui, compliance | `feat(web): add NSF compliance dashboard` |
-| `fix` | Bug fix | web, strands, genkit, api, components | `fix(api): resolve validation error` |
+| `feat` | New feature | web, strands, ui, compliance | `feat(web): add NSF compliance dashboard` |
+| `fix` | Bug fix | web, strands, api, components | `fix(api): resolve validation error` |
 | `docs` | Documentation | docs, web, ui, lib | `docs(readme): update setup instructions` |
 | `style` | Code formatting | web, ui, components | `style(ui): apply biome formatting` |
-| `refactor` | Code restructuring | web, strands, genkit, orchestration | `refactor(orchestration): extract validation logic` |
+| `refactor` | Code restructuring | web, strands, orchestration | `refactor(orchestration): extract validation logic` |
 | `test` | Testing | tests, web, strands, compliance | `test(compliance): add NSF validation tests` |
 | `chore` | Maintenance | deps, config, ci | `chore(deps): update dependencies` |
 | `ci` | CI/CD changes | ci, docker, railway, security | `ci(docker): add security workflow` |
@@ -88,7 +88,7 @@ Signed-off-by: Human Sponsor <human@seventeensierra.com>
 
 | Category | Scopes | Purpose |
 |----------|--------|---------|
-| **Services** | `web`, `strands`, `genkit` | Federated Mesh services |
+| **Services** | `web`, `strands` | Federated Mesh services |
 | **Packages** | `ui`, `lib` | Shared component libraries |
 | **Infrastructure** | `docker`, `railway`, `ci`, `deps` | Deployment and tooling |
 | **Business Logic** | `compliance`, `orchestration`, `api` | Core functionality |
@@ -212,7 +212,6 @@ AI agents must use appropriate scopes based on the files being modified:
 |--------------|----------------|------|
 | `apps/web/**` | `web` | 2+ |
 | `services/strands-agent/**` | `strands` | 3 (security) |
-| `services/genkit-service/**` | `genkit` | 2+ |
 | `packages/ui/**` | `ui` | 1+ |
 | `packages/lib/**` | `lib` | 1+ |
 | `docker-compose.yml` | `docker` | 4 (human-only) |
@@ -311,8 +310,7 @@ Scope: deps
 ```bash
 ci(security): add gitleaks scanning for AI service secrets
 
-Adds detection for AWS Bedrock and Google Genkit
-credentials in the pre-commit pipeline.
+Adds detection for AWS Bedrock credentials in the pre-commit pipeline.
 
 AI-Agent: kiro
 Human-Involvement: reviewed
@@ -350,7 +348,7 @@ Scope: security
 style(strands): format Python code
 AI-Agent: kiro
 # ❌ Python service uses Black, not Biome
-# ❌ Should use scope 'genkit' or 'web' for style changes
+# ❌ Should use scope 'web' for style changes
 ```
 
 #### Missing Required Trailers

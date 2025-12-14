@@ -42,12 +42,10 @@ pnpm build
 
 - **Web Service** (Next.js) - Port 3000: User interface and orchestration
 - **Strands Service** (Python) - Port 8080: NSF PAPPG compliance validation using AWS Bedrock
-- **Genkit Service** (Node.js) - Port 8081: AI workflow orchestration and document processing
 
 ```
 apps/web/                 # Next.js web application
 services/strands-agent/   # Python compliance validation service
-services/genkit-service/  # Node.js AI orchestration service
 packages/ui/              # Shared UI components
 packages/lib/             # Shared utilities
 ```
@@ -67,7 +65,7 @@ The base application specifications are organized in `.kiro/specs/base-app/` wit
 
 ### Domain-Specific
 - **`compliance/`** - NSF/FAR compliance logic, validation rules, regulatory requirements
-- **`ai/`** - AI integration (Strands/Genkit), model configuration, prompt engineering
+- **`ai/`** - AI integration, model configuration, prompt engineering
 - **`data/`** - Data management, storage, processing pipelines
 
 ### Infrastructure & Operations

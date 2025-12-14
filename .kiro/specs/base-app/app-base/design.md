@@ -253,7 +253,7 @@ interface ProvenanceDisplayProps {
 interface ProvenanceInfo {
   agentId: string
   agentName: string
-  service: 'strands' | 'genkit'
+  service: 'strands'
   model: string
   timestamp: Date
   processingTime: number
