@@ -5,7 +5,7 @@
 
 /**
  * Error Messaging Demo
- * 
+ *
  * Demonstrates the improved error messaging system for upload failures.
  * This shows how users will see clear, actionable error messages.
  */
@@ -24,9 +24,9 @@ export class ErrorMessagingDemo {
     // 1. Invalid file type error
     console.log('1. Invalid File Type Error:');
     const textFile = new File(['Some text content'], 'document.txt', {
-      type: 'text/plain'
+      type: 'text/plain',
     });
-    
+
     const textResult = await this.mockClient.uploadDocument(textFile);
     console.log(`   ❌ ${textResult.error} (Code: ${textResult.code})`);
     console.log('   💡 User sees: Clear message about PDF requirement\n');
@@ -34,13 +34,13 @@ export class ErrorMessagingDemo {
     // 2. File too large error
     console.log('2. File Size Error:');
     const largeFile = new File(['content'], 'huge.pdf', {
-      type: 'application/pdf'
+      type: 'application/pdf',
     });
     Object.defineProperty(largeFile, 'size', {
       value: 150 * 1024 * 1024, // 150MB
-      writable: false
+      writable: false,
     });
-    
+
     const sizeResult = await this.mockClient.uploadDocument(largeFile);
     console.log(`   ❌ ${sizeResult.error} (Code: ${sizeResult.code})`);
     console.log('   💡 User sees: Specific size limit and current file size\n');
@@ -48,14 +48,14 @@ export class ErrorMessagingDemo {
     // 3. Successful upload with progress
     console.log('3. Successful Upload with Progress:');
     const validFile = new File(['%PDF-1.4 valid content'], 'proposal.pdf', {
-      type: 'application/pdf'
+      type: 'application/pdf',
     });
-    
+
     const progressUpdates: number[] = [];
     const successResult = await this.mockClient.uploadDocument(validFile, (progress) => {
       progressUpdates.push(progress);
     });
-    
+
     console.log(`   ✅ Upload successful: ${successResult.data?.filename}`);
     console.log(`   📊 Progress updates: ${progressUpdates.join('% → ')}%`);
     console.log('   💡 User sees: Real-time progress feedback\n');
@@ -63,14 +63,14 @@ export class ErrorMessagingDemo {
     // 4. Analysis results with issues
     console.log('4. Analysis Results:');
     const analysisResult = await this.mockClient.getResults('demo-session');
-    
+
     if (analysisResult.success && analysisResult.data) {
       const { status, issues, summary } = analysisResult.data;
       console.log(`   📋 Status: ${status.toUpperCase()}`);
       console.log(`   📊 Summary: ${summary.totalIssues} total issues`);
       console.log(`       - Critical: ${summary.criticalIssues}`);
       console.log(`       - Warning: ${summary.warningIssues}`);
-      
+
       if (issues.length > 0) {
         console.log('   🔍 Sample Issue:');
         const issue = issues[0];
@@ -95,33 +95,38 @@ export class ErrorMessagingDemo {
       {
         scenario: 'Network Connection Lost',
         originalError: 'fetch failed: network error',
-        improvedMessage: 'Network connection failed. Unable to connect to upload server. Please check your internet connection.',
-        userAction: 'Check internet connection and retry'
+        improvedMessage:
+          'Network connection failed. Unable to connect to upload server. Please check your internet connection.',
+        userAction: 'Check internet connection and retry',
       },
       {
         scenario: 'Server Unavailable',
         originalError: 'ECONNREFUSED connection refused',
-        improvedMessage: 'Server unavailable. Upload server is not responding. Using mock mode for testing.',
-        userAction: 'Server issue - mock mode activated automatically'
+        improvedMessage:
+          'Server unavailable. Upload server is not responding. Using mock mode for testing.',
+        userAction: 'Server issue - mock mode activated automatically',
       },
       {
         scenario: 'Upload Timeout',
         originalError: 'timeout exceeded',
-        improvedMessage: 'Upload timeout. Upload took too long to complete. Please try again with a smaller file.',
-        userAction: 'Try with smaller file or check connection speed'
+        improvedMessage:
+          'Upload timeout. Upload took too long to complete. Please try again with a smaller file.',
+        userAction: 'Try with smaller file or check connection speed',
       },
       {
         scenario: 'Invalid File Format',
         originalError: 'INVALID_FILE_TYPE',
-        improvedMessage: 'Invalid file type: text/plain (.txt). Only PDF files are accepted for upload.',
-        userAction: 'Convert to PDF or select a PDF file'
+        improvedMessage:
+          'Invalid file type: text/plain (.txt). Only PDF files are accepted for upload.',
+        userAction: 'Convert to PDF or select a PDF file',
       },
       {
         scenario: 'File Too Large',
         originalError: 'FILE_TOO_LARGE',
-        improvedMessage: 'File size (150.5MB) exceeds the maximum limit of 100MB. Please compress your PDF or select a smaller file.',
-        userAction: 'Compress PDF or use smaller file'
-      }
+        improvedMessage:
+          'File size (150.5MB) exceeds the maximum limit of 100MB. Please compress your PDF or select a smaller file.',
+        userAction: 'Compress PDF or use smaller file',
+      },
     ];
 
     errorExamples.forEach((example, index) => {

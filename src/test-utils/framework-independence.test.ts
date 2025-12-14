@@ -9,7 +9,7 @@ import { apiConfiguration, ApiConfigUtils, apiConfigManager } from '@/config/api
 
 /**
  * Framework Independence Tests
- * 
+ *
  * Tests that verify the API can work independently of any specific
  * framework and can be configured for different deployment scenarios.
  */
@@ -23,7 +23,7 @@ describe('Framework Independence', () => {
   describe('Mock API Server', () => {
     it('should handle document upload without framework dependencies', async () => {
       const file = new File(['%PDF-1.4 test content'], 'test.pdf', {
-        type: 'application/pdf'
+        type: 'application/pdf',
       });
 
       const result = await mockApiServer.handleDocumentUpload(file);
@@ -59,7 +59,7 @@ describe('Framework Independence', () => {
 
     it('should validate file types consistently', async () => {
       const invalidFile = new File(['test content'], 'document.txt', {
-        type: 'text/plain'
+        type: 'text/plain',
       });
 
       const result = await mockApiServer.handleDocumentUpload(invalidFile);
@@ -71,13 +71,13 @@ describe('Framework Independence', () => {
 
     it('should validate file sizes consistently', async () => {
       const largeFile = new File(['content'], 'large.pdf', {
-        type: 'application/pdf'
+        type: 'application/pdf',
       });
-      
+
       // Mock large file size
       Object.defineProperty(largeFile, 'size', {
         value: 150 * 1024 * 1024, // 150MB
-        writable: false
+        writable: false,
       });
 
       const result = await mockApiServer.handleDocumentUpload(largeFile);
@@ -266,7 +266,7 @@ describe('Framework Independence Integration', () => {
     let config = apiConfigManager.getConfiguration();
     expect(config.baseUrl).toBe('http://localhost:3000');
 
-    // Test Express configuration  
+    // Test Express configuration
     ApiConfigUtils.configureForExpress(8080);
     config = apiConfigManager.getConfiguration();
     expect(config.baseUrl).toBe('http://localhost:8080');

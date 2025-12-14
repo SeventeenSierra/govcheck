@@ -5,7 +5,7 @@
 
 /**
  * Integration Test Helper
- * 
+ *
  * Provides utilities for testing the end-to-end flow:
  * PDF Upload → Analysis Processing → Results Display
  */
@@ -35,41 +35,53 @@ export class IntegrationTestHelper {
       {
         name: 'Valid Compliant Proposal',
         description: 'A proposal that should pass all FAR/DFARS requirements',
-        testFile: this.createMockPDF('compliant-proposal.pdf', 
-          'This proposal meets all FAR requirements including cost accounting standards and technical specifications.'),
+        testFile: this.createMockPDF(
+          'compliant-proposal.pdf',
+          'This proposal meets all FAR requirements including cost accounting standards and technical specifications.'
+        ),
         expectedOutcome: 'pass',
-        expectedIssues: []
+        expectedIssues: [],
       },
       {
         name: 'Non-Compliant Proposal',
         description: 'A proposal with clear FAR violations',
-        testFile: this.createMockPDF('non-compliant-proposal.pdf',
-          'This proposal lacks required cost accounting disclosures and technical specifications.'),
+        testFile: this.createMockPDF(
+          'non-compliant-proposal.pdf',
+          'This proposal lacks required cost accounting disclosures and technical specifications.'
+        ),
         expectedOutcome: 'fail',
-        expectedIssues: ['Missing cost accounting standards', 'Incomplete technical specifications']
+        expectedIssues: [
+          'Missing cost accounting standards',
+          'Incomplete technical specifications',
+        ],
       },
       {
         name: 'Proposal with Warnings',
         description: 'A proposal with minor compliance issues',
-        testFile: this.createMockPDF('warning-proposal.pdf',
-          'This proposal meets most requirements but has some formatting issues.'),
+        testFile: this.createMockPDF(
+          'warning-proposal.pdf',
+          'This proposal meets most requirements but has some formatting issues.'
+        ),
         expectedOutcome: 'warning',
-        expectedIssues: ['Formatting inconsistencies']
-      }
+        expectedIssues: ['Formatting inconsistencies'],
+      },
     ];
   }
 
   /**
    * Simulate the upload process
    */
-  static async simulateUpload(file: File): Promise<{ success: boolean; sessionId?: string; error?: string }> {
+  static async simulateUpload(
+    file: File
+  ): Promise<{ success: boolean; sessionId?: string; error?: string }> {
     try {
       // Simulate file validation
       if (!file.name.endsWith('.pdf')) {
         return { success: false, error: 'Invalid file format. Only PDF files are accepted.' };
       }
 
-      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+      if (file.size > 10 * 1024 * 1024) {
+        // 10MB limit
         return { success: false, error: 'File size exceeds 10MB limit.' };
       }
 
@@ -84,7 +96,10 @@ export class IntegrationTestHelper {
   /**
    * Simulate the analysis process
    */
-  static async simulateAnalysis(sessionId: string, scenario: IntegrationTestScenario): Promise<{
+  static async simulateAnalysis(
+    sessionId: string,
+    scenario: IntegrationTestScenario
+  ): Promise<{
     success: boolean;
     results?: {
       overallStatus: 'pass' | 'fail' | 'warning';
@@ -101,20 +116,25 @@ export class IntegrationTestHelper {
   }> {
     try {
       // Simulate analysis processing time
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Generate mock results based on scenario
       const results = {
         overallStatus: scenario.expectedOutcome,
-        issues: scenario.expectedIssues?.map((issue, index) => ({
-          id: `issue-${index + 1}`,
-          type: 'FAR Compliance',
-          severity: scenario.expectedOutcome === 'fail' ? 'high' as const : 'medium' as const,
-          description: issue,
-          recommendation: `Address ${issue.toLowerCase()} to ensure compliance.`
-        })) || [],
-        complianceScore: scenario.expectedOutcome === 'pass' ? 95 : 
-                        scenario.expectedOutcome === 'warning' ? 75 : 45
+        issues:
+          scenario.expectedIssues?.map((issue, index) => ({
+            id: `issue-${index + 1}`,
+            type: 'FAR Compliance',
+            severity: scenario.expectedOutcome === 'fail' ? ('high' as const) : ('medium' as const),
+            description: issue,
+            recommendation: `Address ${issue.toLowerCase()} to ensure compliance.`,
+          })) || [],
+        complianceScore:
+          scenario.expectedOutcome === 'pass'
+            ? 95
+            : scenario.expectedOutcome === 'warning'
+              ? 75
+              : 45,
       };
 
       return { success: true, results };
@@ -138,12 +158,15 @@ export class IntegrationTestHelper {
 
     // Step 1: Upload
     const uploadResult = await this.simulateUpload(scenario.testFile);
-    
+
     if (!uploadResult.success) {
       return {
         success: false,
-        steps: { upload: uploadResult, analysis: { success: false, error: 'Skipped due to upload failure' } },
-        summary: `Upload failed: ${uploadResult.error}`
+        steps: {
+          upload: uploadResult,
+          analysis: { success: false, error: 'Skipped due to upload failure' },
+        },
+        summary: `Upload failed: ${uploadResult.error}`,
       };
     }
 
@@ -154,7 +177,7 @@ export class IntegrationTestHelper {
       return {
         success: false,
         steps: { upload: uploadResult, analysis: analysisResult },
-        summary: `Analysis failed: ${analysisResult.error}`
+        summary: `Analysis failed: ${analysisResult.error}`,
       };
     }
 
@@ -166,9 +189,9 @@ export class IntegrationTestHelper {
     return {
       success: outcomeMatches,
       steps: { upload: uploadResult, analysis: analysisResult },
-      summary: outcomeMatches 
+      summary: outcomeMatches
         ? `✅ Test passed: Expected ${expectedOutcome}, got ${actualOutcome}`
-        : `❌ Test failed: Expected ${expectedOutcome}, got ${actualOutcome}`
+        : `❌ Test failed: Expected ${expectedOutcome}, got ${actualOutcome}`,
     };
   }
 }

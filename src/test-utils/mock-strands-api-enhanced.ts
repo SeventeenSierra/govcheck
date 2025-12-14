@@ -7,7 +7,11 @@ import type { AnalysisResult, AnalysisSession } from '@/components/analysis/type
 import { AnalysisStatus } from '@/components/analysis/types';
 import type { UploadSession } from '@/types/app';
 import { UploadStatus } from '@/types/app';
-import { getRandomSeedGrant, seedGrantToAnalysisResult, seedGrantToUploadSession } from '@/seed-data';
+import {
+  getRandomSeedGrant,
+  seedGrantToAnalysisResult,
+  seedGrantToUploadSession,
+} from '@/seed-data';
 
 /**
  * Enhanced Mock Strands API for testing with real grant data
@@ -139,9 +143,11 @@ export class MockStrandsAPIEnhanced {
   /**
    * Get available seed grants for testing
    */
-  async getAvailableGrants(): Promise<Array<{ id: string; title: string; author: string; funder: string }>> {
+  async getAvailableGrants(): Promise<
+    Array<{ id: string; title: string; author: string; funder: string }>
+  > {
     await this.simulateDelay();
-    
+
     // This would be useful for testing different grant scenarios
     return [
       {
@@ -158,7 +164,8 @@ export class MockStrandsAPIEnhanced {
       },
       {
         id: '4a81a377-e0e9-43b6-b301-7a3058b0d012',
-        title: 'Using metacommunity theory to assess the impact of multi-species interactions on gut microbial assembly',
+        title:
+          'Using metacommunity theory to assess the impact of multi-species interactions on gut microbial assembly',
         author: 'Mauna Dasari',
         funder: 'U.S. National Science Foundation (NSF)',
       },

@@ -15,7 +15,7 @@ describe('Module Path Resolution Property Tests', () => {
     /**
      * **Feature: test-infrastructure-fixes, Property 1: Module path resolution consistency**
      * **Validates: Requirements 1.1, 1.2, 1.3, 1.4, 1.5**
-     * 
+     *
      * For any test file using @/ imports, all path imports should resolve successfully during TypeScript compilation
      */
     fc.assert(
@@ -49,7 +49,7 @@ describe('Module Path Resolution Property Tests', () => {
     /**
      * **Feature: test-infrastructure-fixes, Property 1: Module path resolution consistency**
      * **Validates: Requirements 1.1, 1.2, 1.3, 1.4, 1.5**
-     * 
+     *
      * For any nested @/ import path, the resolution should work consistently
      */
     fc.assert(
@@ -79,17 +79,17 @@ describe('Module Path Resolution Property Tests', () => {
     /**
      * **Feature: test-infrastructure-fixes, Property 1: Module path resolution consistency**
      * **Validates: Requirements 1.1, 1.2, 1.3, 1.4, 1.5**
-     * 
+     *
      * Test that actual imports from @/ paths work correctly in the test environment
      */
-    
+
     // Test actual imports that should work
     const testImports = [
       () => import('@/types/app'),
       () => import('@/components/analysis/types'),
       () => import('@/utils/upload-validation'),
       () => import('@/seed-data/grants'),
-      () => import('@/test-utils/mock-strands-api')
+      () => import('@/test-utils/mock-strands-api'),
     ];
 
     // All imports should resolve successfully
@@ -102,30 +102,24 @@ describe('Module Path Resolution Property Tests', () => {
     /**
      * **Feature: test-infrastructure-fixes, Property 1: Module path resolution consistency**
      * **Validates: Requirements 1.1, 1.2, 1.3, 1.4, 1.5**
-     * 
+     *
      * The path mapping should be consistent across different import scenarios
      */
     fc.assert(
       fc.property(
         fc.array(
-          fc.constantFrom(
-            '@/services',
-            '@/types/app',
-            '@/utils',
-            '@/components',
-            '@/seed-data'
-          ),
+          fc.constantFrom('@/services', '@/types/app', '@/utils', '@/components', '@/seed-data'),
           { minLength: 1, maxLength: 5 }
         ),
         (importPaths) => {
           // All paths should follow the same resolution pattern
-          const resolvedPaths = importPaths.map(path => path.replace('@/', './src/'));
-          
+          const resolvedPaths = importPaths.map((path) => path.replace('@/', './src/'));
+
           // All resolved paths should start with ./src/
-          resolvedPaths.forEach(resolvedPath => {
+          resolvedPaths.forEach((resolvedPath) => {
             expect(resolvedPath).toMatch(/^\.\/src\//);
           });
-          
+
           // No duplicate resolutions for the same input
           const uniqueInputs = [...new Set(importPaths)];
           const uniqueResolved = [...new Set(resolvedPaths)];

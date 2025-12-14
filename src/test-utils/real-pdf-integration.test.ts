@@ -9,7 +9,7 @@ import { join } from 'path';
 
 /**
  * Real PDF Integration Tests
- * 
+ *
  * Tests the upload functionality with actual PDF files from seed-data directory.
  * Verifies that all proposal PDFs can be properly processed by the upload system.
  */
@@ -28,17 +28,17 @@ class RealPDFTestHelper {
   static loadSeedPDFs(): PDFTestFile[] {
     const seedDataPath = join(process.cwd(), 'src', 'seed-data');
     const files = readdirSync(seedDataPath);
-    const pdfFiles = files.filter(file => file.endsWith('.pdf'));
-    
-    return pdfFiles.map(filename => {
+    const pdfFiles = files.filter((file) => file.endsWith('.pdf'));
+
+    return pdfFiles.map((filename) => {
       const filePath = join(seedDataPath, filename);
       const buffer = readFileSync(filePath);
-      
+
       return {
         name: filename,
         path: filePath,
         size: buffer.length,
-        buffer
+        buffer,
       };
     });
   }
@@ -48,9 +48,9 @@ class RealPDFTestHelper {
    */
   static createFileFromBuffer(pdfFile: PDFTestFile): File {
     const blob = new Blob([pdfFile.buffer], { type: 'application/pdf' });
-    return new File([blob], pdfFile.name, { 
+    return new File([blob], pdfFile.name, {
       type: 'application/pdf',
-      lastModified: Date.now()
+      lastModified: Date.now(),
     });
   }
 
@@ -95,7 +95,7 @@ class RealPDFTestHelper {
     return {
       isValid: errors.length === 0,
       errors,
-      warnings
+      warnings,
     };
   }
 
@@ -109,21 +109,21 @@ class RealPDFTestHelper {
     warnings?: string[];
   }> {
     const validation = this.validatePDFFile(file);
-    
+
     if (!validation.isValid) {
       return {
         success: false,
-        error: validation.errors.join('; ')
+        error: validation.errors.join('; '),
       };
     }
 
     // Simulate successful upload
     const sessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
+
     return {
       success: true,
       sessionId,
-      warnings: validation.warnings.length > 0 ? validation.warnings : undefined
+      warnings: validation.warnings.length > 0 ? validation.warnings : undefined,
     };
   }
 
@@ -138,13 +138,13 @@ class RealPDFTestHelper {
   } {
     // Pattern: author_name_year_uuid_PROPOSAL_number.pdf
     const match = filename.match(/^(.+?)_(\d{4})_([a-f0-9-]+)_PROPOSAL_(\d+)\.pdf$/i);
-    
+
     if (match) {
       return {
         author: match[1].replace(/_/g, ' '),
         year: parseInt(match[2]),
         uuid: match[3],
-        proposalNumber: parseInt(match[4])
+        proposalNumber: parseInt(match[4]),
       };
     }
 
@@ -164,15 +164,15 @@ describe('Real PDF Integration Tests', () => {
     it('should load PDF files from seed-data directory', () => {
       expect(seedPDFs.length).toBeGreaterThan(0);
       console.log(`Found ${seedPDFs.length} PDF files`);
-      
+
       // Log first few files for verification
-      seedPDFs.slice(0, 5).forEach(pdf => {
+      seedPDFs.slice(0, 5).forEach((pdf) => {
         console.log(`- ${pdf.name} (${(pdf.size / 1024).toFixed(1)}KB)`);
       });
     });
 
     it('should have valid PDF file structures', () => {
-      seedPDFs.forEach(pdf => {
+      seedPDFs.forEach((pdf) => {
         expect(pdf.name).toMatch(/\.pdf$/i);
         expect(pdf.size).toBeGreaterThan(0);
         expect(pdf.buffer).toBeInstanceOf(Buffer);
@@ -183,39 +183,43 @@ describe('Real PDF Integration Tests', () => {
 
   describe('File Validation', () => {
     it('should validate all seed PDFs as uploadable', () => {
-      const results = seedPDFs.map(pdfFile => {
+      const results = seedPDFs.map((pdfFile) => {
         const file = RealPDFTestHelper.createFileFromBuffer(pdfFile);
         const validation = RealPDFTestHelper.validatePDFFile(file);
-        
+
         return {
           filename: pdfFile.name,
-          validation
+          validation,
         };
       });
 
-      const invalidFiles = results.filter(r => !r.validation.isValid);
-      
+      const invalidFiles = results.filter((r) => !r.validation.isValid);
+
       if (invalidFiles.length > 0) {
         console.log('Invalid files found:');
-        invalidFiles.forEach(f => {
+        invalidFiles.forEach((f) => {
           console.log(`- ${f.filename}: ${f.validation.errors.join(', ')}`);
         });
       }
 
       expect(invalidFiles.length).toBe(0);
-      
+
       // Log summary
       const totalSize = seedPDFs.reduce((sum, pdf) => sum + pdf.size, 0);
-      console.log(`All ${seedPDFs.length} PDFs are valid (total: ${(totalSize / 1024 / 1024).toFixed(1)}MB)`);
+      console.log(
+        `All ${seedPDFs.length} PDFs are valid (total: ${(totalSize / 1024 / 1024).toFixed(1)}MB)`
+      );
     });
 
     it('should handle file size variations appropriately', () => {
-      const fileSizes = seedPDFs.map(pdf => pdf.size);
+      const fileSizes = seedPDFs.map((pdf) => pdf.size);
       const minSize = Math.min(...fileSizes);
       const maxSize = Math.max(...fileSizes);
       const avgSize = fileSizes.reduce((sum, size) => sum + size, 0) / fileSizes.length;
 
-      console.log(`File sizes: min=${(minSize/1024).toFixed(1)}KB, max=${(maxSize/1024/1024).toFixed(1)}MB, avg=${(avgSize/1024).toFixed(1)}KB`);
+      console.log(
+        `File sizes: min=${(minSize / 1024).toFixed(1)}KB, max=${(maxSize / 1024 / 1024).toFixed(1)}MB, avg=${(avgSize / 1024).toFixed(1)}KB`
+      );
 
       expect(minSize).toBeGreaterThan(0);
       expect(maxSize).toBeLessThan(100 * 1024 * 1024); // 100MB limit
@@ -229,35 +233,36 @@ describe('Real PDF Integration Tests', () => {
       for (const pdfFile of seedPDFs) {
         const file = RealPDFTestHelper.createFileFromBuffer(pdfFile);
         const result = await RealPDFTestHelper.simulateUploadValidation(file);
-        
+
         uploadResults.push({
           filename: pdfFile.name,
-          result
+          result,
         });
       }
 
-      const failedUploads = uploadResults.filter(r => !r.result.success);
-      
+      const failedUploads = uploadResults.filter((r) => !r.result.success);
+
       if (failedUploads.length > 0) {
         console.log('Failed uploads:');
-        failedUploads.forEach(f => {
+        failedUploads.forEach((f) => {
           console.log(`- ${f.filename}: ${f.result.error}`);
         });
       }
 
       expect(failedUploads.length).toBe(0);
-      
-      const successfulUploads = uploadResults.filter(r => r.result.success);
+
+      const successfulUploads = uploadResults.filter((r) => r.result.success);
       console.log(`Successfully validated ${successfulUploads.length}/${seedPDFs.length} uploads`);
     });
 
     it('should generate unique session IDs for each upload', async () => {
       const sessionIds = new Set<string>();
 
-      for (const pdfFile of seedPDFs.slice(0, 10)) { // Test first 10 files
+      for (const pdfFile of seedPDFs.slice(0, 10)) {
+        // Test first 10 files
         const file = RealPDFTestHelper.createFileFromBuffer(pdfFile);
         const result = await RealPDFTestHelper.simulateUploadValidation(file);
-        
+
         if (result.success && result.sessionId) {
           expect(sessionIds.has(result.sessionId)).toBe(false);
           sessionIds.add(result.sessionId);
@@ -270,20 +275,22 @@ describe('Real PDF Integration Tests', () => {
 
   describe('Metadata Extraction', () => {
     it('should extract metadata from PDF filenames', () => {
-      const metadataResults = seedPDFs.map(pdf => ({
+      const metadataResults = seedPDFs.map((pdf) => ({
         filename: pdf.name,
-        metadata: RealPDFTestHelper.extractMetadataFromFilename(pdf.name)
+        metadata: RealPDFTestHelper.extractMetadataFromFilename(pdf.name),
       }));
 
-      const validMetadata = metadataResults.filter(r => 
-        r.metadata.author && r.metadata.year && r.metadata.uuid
+      const validMetadata = metadataResults.filter(
+        (r) => r.metadata.author && r.metadata.year && r.metadata.uuid
       );
 
       console.log(`Extracted metadata from ${validMetadata.length}/${seedPDFs.length} files`);
-      
+
       // Show some examples
-      validMetadata.slice(0, 3).forEach(r => {
-        console.log(`- ${r.metadata.author} (${r.metadata.year}) - Proposal ${r.metadata.proposalNumber}`);
+      validMetadata.slice(0, 3).forEach((r) => {
+        console.log(
+          `- ${r.metadata.author} (${r.metadata.year}) - Proposal ${r.metadata.proposalNumber}`
+        );
       });
 
       expect(validMetadata.length).toBeGreaterThan(0);
@@ -291,8 +298,8 @@ describe('Real PDF Integration Tests', () => {
 
     it('should identify proposal variations for same authors', () => {
       const authorGroups = new Map<string, number>();
-      
-      seedPDFs.forEach(pdf => {
+
+      seedPDFs.forEach((pdf) => {
         const metadata = RealPDFTestHelper.extractMetadataFromFilename(pdf.name);
         if (metadata.author) {
           const count = authorGroups.get(metadata.author) || 0;
@@ -300,8 +307,9 @@ describe('Real PDF Integration Tests', () => {
         }
       });
 
-      const multipleProposals = Array.from(authorGroups.entries())
-        .filter(([_, count]) => count > 1);
+      const multipleProposals = Array.from(authorGroups.entries()).filter(
+        ([_, count]) => count > 1
+      );
 
       if (multipleProposals.length > 0) {
         console.log('Authors with multiple proposals:');
@@ -317,9 +325,9 @@ describe('Real PDF Integration Tests', () => {
   describe('Performance Testing', () => {
     it('should handle batch file validation efficiently', async () => {
       const startTime = Date.now();
-      
+
       const batchResults = await Promise.all(
-        seedPDFs.map(async pdfFile => {
+        seedPDFs.map(async (pdfFile) => {
           const file = RealPDFTestHelper.createFileFromBuffer(pdfFile);
           return RealPDFTestHelper.simulateUploadValidation(file);
         })
@@ -327,10 +335,12 @@ describe('Real PDF Integration Tests', () => {
 
       const endTime = Date.now();
       const processingTime = endTime - startTime;
-      
-      const successCount = batchResults.filter(r => r.success).length;
-      
-      console.log(`Processed ${seedPDFs.length} files in ${processingTime}ms (${successCount} successful)`);
+
+      const successCount = batchResults.filter((r) => r.success).length;
+
+      console.log(
+        `Processed ${seedPDFs.length} files in ${processingTime}ms (${successCount} successful)`
+      );
       console.log(`Average: ${(processingTime / seedPDFs.length).toFixed(1)}ms per file`);
 
       expect(successCount).toBe(seedPDFs.length);
@@ -345,24 +355,24 @@ describe('Real PDF Integration Tests', () => {
 describe('Real PDF Integration Summary', () => {
   it('should provide comprehensive test summary for all seed PDFs', async () => {
     const seedPDFs = RealPDFTestHelper.loadSeedPDFs();
-    
+
     console.log('\n=== REAL PDF INTEGRATION SUMMARY ===');
     console.log(`Total PDF files: ${seedPDFs.length}`);
-    
+
     const totalSize = seedPDFs.reduce((sum, pdf) => sum + pdf.size, 0);
     console.log(`Total size: ${(totalSize / 1024 / 1024).toFixed(1)}MB`);
-    
+
     const avgSize = totalSize / seedPDFs.length;
     console.log(`Average size: ${(avgSize / 1024).toFixed(1)}KB`);
-    
+
     // Test all files
     let successCount = 0;
     let errorCount = 0;
-    
+
     for (const pdfFile of seedPDFs) {
       const file = RealPDFTestHelper.createFileFromBuffer(pdfFile);
       const result = await RealPDFTestHelper.simulateUploadValidation(file);
-      
+
       if (result.success) {
         successCount++;
       } else {
@@ -370,12 +380,12 @@ describe('Real PDF Integration Summary', () => {
         console.log(`❌ ${pdfFile.name}: ${result.error}`);
       }
     }
-    
+
     console.log(`✅ Successful uploads: ${successCount}`);
     console.log(`❌ Failed uploads: ${errorCount}`);
     console.log(`📊 Success rate: ${((successCount / seedPDFs.length) * 100).toFixed(1)}%`);
     console.log('=== END SUMMARY ===\n');
-    
+
     expect(successCount).toBe(seedPDFs.length);
     expect(errorCount).toBe(0);
   });

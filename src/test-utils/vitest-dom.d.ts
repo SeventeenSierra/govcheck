@@ -3,7 +3,7 @@
 
 /**
  * Comprehensive Vitest DOM Type Declarations
- * 
+ *
  * This file provides multiple approaches to ensure DOM matchers are available
  * in both the TypeScript compiler and IDE environments.
  */
@@ -25,11 +25,11 @@ declare global {
   namespace Vi {
     interface JestAssertion<T = any> extends TestingLibraryMatchers<T, void> {}
   }
-  
+
   namespace jest {
     interface Matchers<R> extends TestingLibraryMatchers<typeof expect.stringContaining, R> {}
   }
-  
+
   // Direct expect interface extension as fallback
   interface Expect {
     <T = any>(actual: T): TestingLibraryMatchers<T, void> & import('vitest').Assertion<T>;

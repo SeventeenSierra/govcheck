@@ -8,7 +8,7 @@ import { join } from 'path';
 
 /**
  * PDF Upload Demo Utility
- * 
+ *
  * Provides utilities for testing PDF uploads with real seed data files.
  * This can be used for manual testing and demonstration purposes.
  */
@@ -42,12 +42,12 @@ export class PDFUploadDemo {
 
     const seedDataPath = join(process.cwd(), 'src', 'seed-data');
     const files = readdirSync(seedDataPath);
-    const pdfFiles = files.filter(file => file.endsWith('.pdf'));
+    const pdfFiles = files.filter((file) => file.endsWith('.pdf'));
 
-    this.pdfFiles = pdfFiles.map(filename => {
+    this.pdfFiles = pdfFiles.map((filename) => {
       const filePath = join(seedDataPath, filename);
       const buffer = readFileSync(filePath);
-      
+
       // Extract metadata from filename
       const match = filename.match(/^(.+?)_(\d{4})_([a-f0-9-]+)_PROPOSAL_(\d+)\.pdf$/i);
       const author = match ? match[1].replace(/_/g, ' ') : 'Unknown';
@@ -57,9 +57,9 @@ export class PDFUploadDemo {
 
       // Create File object
       const blob = new Blob([buffer], { type: 'application/pdf' });
-      const file = new File([blob], filename, { 
+      const file = new File([blob], filename, {
         type: 'application/pdf',
-        lastModified: Date.now()
+        lastModified: Date.now(),
       });
 
       // Categorize by size
@@ -81,8 +81,8 @@ export class PDFUploadDemo {
         metadata: {
           uuid,
           category,
-          description: `${category.charAt(0).toUpperCase() + category.slice(1)} proposal by ${author}`
-        }
+          description: `${category.charAt(0).toUpperCase() + category.slice(1)} proposal by ${author}`,
+        },
       };
     });
 
@@ -102,7 +102,7 @@ export class PDFUploadDemo {
    */
   static async getFilesByCategory(category: 'small' | 'medium' | 'large'): Promise<PDFDemoFile[]> {
     const files = await this.loadDemoFiles();
-    return files.filter(f => f.metadata.category === category);
+    return files.filter((f) => f.metadata.category === category);
   }
 
   /**
@@ -110,7 +110,7 @@ export class PDFUploadDemo {
    */
   static async getFilesByAuthor(author: string): Promise<PDFDemoFile[]> {
     const files = await this.loadDemoFiles();
-    return files.filter(f => f.author.toLowerCase().includes(author.toLowerCase()));
+    return files.filter((f) => f.author.toLowerCase().includes(author.toLowerCase()));
   }
 
   /**
@@ -133,31 +133,32 @@ export class PDFUploadDemo {
     recentProposals: PDFDemoFile[];
   }> {
     const files = await this.loadDemoFiles();
-    
-    const smallFiles = files.filter(f => f.metadata.category === 'small');
-    const mediumFiles = files.filter(f => f.metadata.category === 'medium');
-    const largeFiles = files.filter(f => f.metadata.category === 'large');
-    
+
+    const smallFiles = files.filter((f) => f.metadata.category === 'small');
+    const mediumFiles = files.filter((f) => f.metadata.category === 'medium');
+    const largeFiles = files.filter((f) => f.metadata.category === 'large');
+
     // Find authors with multiple proposals
     const authorCounts = new Map<string, PDFDemoFile[]>();
-    files.forEach(f => {
+    files.forEach((f) => {
       const existing = authorCounts.get(f.author) || [];
       existing.push(f);
       authorCounts.set(f.author, existing);
     });
-    
-    const multipleProposalAuthors = Array.from(authorCounts.entries())
-      .filter(([_, proposals]) => proposals.length > 1);
-    
+
+    const multipleProposalAuthors = Array.from(authorCounts.entries()).filter(
+      ([_, proposals]) => proposals.length > 1
+    );
+
     // Get recent proposals (2020+)
-    const recentProposals = files.filter(f => f.year >= 2020);
+    const recentProposals = files.filter((f) => f.year >= 2020);
 
     return {
       small: smallFiles[0],
       medium: mediumFiles[0],
       large: largeFiles[0],
       multipleFromSameAuthor: multipleProposalAuthors[0]?.[1] || [],
-      recentProposals: recentProposals.slice(0, 5)
+      recentProposals: recentProposals.slice(0, 5),
     };
   }
 
@@ -166,11 +167,11 @@ export class PDFUploadDemo {
    */
   private static formatFileSize(bytes: number): string {
     if (bytes === 0) return '0 B';
-    
+
     const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    
+
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
   }
 
@@ -194,30 +195,31 @@ export class PDFUploadDemo {
     authorsWithMultipleProposals: number;
   }> {
     const files = await this.loadDemoFiles();
-    
+
     const totalSize = files.reduce((sum, f) => sum + f.size, 0);
     const averageSize = totalSize / files.length;
-    
+
     const sizeDistribution = {
-      small: files.filter(f => f.metadata.category === 'small').length,
-      medium: files.filter(f => f.metadata.category === 'medium').length,
-      large: files.filter(f => f.metadata.category === 'large').length
+      small: files.filter((f) => f.metadata.category === 'small').length,
+      medium: files.filter((f) => f.metadata.category === 'medium').length,
+      large: files.filter((f) => f.metadata.category === 'large').length,
     };
-    
-    const years = files.map(f => f.year).filter(y => y > 0);
+
+    const years = files.map((f) => f.year).filter((y) => y > 0);
     const yearRange = {
       earliest: Math.min(...years),
-      latest: Math.max(...years)
+      latest: Math.max(...years),
     };
-    
-    const uniqueAuthors = new Set(files.map(f => f.author)).size;
-    
+
+    const uniqueAuthors = new Set(files.map((f) => f.author)).size;
+
     const authorCounts = new Map<string, number>();
-    files.forEach(f => {
+    files.forEach((f) => {
       authorCounts.set(f.author, (authorCounts.get(f.author) || 0) + 1);
     });
-    const authorsWithMultipleProposals = Array.from(authorCounts.values())
-      .filter(count => count > 1).length;
+    const authorsWithMultipleProposals = Array.from(authorCounts.values()).filter(
+      (count) => count > 1
+    ).length;
 
     return {
       totalFiles: files.length,
@@ -226,7 +228,7 @@ export class PDFUploadDemo {
       sizeDistribution,
       yearRange,
       uniqueAuthors,
-      authorsWithMultipleProposals
+      authorsWithMultipleProposals,
     };
   }
 
@@ -236,7 +238,7 @@ export class PDFUploadDemo {
   static async createDemoFileList(): Promise<string> {
     const files = await this.loadDemoFiles();
     const stats = await this.getDemoStatistics();
-    
+
     let output = '# PDF Upload Demo Files\n\n';
     output += `## Statistics\n`;
     output += `- **Total Files**: ${stats.totalFiles}\n`;
@@ -245,21 +247,21 @@ export class PDFUploadDemo {
     output += `- **Year Range**: ${stats.yearRange.earliest} - ${stats.yearRange.latest}\n`;
     output += `- **Unique Authors**: ${stats.uniqueAuthors}\n`;
     output += `- **Authors with Multiple Proposals**: ${stats.authorsWithMultipleProposals}\n\n`;
-    
+
     output += `## Size Distribution\n`;
     output += `- **Small** (< 0.5MB): ${stats.sizeDistribution.small} files\n`;
     output += `- **Medium** (0.5-2MB): ${stats.sizeDistribution.medium} files\n`;
     output += `- **Large** (> 2MB): ${stats.sizeDistribution.large} files\n\n`;
-    
+
     output += `## Available Files\n\n`;
-    
+
     files.forEach((file, index) => {
       output += `${index + 1}. **${file.displayName}**\n`;
       output += `   - File: \`${file.name}\`\n`;
       output += `   - Size: ${file.sizeFormatted} (${file.metadata.category})\n`;
       output += `   - Description: ${file.metadata.description}\n\n`;
     });
-    
+
     return output;
   }
 }

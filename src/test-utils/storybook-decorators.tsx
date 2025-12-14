@@ -36,17 +36,13 @@ export const MockAPIProvider: React.FC<MockAPIProviderProps> = ({
 }) => {
   const api = React.useMemo(() => {
     if (mockAPI) return mockAPI;
-    
+
     // Create a new instance with the specified delay
     // Error scenarios can be handled by the consuming component
     return new MockStrandsAPIEnhanced('http://localhost:8080', delay);
   }, [mockAPI, errorScenario, delay]);
 
-  return (
-    <MockAPIContext.Provider value={api}>
-      {children}
-    </MockAPIContext.Provider>
-  );
+  return <MockAPIContext.Provider value={api}>{children}</MockAPIContext.Provider>;
 };
 
 /**
@@ -82,7 +78,7 @@ export const withMockAPI = (errorScenario?: ErrorScenario, delay?: number): Deco
  */
 export const withTheme: Decorator = (Story, context) => {
   const theme = context.parameters?.theme || context.globals?.theme || 'light';
-  
+
   return (
     <div className={theme === 'dark' ? 'dark' : ''} data-theme={theme}>
       <div className="min-h-screen bg-background text-foreground">
@@ -97,7 +93,7 @@ export const withTheme: Decorator = (Story, context) => {
  */
 export const withResponsive: Decorator = (Story, context) => {
   const viewport = context.parameters?.viewport?.defaultViewport;
-  
+
   return (
     <div className="w-full h-full" data-viewport={viewport}>
       <Story />
@@ -138,19 +134,23 @@ export const withFullscreen: Decorator = (Story) => (
  * Composite decorator that combines common story needs
  * Use individual decorators for now due to TypeScript complexity
  */
-export const withCommonDecorators = (options: {
-  mockAPI?: boolean;
-  errorScenario?: ErrorScenario;
-  theme?: boolean;
-  padding?: string;
-  centered?: boolean;
-  fullscreen?: boolean;
-} = {}): Decorator => {
+export const withCommonDecorators = (
+  options: {
+    mockAPI?: boolean;
+    errorScenario?: ErrorScenario;
+    theme?: boolean;
+    padding?: string;
+    centered?: boolean;
+    fullscreen?: boolean;
+  } = {}
+): Decorator => {
   return (Story) => (
     <div className={options.fullscreen ? 'w-screen h-screen' : ''}>
       <div className={options.centered ? 'flex items-center justify-center min-h-screen' : ''}>
         <div className={options.padding || 'p-4'}>
-          <div className={options.theme === false ? '' : 'min-h-screen bg-background text-foreground'}>
+          <div
+            className={options.theme === false ? '' : 'min-h-screen bg-background text-foreground'}
+          >
             {options.mockAPI ? (
               <MockAPIProvider errorScenario={options.errorScenario}>
                 <Story />

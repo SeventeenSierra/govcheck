@@ -18,7 +18,9 @@ describe('Testing Library Matcher Availability', () => {
       fc.property(
         fc.record({
           tagName: fc.constantFrom('div', 'span', 'button', 'p', 'h1', 'section'), // Exclude input to avoid void element issues
-          textContent: fc.string({ minLength: 1, maxLength: 50 }).filter(s => s.trim().length > 0),
+          textContent: fc
+            .string({ minLength: 1, maxLength: 50 })
+            .filter((s) => s.trim().length > 0),
           id: fc.option(fc.string({ minLength: 1, maxLength: 20 }), { nil: undefined }),
           className: fc.option(fc.string({ minLength: 1, maxLength: 30 }), { nil: undefined }),
           disabled: fc.option(fc.boolean(), { nil: undefined }),
@@ -89,13 +91,21 @@ describe('Testing Library Matcher Availability', () => {
               return true; // Skip values with leading/trailing whitespace
             }
           }
-          
+
           const TestForm = () => (
             <form>
               <input
                 type={formProps.inputType}
-                value={formProps.inputType === 'checkbox' || formProps.inputType === 'radio' ? undefined : formProps.value}
-                checked={formProps.inputType === 'checkbox' || formProps.inputType === 'radio' ? formProps.checked : undefined}
+                value={
+                  formProps.inputType === 'checkbox' || formProps.inputType === 'radio'
+                    ? undefined
+                    : formProps.value
+                }
+                checked={
+                  formProps.inputType === 'checkbox' || formProps.inputType === 'radio'
+                    ? formProps.checked
+                    : undefined
+                }
                 required={formProps.required}
                 placeholder={formProps.placeholder}
                 readOnly={formProps.inputType !== 'checkbox' && formProps.inputType !== 'radio'}
@@ -140,7 +150,11 @@ describe('Testing Library Matcher Availability', () => {
           }
 
           // Test that the input is valid only if it's not a required checkbox/radio that's unchecked
-          if (formProps.required && (formProps.inputType === 'checkbox' || formProps.inputType === 'radio') && !formProps.checked) {
+          if (
+            formProps.required &&
+            (formProps.inputType === 'checkbox' || formProps.inputType === 'radio') &&
+            !formProps.checked
+          ) {
             expect(input).toBeInvalid();
           } else {
             expect(input).toBeValid();
@@ -156,8 +170,13 @@ describe('Testing Library Matcher Availability', () => {
       fc.property(
         fc.record({
           role: fc.constantFrom('button', 'link', 'heading', 'textbox', 'checkbox', 'radio'),
-          ariaLabel: fc.option(fc.string({ minLength: 1, maxLength: 50 }).filter(s => s.trim().length > 0), { nil: undefined }),
-          ariaDescribedBy: fc.option(fc.string({ minLength: 1, maxLength: 20 }), { nil: undefined }),
+          ariaLabel: fc.option(
+            fc.string({ minLength: 1, maxLength: 50 }).filter((s) => s.trim().length > 0),
+            { nil: undefined }
+          ),
+          ariaDescribedBy: fc.option(fc.string({ minLength: 1, maxLength: 20 }), {
+            nil: undefined,
+          }),
           ariaExpanded: fc.option(fc.boolean(), { nil: undefined }),
         }),
         (ariaProps) => {
@@ -165,7 +184,8 @@ describe('Testing Library Matcher Availability', () => {
             const props: any = { role: ariaProps.role };
             if (ariaProps.ariaLabel) props['aria-label'] = ariaProps.ariaLabel;
             if (ariaProps.ariaDescribedBy) props['aria-describedby'] = ariaProps.ariaDescribedBy;
-            if (ariaProps.ariaExpanded !== undefined) props['aria-expanded'] = ariaProps.ariaExpanded;
+            if (ariaProps.ariaExpanded !== undefined)
+              props['aria-expanded'] = ariaProps.ariaExpanded;
 
             return <div {...props}>Test content</div>;
           };

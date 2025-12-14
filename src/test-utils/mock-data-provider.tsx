@@ -75,15 +75,18 @@ export const MockDataProvider: React.FC<MockDataProviderProps> = ({
   }, [config.delay]);
 
   // Generate mock data based on config
-  const mockData = React.useMemo(() => ({
-    uploadSession: generateMockUploadSession(config.uploadStatus),
-    analysisSession: generateMockAnalysisSession(config.analysisStatus),
-    analysisResults: generateMockAnalysisResults(config.complianceStatus),
-    mockFile: generateMockFile(),
-  }), [config.uploadStatus, config.analysisStatus, config.complianceStatus]);
+  const mockData = React.useMemo(
+    () => ({
+      uploadSession: generateMockUploadSession(config.uploadStatus),
+      analysisSession: generateMockAnalysisSession(config.analysisStatus),
+      analysisResults: generateMockAnalysisResults(config.complianceStatus),
+      mockFile: generateMockFile(),
+    }),
+    [config.uploadStatus, config.analysisStatus, config.complianceStatus]
+  );
 
   const updateConfig = React.useCallback((newConfig: Partial<MockDataConfig>) => {
-    setConfig(prev => ({ ...prev, ...newConfig }));
+    setConfig((prev) => ({ ...prev, ...newConfig }));
   }, []);
 
   const contextValue: MockDataContextValue = {
@@ -93,11 +96,7 @@ export const MockDataProvider: React.FC<MockDataProviderProps> = ({
     updateConfig,
   };
 
-  return (
-    <MockDataContext.Provider value={contextValue}>
-      {children}
-    </MockDataContext.Provider>
-  );
+  return <MockDataContext.Provider value={contextValue}>{children}</MockDataContext.Provider>;
 };
 
 /**
@@ -220,7 +219,10 @@ export const createMockScenario = {
   /**
    * Create analysis scenario with specific state
    */
-  analysis: (status: 'queued' | 'extracting' | 'analyzing' | 'validating' | 'completed' | 'failed', withError = false) => ({
+  analysis: (
+    status: 'queued' | 'extracting' | 'analyzing' | 'validating' | 'completed' | 'failed',
+    withError = false
+  ) => ({
     analysisStatus: status,
     ...(withError && { errorScenario: ErrorScenario.ANALYSIS_FAILED }),
   }),

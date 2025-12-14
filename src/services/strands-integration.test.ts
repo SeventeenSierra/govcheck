@@ -111,7 +111,7 @@ describe('StrandsIntegrationManager', () => {
       await manager.checkServiceHealth();
 
       expect(listener).toHaveBeenCalled();
-      
+
       unsubscribe();
     });
   });
@@ -178,7 +178,7 @@ describe('StrandsIntegrationUtils', () => {
     it('should return ready when service is healthy', async () => {
       const manager = StrandsIntegrationManager.getInstance();
       const client = manager.getClient();
-      
+
       vi.mocked(client.getServiceStatus).mockResolvedValue({
         healthy: true,
         baseUrl: 'http://localhost:8080',
@@ -194,7 +194,7 @@ describe('StrandsIntegrationUtils', () => {
     it('should return not ready when service is unhealthy', async () => {
       const manager = StrandsIntegrationManager.getInstance();
       const client = manager.getClient();
-      
+
       vi.mocked(client.getServiceStatus).mockResolvedValue({
         healthy: false,
         baseUrl: 'http://localhost:8080',

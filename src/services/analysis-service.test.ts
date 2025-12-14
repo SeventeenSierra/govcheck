@@ -31,10 +31,10 @@ vi.mock('./strands-integration', () => ({
   },
   StrandsIntegrationUtils: {
     ensureServiceReady: vi.fn(() => Promise.resolve({ ready: true })),
-    getServiceConfig: vi.fn(() => ({ 
-      baseUrl: 'http://localhost:8080', 
-      healthy: true, 
-      version: '1.0.0' 
+    getServiceConfig: vi.fn(() => ({
+      baseUrl: 'http://localhost:8080',
+      healthy: true,
+      version: '1.0.0',
     })),
     initialize: vi.fn(() => Promise.resolve()),
   },

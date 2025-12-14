@@ -167,7 +167,7 @@ describe('Performance Utilities', () => {
     it('should use custom key generator', () => {
       const fn = vi.fn((obj: { id: number }) => obj.id * 2);
       const memoizedFn = memoize(
-        fn as (...args: unknown[]) => unknown, 
+        fn as (...args: unknown[]) => unknown,
         (obj: unknown) => `id:${(obj as { id: number }).id}`
       );
 
