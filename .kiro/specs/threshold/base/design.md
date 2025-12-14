@@ -64,13 +64,13 @@ graph TB
         BC4[Data Table]
         BC5[Form Controls]
         BC6[Navigation]
-        BC7[Modals & Dialogs]
-        BC8[Charts & Graphs]
+        BC7["Modals & Dialogs"]
+        BC8["Charts & Graphs"]
     end
     
     subgraph "Layer 0: Foundation"
         F1[Design Tokens]
-        F2[@17sierra/ui Library]
+        F2["@17sierra/ui Library"]
         F3[CSS Architecture]
         F4[Type System]
     end
@@ -179,9 +179,9 @@ graph TB
     subgraph "Web Service (Next.js - Port 3000)"
         subgraph "API Routes"
             UploadAPI[POST /api/proposals]
-            StatusAPI[GET /api/proposals/{id}/status]
-            ResultsAPI[GET /api/proposals/{id}/results]
-            AnalysisAPI[POST /api/proposals/{id}/analyze]
+            StatusAPI["GET /api/proposals/{id}/status"]
+            ResultsAPI["GET /api/proposals/{id}/results"]
+            AnalysisAPI["POST /api/proposals/{id}/analyze"]
         end
         
         subgraph "Middleware"
@@ -208,7 +208,7 @@ graph TB
         PostgresDB[(PostgreSQL)]
         RedisCache[(Redis Cache)]
         FileStorage[(File Storage)]
-        AWSBedrock[AWS Bedrock<br/>Claude 3.5 Sonnet]
+        AWSBedrock["AWS Bedrock<br/>Claude 3.5 Sonnet"]
     end
     
     %% Frontend to Web Service
@@ -781,7 +781,7 @@ graph TB
     subgraph "API Routes (Next.js)"
         ProposalAPI[Proposal Management<br/>CRUD Operations]
         AnalysisAPI[Analysis Control<br/>Start/Stop/Status]
-        UserAPI[User Management<br/>Profile & Preferences]
+        UserAPI["User Management<br/>Profile & Preferences"]
         StatusAPI[Real-time Status<br/>WebSocket/SSE]
         HealthAPI[Health Checks<br/>Service Monitoring]
     end
@@ -795,7 +795,7 @@ graph TB
     
     subgraph "Error Handling"
         ErrorCapture[Error Capture<br/>Comprehensive Logging]
-        ErrorClassification[Error Classification<br/>Type & Severity]
+        ErrorClassification["Error Classification<br/>Type & Severity"]
         ErrorResponse[Error Response<br/>Consistent Format]
         ErrorRecovery[Error Recovery<br/>Retry Mechanisms]
     end
