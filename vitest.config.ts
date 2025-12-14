@@ -11,7 +11,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
-    exclude: ['**/node_modules/**', '**/dist/**', '**/e2e/**', '**/.next/**'],
+    exclude: ['**/node_modules/**', '**/dist/**', '**/e2e/**', '**/.next/**', '**/.direnv/**'],
     // Ensure TypeScript declarations are properly loaded
     typecheck: {
       tsconfig: './tsconfig.test.json',
