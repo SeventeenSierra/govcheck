@@ -81,9 +81,10 @@ export const uiConfig = {
  */
 export const apiConfig = {
   /** Base URL for Strands service - Docker container or localhost */
-  strandsBaseUrl: process.env.NEXT_PUBLIC_STRANDS_URL || 
-                  process.env.STRANDS_SERVICE_URL || 
-                  (typeof window === 'undefined' ? 'http://strands:8080' : 'http://localhost:8080'),
+  strandsBaseUrl:
+    process.env.NEXT_PUBLIC_STRANDS_URL ||
+    process.env.STRANDS_SERVICE_URL ||
+    (typeof window === 'undefined' ? 'http://strands:8080' : 'http://localhost:8080'),
   /** Use mock APIs for development (when external services aren't available) */
   useMockApis: process.env.NEXT_PUBLIC_USE_MOCK_APIS === 'true',
   /** API request timeout in milliseconds */

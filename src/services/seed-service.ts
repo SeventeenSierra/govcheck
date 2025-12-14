@@ -5,7 +5,7 @@
 
 /**
  * Service for managing seeded documents and database seeding operations.
- * 
+ *
  * This service provides functionality to:
  * - Check seeding status
  * - Get list of seeded documents
@@ -70,13 +70,13 @@ export class SeedService {
   async getSeedingStatus(): Promise<SeedingStatus> {
     try {
       const response = await fetch(`${this.baseUrl}?action=status`);
-      
+
       if (!response.ok) {
         throw new Error(`Failed to get seeding status: ${response.statusText}`);
       }
 
       const result = await response.json();
-      
+
       if (!result.success) {
         throw new Error(result.error || 'Failed to get seeding status');
       }
@@ -94,13 +94,13 @@ export class SeedService {
   async getSeededDocuments(): Promise<SeededDocument[]> {
     try {
       const response = await fetch(`${this.baseUrl}?action=documents`);
-      
+
       if (!response.ok) {
         throw new Error(`Failed to get seeded documents: ${response.statusText}`);
       }
 
       const result = await response.json();
-      
+
       if (!result.success) {
         throw new Error(result.error || 'Failed to get seeded documents');
       }
@@ -118,13 +118,13 @@ export class SeedService {
   async verifySeededFiles(): Promise<FileVerification> {
     try {
       const response = await fetch(`${this.baseUrl}?action=verify`);
-      
+
       if (!response.ok) {
         throw new Error(`Failed to verify seeded files: ${response.statusText}`);
       }
 
       const result = await response.json();
-      
+
       if (!result.success) {
         throw new Error(result.error || 'Failed to verify seeded files');
       }
@@ -147,13 +147,13 @@ export class SeedService {
           'Content-Type': 'application/json',
         },
       });
-      
+
       if (!response.ok) {
         throw new Error(`Failed to reseed database: ${response.statusText}`);
       }
 
       const result = await response.json();
-      
+
       if (!result.success) {
         throw new Error(result.error || 'Failed to reseed database');
       }
@@ -171,7 +171,7 @@ export class SeedService {
   async getSeededDocumentById(documentId: string): Promise<SeededDocument | null> {
     try {
       const documents = await this.getSeededDocuments();
-      return documents.find(doc => doc.document_id === documentId) || null;
+      return documents.find((doc) => doc.document_id === documentId) || null;
     } catch (error) {
       console.error('Error getting seeded document by ID:', error);
       throw error;
@@ -184,9 +184,9 @@ export class SeedService {
   async getSeededDocumentsByAuthor(author: string): Promise<SeededDocument[]> {
     try {
       const documents = await this.getSeededDocuments();
-      return documents.filter(doc => 
-        doc.metadata.author && 
-        doc.metadata.author.toLowerCase().includes(author.toLowerCase())
+      return documents.filter(
+        (doc) =>
+          doc.metadata.author && doc.metadata.author.toLowerCase().includes(author.toLowerCase())
       );
     } catch (error) {
       console.error('Error getting seeded documents by author:', error);
@@ -200,9 +200,9 @@ export class SeedService {
   async getSeededDocumentsByFunder(funder: string): Promise<SeededDocument[]> {
     try {
       const documents = await this.getSeededDocuments();
-      return documents.filter(doc => 
-        doc.metadata.funder && 
-        doc.metadata.funder.toLowerCase().includes(funder.toLowerCase())
+      return documents.filter(
+        (doc) =>
+          doc.metadata.funder && doc.metadata.funder.toLowerCase().includes(funder.toLowerCase())
       );
     } catch (error) {
       console.error('Error getting seeded documents by funder:', error);
@@ -216,9 +216,7 @@ export class SeedService {
   async getSeededDocumentsByYear(year: number): Promise<SeededDocument[]> {
     try {
       const documents = await this.getSeededDocuments();
-      return documents.filter(doc => 
-        doc.metadata.year === year
-      );
+      return documents.filter((doc) => doc.metadata.year === year);
     } catch (error) {
       console.error('Error getting seeded documents by year:', error);
       throw error;
@@ -232,12 +230,13 @@ export class SeedService {
     try {
       const documents = await this.getSeededDocuments();
       const lowerQuery = query.toLowerCase();
-      
-      return documents.filter(doc => 
-        doc.filename.toLowerCase().includes(lowerQuery) ||
-        doc.original_filename.toLowerCase().includes(lowerQuery) ||
-        (doc.metadata.title && doc.metadata.title.toLowerCase().includes(lowerQuery)) ||
-        (doc.metadata.author && doc.metadata.author.toLowerCase().includes(lowerQuery))
+
+      return documents.filter(
+        (doc) =>
+          doc.filename.toLowerCase().includes(lowerQuery) ||
+          doc.original_filename.toLowerCase().includes(lowerQuery) ||
+          (doc.metadata.title && doc.metadata.title.toLowerCase().includes(lowerQuery)) ||
+          (doc.metadata.author && doc.metadata.author.toLowerCase().includes(lowerQuery))
       );
     } catch (error) {
       console.error('Error searching seeded documents:', error);
@@ -274,7 +273,7 @@ export class SeedService {
       const byAuthor: Record<string, number> = {};
       let totalFileSize = 0;
 
-      documents.forEach(doc => {
+      documents.forEach((doc) => {
         // Count by funder
         const funder = doc.metadata.funder || 'Unknown';
         byFunder[funder] = (byFunder[funder] || 0) + 1;

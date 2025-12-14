@@ -5,7 +5,7 @@
 
 /**
  * Framework-Independent API Configuration
- * 
+ *
  * Provides flexible configuration for different deployment scenarios
  * and framework integrations. Supports environment-based configuration
  * and runtime switching between real and mock APIs.
@@ -104,7 +104,7 @@ function shouldUseMockApi(): boolean {
     if (window.location.pathname.includes('/mock')) {
       return true;
     }
-    
+
     // Check localStorage override
     const mockOverride = localStorage.getItem('use-mock-api');
     if (mockOverride !== null) {
@@ -237,7 +237,7 @@ export class ApiConfigurationManager {
    * Notify all listeners of configuration changes
    */
   private notifyListeners(): void {
-    this.listeners.forEach(listener => listener(this.config));
+    this.listeners.forEach((listener) => listener(this.config));
   }
 
   /**

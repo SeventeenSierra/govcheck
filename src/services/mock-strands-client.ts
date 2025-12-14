@@ -3,11 +3,16 @@
  * SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
  */
 
-import type { ApiResponse, UploadSessionResponse, AnalysisSessionResponse, ComplianceResultsResponse } from './strands-api-client';
+import type {
+  ApiResponse,
+  UploadSessionResponse,
+  AnalysisSessionResponse,
+  ComplianceResultsResponse,
+} from './strands-api-client';
 
 /**
  * Mock Strands API Client for Development
- * 
+ *
  * Provides realistic mock responses for development and testing
  * when the actual Strands service isn't available.
  */
@@ -22,7 +27,7 @@ export class MockStrandsClient {
 
   private async simulateDelay(customDelay?: number): Promise<void> {
     const delay = customDelay ?? this.mockDelay;
-    return new Promise(resolve => setTimeout(resolve, delay));
+    return new Promise((resolve) => setTimeout(resolve, delay));
   }
 
   async uploadDocument(
@@ -45,7 +50,7 @@ export class MockStrandsClient {
       return {
         success: false,
         error: 'Only PDF files are accepted',
-        code: 'INVALID_FILE_TYPE'
+        code: 'INVALID_FILE_TYPE',
       };
     }
 
@@ -53,7 +58,7 @@ export class MockStrandsClient {
       return {
         success: false,
         error: 'File size exceeds 100MB limit',
-        code: 'FILE_TOO_LARGE'
+        code: 'FILE_TOO_LARGE',
       };
     }
 
@@ -69,7 +74,7 @@ export class MockStrandsClient {
         progress: 100,
         startedAt: new Date().toISOString(),
         completedAt: new Date().toISOString(),
-      }
+      },
     };
   }
 
@@ -86,7 +91,7 @@ export class MockStrandsClient {
         startedAt: new Date().toISOString(),
         estimatedCompletion: new Date(Date.now() + 30000).toISOString(),
         currentStep: 'Starting compliance analysis...',
-      }
+      },
     };
   }
 
@@ -98,12 +103,13 @@ export class MockStrandsClient {
         id: 'issue_1',
         severity: 'warning' as const,
         title: 'Budget Justification Format',
-        description: 'Budget justification follows standard format but could include more detail on equipment costs',
+        description:
+          'Budget justification follows standard format but could include more detail on equipment costs',
         location: { page: 8, section: 'Budget Justification', text: 'Equipment costs section' },
         regulation: {
           framework: 'FAR' as const,
           section: '15.204-5',
-          reference: 'FAR 15.204-5 - Budget Justification Requirements'
+          reference: 'FAR 15.204-5 - Budget Justification Requirements',
         },
         remediation: 'Consider adding more detailed breakdown of equipment and personnel costs',
       },
@@ -116,7 +122,7 @@ export class MockStrandsClient {
         regulation: {
           framework: 'FAR' as const,
           section: '19-069',
-          reference: 'NSF 19-069 - Data Management Plan Requirements'
+          reference: 'NSF 19-069 - Data Management Plan Requirements',
         },
         remediation: 'Plan is compliant with current requirements',
       },
@@ -129,33 +135,40 @@ export class MockStrandsClient {
         regulation: {
           framework: 'DFARS' as const,
           section: '252.204-7012',
-          reference: 'DFARS 252.204-7012 - Cybersecurity Requirements'
+          reference: 'DFARS 252.204-7012 - Cybersecurity Requirements',
         },
-        remediation: 'Must include comprehensive cybersecurity plan addressing all DFARS requirements',
-      }
+        remediation:
+          'Must include comprehensive cybersecurity plan addressing all DFARS requirements',
+      },
     ];
 
     // Randomly select subset of issues (sometimes including critical)
-    const mockIssues = Math.random() > 0.7 
-      ? allMockIssues // 30% chance of all issues including critical
-      : allMockIssues.slice(0, 2); // 70% chance of just warning/info issues
+    const mockIssues =
+      Math.random() > 0.7
+        ? allMockIssues // 30% chance of all issues including critical
+        : allMockIssues.slice(0, 2); // 70% chance of just warning/info issues
 
     const issues = Math.random() > 0.3 ? mockIssues : []; // 70% chance of having issues
-    
+
     return {
       success: true,
       data: {
         id: sessionId,
         proposalId: `proposal_${sessionId}`,
-        status: issues.length === 0 ? 'pass' : issues.some(i => i.severity === 'critical') ? 'fail' : 'warning',
+        status:
+          issues.length === 0
+            ? 'pass'
+            : issues.some((i) => i.severity === 'critical')
+              ? 'fail'
+              : 'warning',
         issues,
         summary: {
           totalIssues: issues.length,
-          criticalIssues: issues.filter(i => i.severity === 'critical').length,
-          warningIssues: issues.filter(i => i.severity === 'warning').length,
+          criticalIssues: issues.filter((i) => i.severity === 'critical').length,
+          warningIssues: issues.filter((i) => i.severity === 'warning').length,
         },
         generatedAt: new Date().toISOString(),
-      }
+      },
     };
   }
 
@@ -172,7 +185,7 @@ export class MockStrandsClient {
         startedAt: new Date(Date.now() - 30000).toISOString(),
         completedAt: new Date().toISOString(),
         currentStep: 'Analysis completed',
-      }
+      },
     };
   }
 
@@ -190,7 +203,7 @@ export class MockStrandsClient {
         progress: 100,
         startedAt: new Date(Date.now() - 10000).toISOString(),
         completedAt: new Date().toISOString(),
-      }
+      },
     };
   }
 
@@ -203,7 +216,7 @@ export class MockStrandsClient {
       data: {
         status: 'healthy',
         timestamp: new Date().toISOString(),
-      }
+      },
     };
   }
 }

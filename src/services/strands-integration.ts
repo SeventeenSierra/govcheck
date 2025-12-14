@@ -38,7 +38,7 @@ export class StrandsIntegrationManager {
 
   private constructor() {
     this.client = strandsApiClient;
-    
+
     // Listen for configuration changes
     apiConfigManager.subscribe((config) => {
       this.client = new StrandsApiClient(config.baseUrl);
@@ -73,7 +73,7 @@ export class StrandsIntegrationManager {
   async checkServiceHealth(): Promise<ServiceIntegrationStatus> {
     try {
       const serviceStatus = await this.client.getServiceStatus();
-      
+
       this.status = {
         connected: true,
         healthy: serviceStatus.healthy,
@@ -81,7 +81,7 @@ export class StrandsIntegrationManager {
         lastChecked: Date.now(),
         error: serviceStatus.error,
         checks: serviceStatus.checks,
-        version: serviceStatus.version
+        version: serviceStatus.version,
       };
     } catch (error) {
       this.status = {
@@ -89,7 +89,7 @@ export class StrandsIntegrationManager {
         healthy: false,
         baseUrl: this.client.getBaseUrl(),
         lastChecked: Date.now(),
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
 
@@ -130,7 +130,7 @@ export class StrandsIntegrationManager {
    */
   subscribeToStatus(listener: (status: ServiceIntegrationStatus) => void): () => void {
     this.statusListeners.add(listener);
-    
+
     // Send current status immediately if available
     if (this.status) {
       listener(this.status);
@@ -144,7 +144,7 @@ export class StrandsIntegrationManager {
    */
   private notifyStatusListeners(): void {
     if (this.status) {
-      this.statusListeners.forEach(listener => listener(this.status!));
+      this.statusListeners.forEach((listener) => listener(this.status!));
     }
   }
 
@@ -153,18 +153,18 @@ export class StrandsIntegrationManager {
    */
   async waitForService(timeoutMs: number = 60000): Promise<boolean> {
     const startTime = Date.now();
-    
+
     while (Date.now() - startTime < timeoutMs) {
       await this.checkServiceHealth();
-      
+
       if (this.status?.healthy) {
         return true;
       }
-      
+
       // Wait before next check
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
     }
-    
+
     return false;
   }
 
@@ -174,16 +174,16 @@ export class StrandsIntegrationManager {
   async recoverConnection(): Promise<boolean> {
     // Try different base URLs if the current one fails
     const fallbackUrls = [
-      'http://strands:8080',  // Docker container name
+      'http://strands:8080', // Docker container name
       'http://localhost:8080', // Local development
-      'http://127.0.0.1:8080'  // Alternative localhost
+      'http://127.0.0.1:8080', // Alternative localhost
     ];
 
     for (const url of fallbackUrls) {
       try {
         const testClient = new StrandsApiClient(url);
         const healthy = await testClient.isServiceHealthy();
-        
+
         if (healthy) {
           // Update configuration to use this URL
           apiConfigManager.updateConfiguration({ baseUrl: url });
@@ -240,7 +240,7 @@ export const StrandsIntegrationUtils = {
    */
   async initialize(): Promise<void> {
     strandsIntegration.startHealthMonitoring();
-    
+
     // Wait for initial health check
     await strandsIntegration.checkServiceHealth();
   },
@@ -257,13 +257,13 @@ export const StrandsIntegrationUtils = {
    */
   async ensureServiceReady(): Promise<{ ready: boolean; message?: string }> {
     const status = await strandsIntegration.checkServiceHealth();
-    
+
     if (status.healthy) {
       return { ready: true };
     }
 
     let message = 'The analysis service is currently unavailable.';
-    
+
     if (!status.connected) {
       message += ' Please ensure the Strands service is running.';
     } else if (status.error) {
@@ -279,11 +279,11 @@ export const StrandsIntegrationUtils = {
   getServiceConfig(): { baseUrl: string; healthy: boolean; version?: string } {
     const status = strandsIntegration.getStatus();
     const client = strandsIntegration.getClient();
-    
+
     return {
       baseUrl: client.getBaseUrl(),
       healthy: status?.healthy || false,
-      version: status?.version
+      version: status?.version,
     };
-  }
+  },
 };

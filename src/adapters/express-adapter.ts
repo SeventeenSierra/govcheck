@@ -9,19 +9,19 @@ import type { ApiResponse } from '../services/strands-api-client';
 
 /**
  * Express.js API Adapter
- * 
+ *
  * Adapter layer for using the framework-independent mock API server
  * with Express.js. Demonstrates how the same business logic can be
  * used across different frameworks.
- * 
+ *
  * Usage:
  * ```typescript
  * import express from 'express';
  * import { ExpressApiHandlers } from './adapters/express-adapter';
- * 
+ *
  * const app = express();
  * app.use(express.json());
- * 
+ *
  * app.post('/api/documents/upload', ExpressApiHandlers.handleDocumentUpload);
  * app.post('/api/analysis/start', ExpressApiHandlers.handleAnalysisStart);
  * // ... other routes
@@ -35,12 +35,12 @@ function sendApiResponse<T>(res: Response, apiResponse: ApiResponse<T>, successS
   if (apiResponse.success) {
     res.status(successStatus).json({
       success: true,
-      data: apiResponse.data
+      data: apiResponse.data,
     });
   } else {
     // Map error codes to HTTP status codes
     let status = 500; // Default server error
-    
+
     switch (apiResponse.code) {
       case 'MISSING_FILE':
       case 'MISSING_PROPOSAL_ID':
@@ -65,7 +65,7 @@ function sendApiResponse<T>(res: Response, apiResponse: ApiResponse<T>, successS
     res.status(status).json({
       success: false,
       error: apiResponse.error,
-      code: apiResponse.code
+      code: apiResponse.code,
     });
   }
 }
@@ -81,20 +81,21 @@ export const ExpressApiHandlers = {
   async handleDocumentUpload(req: Request, res: Response): Promise<void> {
     try {
       // Assuming multer middleware is used: app.use(multer().single('file'))
-      const file = req.file;
-      
+      const file = (req as Request & { file?: Express.Multer.File }).file;
+
       if (!file) {
         res.status(400).json({
           success: false,
           error: 'No file provided',
-          code: 'MISSING_FILE'
+          code: 'MISSING_FILE',
         });
         return;
       }
 
       // Convert multer file to File object
-      const fileObj = new File([file.buffer], file.originalname, {
-        type: file.mimetype
+      // Using generic ArrayBuffer for compatibility
+      const fileObj = new File([file.buffer as unknown as BlobPart], file.originalname, {
+        type: file.mimetype,
       });
 
       const result = await mockApiServer.handleDocumentUpload(fileObj);
@@ -104,7 +105,7 @@ export const ExpressApiHandlers = {
       res.status(500).json({
         success: false,
         error: 'Upload failed',
-        code: 'UPLOAD_FAILED'
+        code: 'UPLOAD_FAILED',
       });
     }
   },
@@ -115,12 +116,12 @@ export const ExpressApiHandlers = {
   async handleAnalysisStart(req: Request, res: Response): Promise<void> {
     try {
       const { proposalId } = req.body;
-      
+
       if (!proposalId) {
         res.status(400).json({
           success: false,
           error: 'Proposal ID is required',
-          code: 'MISSING_PROPOSAL_ID'
+          code: 'MISSING_PROPOSAL_ID',
         });
         return;
       }
@@ -132,7 +133,7 @@ export const ExpressApiHandlers = {
       res.status(500).json({
         success: false,
         error: 'Failed to start analysis',
-        code: 'ANALYSIS_START_FAILED'
+        code: 'ANALYSIS_START_FAILED',
       });
     }
   },
@@ -143,12 +144,12 @@ export const ExpressApiHandlers = {
   async handleAnalysisResults(req: Request, res: Response): Promise<void> {
     try {
       const { sessionId } = req.params;
-      
+
       if (!sessionId) {
         res.status(400).json({
           success: false,
           error: 'Session ID is required',
-          code: 'MISSING_SESSION_ID'
+          code: 'MISSING_SESSION_ID',
         });
         return;
       }
@@ -160,7 +161,7 @@ export const ExpressApiHandlers = {
       res.status(500).json({
         success: false,
         error: 'Failed to retrieve results',
-        code: 'RESULTS_RETRIEVAL_FAILED'
+        code: 'RESULTS_RETRIEVAL_FAILED',
       });
     }
   },
@@ -171,12 +172,12 @@ export const ExpressApiHandlers = {
   async handleUploadStatus(req: Request, res: Response): Promise<void> {
     try {
       const { sessionId } = req.params;
-      
+
       if (!sessionId) {
         res.status(400).json({
           success: false,
           error: 'Session ID is required',
-          code: 'MISSING_SESSION_ID'
+          code: 'MISSING_SESSION_ID',
         });
         return;
       }
@@ -188,7 +189,7 @@ export const ExpressApiHandlers = {
       res.status(500).json({
         success: false,
         error: 'Failed to get upload status',
-        code: 'UPLOAD_STATUS_FAILED'
+        code: 'UPLOAD_STATUS_FAILED',
       });
     }
   },
@@ -199,12 +200,12 @@ export const ExpressApiHandlers = {
   async handleAnalysisStatus(req: Request, res: Response): Promise<void> {
     try {
       const { sessionId } = req.params;
-      
+
       if (!sessionId) {
         res.status(400).json({
           success: false,
           error: 'Session ID is required',
-          code: 'MISSING_SESSION_ID'
+          code: 'MISSING_SESSION_ID',
         });
         return;
       }
@@ -216,7 +217,7 @@ export const ExpressApiHandlers = {
       res.status(500).json({
         success: false,
         error: 'Failed to get analysis status',
-        code: 'ANALYSIS_STATUS_FAILED'
+        code: 'ANALYSIS_STATUS_FAILED',
       });
     }
   },
@@ -227,12 +228,12 @@ export const ExpressApiHandlers = {
   async handleIssueDetails(req: Request, res: Response): Promise<void> {
     try {
       const { issueId } = req.params;
-      
+
       if (!issueId) {
         res.status(400).json({
           success: false,
           error: 'Issue ID is required',
-          code: 'MISSING_ISSUE_ID'
+          code: 'MISSING_ISSUE_ID',
         });
         return;
       }
@@ -244,7 +245,7 @@ export const ExpressApiHandlers = {
       res.status(500).json({
         success: false,
         error: 'Failed to get issue details',
-        code: 'ISSUE_DETAILS_FAILED'
+        code: 'ISSUE_DETAILS_FAILED',
       });
     }
   },
@@ -261,7 +262,7 @@ export const ExpressApiHandlers = {
       res.status(500).json({
         success: false,
         error: 'Health check failed',
-        code: 'HEALTH_CHECK_FAILED'
+        code: 'HEALTH_CHECK_FAILED',
       });
     }
   },
@@ -300,21 +301,21 @@ export function createExpressServer(port = 8080) {
   const express = require('express');
   const cors = require('cors');
   const multer = require('multer');
-  
+
   const app = express();
-  
+
   // Middleware
   app.use(cors());
   app.use(express.json());
   app.use(multer().single('file')); // For file uploads
-  
+
   // API routes
   app.use('/api', createExpressApiRouter());
-  
+
   // Start server
   app.listen(port, () => {
     console.log(`Mock API server running on http://localhost:${port}`);
   });
-  
+
   return app;
 }

@@ -65,10 +65,10 @@ export class AnalysisService {
       // Check if service is ready before attempting analysis
       const serviceReady = await StrandsIntegrationUtils.ensureServiceReady();
       if (!serviceReady.ready) {
-        return { 
-          success: false, 
-          sessionId: '', 
-          error: serviceReady.message || 'Analysis service is not available'
+        return {
+          success: false,
+          sessionId: '',
+          error: serviceReady.message || 'Analysis service is not available',
         };
       }
 
@@ -190,12 +190,12 @@ export class AnalysisService {
   }> {
     const status = strandsIntegration.getStatus();
     const config = StrandsIntegrationUtils.getServiceConfig();
-    
+
     return {
       healthy: config.healthy,
       message: strandsIntegration.getStatusMessage(),
       baseUrl: config.baseUrl,
-      version: config.version
+      version: config.version,
     };
   }
 

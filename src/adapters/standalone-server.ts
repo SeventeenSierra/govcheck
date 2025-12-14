@@ -7,11 +7,11 @@
 
 /**
  * Standalone Mock API Server
- * 
+ *
  * Framework-independent server that can run without Next.js or any
  * specific framework. Uses Node.js built-in HTTP server with the
  * same business logic as the framework adapters.
- * 
+ *
  * Usage:
  * ```bash
  * node src/adapters/standalone-server.js
@@ -31,7 +31,7 @@ import type { ApiResponse } from '../services/strands-api-client';
 async function parseJsonBody(req: IncomingMessage): Promise<any> {
   return new Promise((resolve, reject) => {
     let body = '';
-    req.on('data', chunk => {
+    req.on('data', (chunk) => {
       body += chunk.toString();
     });
     req.on('end', () => {
@@ -51,7 +51,7 @@ async function parseJsonBody(req: IncomingMessage): Promise<any> {
 async function parseFormData(req: IncomingMessage): Promise<{ file?: File }> {
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
-    req.on('data', chunk => {
+    req.on('data', (chunk) => {
       chunks.push(chunk);
     });
     req.on('end', () => {
@@ -60,7 +60,7 @@ async function parseFormData(req: IncomingMessage): Promise<{ file?: File }> {
         // This is a simplified implementation
         // In production, you'd use a proper multipart parser
         const file = new File([buffer], 'uploaded-file.pdf', {
-          type: 'application/pdf'
+          type: 'application/pdf',
         });
         resolve({ file });
       } catch (error) {
@@ -74,7 +74,11 @@ async function parseFormData(req: IncomingMessage): Promise<{ file?: File }> {
 /**
  * Send API response
  */
-function sendResponse<T>(res: ServerResponse, apiResponse: ApiResponse<T>, successStatus = 200): void {
+function sendResponse<T>(
+  res: ServerResponse,
+  apiResponse: ApiResponse<T>,
+  successStatus = 200
+): void {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -83,14 +87,16 @@ function sendResponse<T>(res: ServerResponse, apiResponse: ApiResponse<T>, succe
   if (apiResponse.success) {
     res.statusCode = successStatus;
     res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({
-      success: true,
-      data: apiResponse.data
-    }));
+    res.end(
+      JSON.stringify({
+        success: true,
+        data: apiResponse.data,
+      })
+    );
   } else {
     // Map error codes to HTTP status codes
     let status = 500;
-    
+
     switch (apiResponse.code) {
       case 'MISSING_FILE':
       case 'MISSING_PROPOSAL_ID':
@@ -106,11 +112,13 @@ function sendResponse<T>(res: ServerResponse, apiResponse: ApiResponse<T>, succe
 
     res.statusCode = status;
     res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({
-      success: false,
-      error: apiResponse.error,
-      code: apiResponse.code
-    }));
+    res.end(
+      JSON.stringify({
+        success: false,
+        error: apiResponse.error,
+        code: apiResponse.code,
+      })
+    );
   }
 }
 
@@ -148,52 +156,48 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse): Promise
         sendResponse(res, {
           success: false,
           error: 'No file provided',
-          code: 'MISSING_FILE'
+          code: 'MISSING_FILE',
         });
         return;
       }
       const result = await mockApiServer.handleDocumentUpload(file);
       sendResponse(res, result, 201);
-
     } else if (pathname?.startsWith('/api/documents/upload/') && method === 'GET') {
       const sessionId = pathname.split('/').pop();
       if (!sessionId) {
         sendResponse(res, {
           success: false,
           error: 'Session ID is required',
-          code: 'MISSING_SESSION_ID'
+          code: 'MISSING_SESSION_ID',
         });
         return;
       }
       const result = await mockApiServer.handleUploadStatus(sessionId);
       sendResponse(res, result);
-
     } else if (pathname === '/api/analysis/start' && method === 'POST') {
       const body = await parseJsonBody(req);
       if (!body.proposalId) {
         sendResponse(res, {
           success: false,
           error: 'Proposal ID is required',
-          code: 'MISSING_PROPOSAL_ID'
+          code: 'MISSING_PROPOSAL_ID',
         });
         return;
       }
       const result = await mockApiServer.handleAnalysisStart(body.proposalId);
       sendResponse(res, result, 201);
-
     } else if (pathname?.match(/^\/api\/analysis\/[^/]+$/) && method === 'GET') {
       const sessionId = pathname.split('/').pop();
       if (!sessionId) {
         sendResponse(res, {
           success: false,
           error: 'Session ID is required',
-          code: 'MISSING_SESSION_ID'
+          code: 'MISSING_SESSION_ID',
         });
         return;
       }
       const result = await mockApiServer.handleAnalysisStatus(sessionId);
       sendResponse(res, result);
-
     } else if (pathname?.match(/^\/api\/analysis\/[^/]+\/results$/) && method === 'GET') {
       const parts = pathname.split('/');
       const sessionId = parts[parts.length - 2];
@@ -201,50 +205,50 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse): Promise
         sendResponse(res, {
           success: false,
           error: 'Session ID is required',
-          code: 'MISSING_SESSION_ID'
+          code: 'MISSING_SESSION_ID',
         });
         return;
       }
       const result = await mockApiServer.handleAnalysisResults(sessionId);
       sendResponse(res, result);
-
     } else if (pathname?.match(/^\/api\/results\/issues\/[^/]+$/) && method === 'GET') {
       const issueId = pathname.split('/').pop();
       if (!issueId) {
         sendResponse(res, {
           success: false,
           error: 'Issue ID is required',
-          code: 'MISSING_ISSUE_ID'
+          code: 'MISSING_ISSUE_ID',
         });
         return;
       }
       const result = await mockApiServer.handleIssueDetails(issueId);
       sendResponse(res, result);
-
     } else if (pathname === '/api/health' && method === 'GET') {
       const result = await mockApiServer.handleHealthCheck();
       sendResponse(res, result);
-
     } else {
       // 404 Not Found
       res.statusCode = 404;
       res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify({
-        success: false,
-        error: 'Not Found',
-        code: 'NOT_FOUND'
-      }));
+      res.end(
+        JSON.stringify({
+          success: false,
+          error: 'Not Found',
+          code: 'NOT_FOUND',
+        })
+      );
     }
-
   } catch (error) {
     console.error('Request error:', error);
     res.statusCode = 500;
     res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({
-      success: false,
-      error: 'Internal Server Error',
-      code: 'INTERNAL_ERROR'
-    }));
+    res.end(
+      JSON.stringify({
+        success: false,
+        error: 'Internal Server Error',
+        code: 'INTERNAL_ERROR',
+      })
+    );
   }
 }
 

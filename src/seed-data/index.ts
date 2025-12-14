@@ -5,7 +5,7 @@
 
 /**
  * Seed data utilities for testing with real grant proposal data
- * 
+ *
  * This module provides access to the AATB dataset from grant-trace repository
  * for testing proposal compliance analysis functionality.
  */

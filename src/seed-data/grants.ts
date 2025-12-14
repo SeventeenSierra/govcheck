@@ -9,10 +9,10 @@ import { UploadStatus } from '../types/app';
 
 /**
  * Seed data from AATB dataset for testing proposal compliance analysis
- * 
+ *
  * This dataset contains real grant proposals and metadata from various funding agencies
  * including NSF, Wellcome Trust, and Danish National Science Foundation.
- * 
+ *
  * Source: https://github.com/SeventeenSierra/grant-trace/tree/main/data/aatb_dataset
  */
 export const seedGrants: SeedGrant[] = [
@@ -64,7 +64,8 @@ export const seedGrants: SeedGrant[] = [
           type: 'compliance',
           severity: IssueSeverity.INFO,
           title: 'Budget justification format',
-          description: 'Budget justification follows standard format but could include more detail on equipment costs',
+          description:
+            'Budget justification follows standard format but could include more detail on equipment costs',
           location: { page: 8, section: 'Budget Justification' },
           regulation: { section: 'FAR 15.204-5', title: 'Proposal Evaluation' },
           remediation: 'Consider adding more detailed breakdown of equipment and personnel costs',
@@ -120,7 +121,8 @@ export const seedGrants: SeedGrant[] = [
           type: 'compliance',
           severity: IssueSeverity.WARNING,
           title: 'Missing cost-sharing documentation',
-          description: 'Cost-sharing commitments mentioned but supporting documentation not clearly referenced',
+          description:
+            'Cost-sharing commitments mentioned but supporting documentation not clearly referenced',
           location: { page: 12, section: 'Budget and Cost Sharing' },
           regulation: { section: 'FAR 16.303', title: 'Cost-reimbursement contracts' },
           remediation: 'Include formal cost-sharing commitment letters from institutional partners',
@@ -130,7 +132,8 @@ export const seedGrants: SeedGrant[] = [
           type: 'compliance',
           severity: IssueSeverity.INFO,
           title: 'Data management plan completeness',
-          description: 'Data management plan is present but could benefit from more specific technical details',
+          description:
+            'Data management plan is present but could benefit from more specific technical details',
           location: { page: 15, section: 'Data Management Plan' },
           regulation: { section: 'NSF 19-069', title: 'Data Management Plan Requirements' },
           remediation: 'Add specific file formats, storage locations, and access protocols',
@@ -153,7 +156,8 @@ export const seedGrants: SeedGrant[] = [
           status: 'Success',
         },
       ],
-      Title: 'Using metacommunity theory to assess the impact of multi-species interactions on gut microbial assembly',
+      Title:
+        'Using metacommunity theory to assess the impact of multi-species interactions on gut microbial assembly',
       Agency: null,
       Year: 2021,
     },
@@ -171,7 +175,8 @@ export const seedGrants: SeedGrant[] = [
           status: 'funded',
           UUID: '4a81a377-e0e9-43b6-b301-7a3058b0d012',
           'Original ID': 'dasari_mauna_2021',
-          Title: 'Using metacommunity theory to assess the impact of multi-species interactions on gut microbial assembly',
+          Title:
+            'Using metacommunity theory to assess the impact of multi-species interactions on gut microbial assembly',
           Agency: null,
           Year: 2021,
         },
@@ -196,21 +201,21 @@ export function getRandomSeedGrant(): SeedGrant {
  * Get seed grant by ID
  */
 export function getSeedGrantById(id: string): SeedGrant | undefined {
-  return seedGrants.find(grant => grant.metadata.UUID === id);
+  return seedGrants.find((grant) => grant.metadata.UUID === id);
 }
 
 /**
  * Get all funded grants
  */
 export function getFundedGrants(): SeedGrant[] {
-  return seedGrants.filter(grant => grant.metadata.status === 'funded');
+  return seedGrants.filter((grant) => grant.metadata.status === 'funded');
 }
 
 /**
  * Get grants by funder
  */
 export function getGrantsByFunder(funder: string): SeedGrant[] {
-  return seedGrants.filter(grant => 
+  return seedGrants.filter((grant) =>
     grant.metadata.funder.toLowerCase().includes(funder.toLowerCase())
   );
 }
@@ -250,7 +255,7 @@ export function seedGrantToAnalysisResult(grant: SeedGrant) {
   };
 
   // Convert issues to match ComplianceIssue interface
-  const convertedIssues = mockResult.issues.map(issue => ({
+  const convertedIssues = mockResult.issues.map((issue) => ({
     id: issue.id,
     severity: issue.severity,
     title: issue.title,
@@ -275,10 +280,10 @@ export function seedGrantToAnalysisResult(grant: SeedGrant) {
       completedAt: new Date(),
       rulesChecked: [
         'FAR 52.204-8',
-        'FAR 52.204-21', 
+        'FAR 52.204-21',
         'DFARS 252.204-7012',
         'FAR 52.219-8',
-        'FAR 52.222-50'
+        'FAR 52.222-50',
       ].slice(0, Math.floor(Math.random() * 5) + 1), // Random subset of rules
     },
   };
@@ -290,7 +295,7 @@ export function seedGrantToAnalysisResult(grant: SeedGrant) {
 export function generateMockUploadSession(status?: UploadStatus) {
   const grant = getRandomSeedGrant();
   const baseSession = seedGrantToUploadSession(grant);
-  
+
   // Set progress based on status
   let progress = baseSession.progress;
   if (status === UploadStatus.PENDING) {
@@ -302,7 +307,7 @@ export function generateMockUploadSession(status?: UploadStatus) {
   } else if (status === UploadStatus.FAILED) {
     progress = Math.floor(Math.random() * 90) + 10; // 10-99
   }
-  
+
   return {
     ...baseSession,
     status: status || UploadStatus.COMPLETED,
@@ -315,7 +320,7 @@ export function generateMockUploadSession(status?: UploadStatus) {
  */
 export function generateMockAnalysisSession(status?: string) {
   const grant = getRandomSeedGrant();
-  
+
   // Set progress based on status
   let progress = 0;
   if (status === 'queued') {
@@ -333,7 +338,7 @@ export function generateMockAnalysisSession(status?: string) {
   } else {
     progress = Math.floor(Math.random() * 100);
   }
-  
+
   return {
     id: `analysis-${grant.metadata.UUID}`,
     proposalId: grant.metadata.UUID,
@@ -352,45 +357,48 @@ export function generateMockAnalysisSession(status?: string) {
 export function generateMockAnalysisResults(complianceStatus?: 'pass' | 'fail' | 'warning') {
   const grant = getRandomSeedGrant();
   const result = seedGrantToAnalysisResult(grant);
-  
+
   if (complianceStatus) {
     result.status = complianceStatus;
-    result.overallScore = complianceStatus === 'pass' ? 90 : complianceStatus === 'warning' ? 75 : 45;
-    
+    result.overallScore =
+      complianceStatus === 'pass' ? 90 : complianceStatus === 'warning' ? 75 : 45;
+
     // Adjust issues based on compliance status
     if (complianceStatus === 'pass') {
       result.issues = [];
     } else if (complianceStatus === 'fail') {
       // Ensure at least one critical issue for fail status
-      if (!result.issues.some(issue => issue.severity === 'critical')) {
+      if (!result.issues.some((issue) => issue.severity === IssueSeverity.CRITICAL)) {
         result.issues.push({
           id: 'critical-issue-1',
           title: 'Critical Compliance Issue',
           description: 'This is a critical compliance issue for testing',
-          severity: 'critical' as const,
-          category: 'compliance',
+          severity: IssueSeverity.CRITICAL,
+          category: 'compliance', // Note: 'category' is extra property not in ComplianceIssue, consider removing if strict
           location: { page: 1, section: 'Section 1' },
-          recommendation: 'Fix this critical issue'
-        });
+          regulation: 'N/A', // Added missing regulation
+          remediation: 'Fix this critical issue',
+        } as any); // Cast as any because 'category' might be missing from type
       }
     } else if (complianceStatus === 'warning') {
       // Filter out critical issues for warning status
-      result.issues = result.issues.filter(issue => issue.severity !== 'critical');
+      result.issues = result.issues.filter((issue) => issue.severity !== IssueSeverity.CRITICAL);
       // Ensure at least one warning if no issues exist
       if (result.issues.length === 0) {
         result.issues.push({
           id: 'warning-issue-1',
           title: 'Warning Issue',
           description: 'This is a warning issue for testing',
-          severity: 'warning' as const,
+          severity: IssueSeverity.WARNING,
           category: 'formatting',
           location: { page: 1, section: 'Section 1' },
-          recommendation: 'Consider addressing this warning'
-        });
+          regulation: 'N/A', // Added missing regulation
+          remediation: 'Consider addressing this warning',
+        } as any);
       }
     }
   }
-  
+
   return result;
 }
 

@@ -5,7 +5,7 @@
 
 /**
  * Next.js API Route for Analysis Start
- * 
+ *
  * This route now uses the Strands integration adapter for end-to-end workflow.
  * Connects to real Strands service with fallback to mock for development.
  */

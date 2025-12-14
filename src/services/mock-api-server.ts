@@ -3,17 +3,17 @@
  * SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
  */
 
-import type { 
-  ApiResponse, 
-  UploadSessionResponse, 
-  AnalysisSessionResponse, 
+import type {
+  ApiResponse,
+  UploadSessionResponse,
+  AnalysisSessionResponse,
   ComplianceResultsResponse,
-  ComplianceIssue 
+  ComplianceIssue,
 } from './strands-api-client';
 
 /**
  * Framework-Independent Mock API Server
- * 
+ *
  * Provides mock API functionality that can be used with any framework
  * or as a standalone server. Extracted from Next.js API routes for
  * maximum portability and reusability.
@@ -27,7 +27,7 @@ export class MockApiServer {
 
   private async simulateDelay(customDelay?: number): Promise<void> {
     const delay = customDelay ?? this.mockDelay;
-    return new Promise(resolve => setTimeout(resolve, delay));
+    return new Promise((resolve) => setTimeout(resolve, delay));
   }
 
   /**
@@ -41,7 +41,7 @@ export class MockApiServer {
         return {
           success: false,
           error: 'No file provided',
-          code: 'MISSING_FILE'
+          code: 'MISSING_FILE',
         };
       }
 
@@ -50,7 +50,7 @@ export class MockApiServer {
         return {
           success: false,
           error: 'Only PDF files are accepted',
-          code: 'INVALID_FILE_TYPE'
+          code: 'INVALID_FILE_TYPE',
         };
       }
 
@@ -59,7 +59,7 @@ export class MockApiServer {
         return {
           success: false,
           error: 'File size exceeds 100MB limit',
-          code: 'FILE_TOO_LARGE'
+          code: 'FILE_TOO_LARGE',
         };
       }
 
@@ -80,15 +80,14 @@ export class MockApiServer {
 
       return {
         success: true,
-        data: uploadSession
+        data: uploadSession,
       };
-
     } catch (error) {
       console.error('Upload error:', error);
       return {
         success: false,
         error: 'Upload failed',
-        code: 'UPLOAD_FAILED'
+        code: 'UPLOAD_FAILED',
       };
     }
   }
@@ -103,7 +102,7 @@ export class MockApiServer {
         return {
           success: false,
           error: 'Proposal ID is required',
-          code: 'MISSING_PROPOSAL_ID'
+          code: 'MISSING_PROPOSAL_ID',
         };
       }
 
@@ -123,15 +122,14 @@ export class MockApiServer {
 
       return {
         success: true,
-        data: analysisSession
+        data: analysisSession,
       };
-
     } catch (error) {
       console.error('Analysis start error:', error);
       return {
         success: false,
         error: 'Failed to start analysis',
-        code: 'ANALYSIS_START_FAILED'
+        code: 'ANALYSIS_START_FAILED',
       };
     }
   }
@@ -146,7 +144,7 @@ export class MockApiServer {
         return {
           success: false,
           error: 'Session ID is required',
-          code: 'MISSING_SESSION_ID'
+          code: 'MISSING_SESSION_ID',
         };
       }
 
@@ -159,16 +157,17 @@ export class MockApiServer {
           id: 'issue_1',
           severity: 'warning',
           title: 'Budget Justification Format',
-          description: 'Budget justification follows standard format but could include more detail on equipment costs',
-          location: { 
-            page: 8, 
+          description:
+            'Budget justification follows standard format but could include more detail on equipment costs',
+          location: {
+            page: 8,
             section: 'Budget Justification',
-            text: 'Equipment costs section'
+            text: 'Equipment costs section',
           },
           regulation: {
             framework: 'FAR',
             section: '15.204-5',
-            reference: 'FAR 15.204-5 - Budget Justification Requirements'
+            reference: 'FAR 15.204-5 - Budget Justification Requirements',
           },
           remediation: 'Consider adding more detailed breakdown of equipment and personnel costs',
         },
@@ -177,18 +176,18 @@ export class MockApiServer {
           severity: 'info',
           title: 'Data Management Plan',
           description: 'Data management plan is present and meets basic requirements',
-          location: { 
-            page: 15, 
+          location: {
+            page: 15,
             section: 'Data Management Plan',
-            text: 'Data management section'
+            text: 'Data management section',
           },
           regulation: {
             framework: 'FAR',
             section: '19-069',
-            reference: 'NSF 19-069 - Data Management Plan Requirements'
+            reference: 'NSF 19-069 - Data Management Plan Requirements',
           },
           remediation: 'Plan is compliant with current requirements',
-        }
+        },
       ];
 
       // Randomly include issues (70% chance)
@@ -202,23 +201,22 @@ export class MockApiServer {
         issues,
         summary: {
           totalIssues: issues.length,
-          criticalIssues: issues.filter(i => i.severity === 'critical').length,
-          warningIssues: issues.filter(i => i.severity === 'warning').length,
+          criticalIssues: issues.filter((i) => i.severity === 'critical').length,
+          warningIssues: issues.filter((i) => i.severity === 'warning').length,
         },
         generatedAt: new Date().toISOString(),
       };
 
       return {
         success: true,
-        data: analysisResults
+        data: analysisResults,
       };
-
     } catch (error) {
       console.error('Results retrieval error:', error);
       return {
         success: false,
         error: 'Failed to retrieve results',
-        code: 'RESULTS_RETRIEVAL_FAILED'
+        code: 'RESULTS_RETRIEVAL_FAILED',
       };
     }
   }
@@ -232,7 +230,7 @@ export class MockApiServer {
         return {
           success: false,
           error: 'Session ID is required',
-          code: 'MISSING_SESSION_ID'
+          code: 'MISSING_SESSION_ID',
         };
       }
 
@@ -251,15 +249,14 @@ export class MockApiServer {
 
       return {
         success: true,
-        data: uploadSession
+        data: uploadSession,
       };
-
     } catch (error) {
       console.error('Upload status error:', error);
       return {
         success: false,
         error: 'Failed to get upload status',
-        code: 'UPLOAD_STATUS_FAILED'
+        code: 'UPLOAD_STATUS_FAILED',
       };
     }
   }
@@ -273,7 +270,7 @@ export class MockApiServer {
         return {
           success: false,
           error: 'Session ID is required',
-          code: 'MISSING_SESSION_ID'
+          code: 'MISSING_SESSION_ID',
         };
       }
 
@@ -291,15 +288,14 @@ export class MockApiServer {
 
       return {
         success: true,
-        data: analysisSession
+        data: analysisSession,
       };
-
     } catch (error) {
       console.error('Analysis status error:', error);
       return {
         success: false,
         error: 'Failed to get analysis status',
-        code: 'ANALYSIS_STATUS_FAILED'
+        code: 'ANALYSIS_STATUS_FAILED',
       };
     }
   }
@@ -307,7 +303,9 @@ export class MockApiServer {
   /**
    * Health check endpoint
    */
-  async handleHealthCheck(): Promise<ApiResponse<{ status: string; version: string; timestamp: string }>> {
+  async handleHealthCheck(): Promise<
+    ApiResponse<{ status: string; version: string; timestamp: string }>
+  > {
     await this.simulateDelay(100);
 
     return {
@@ -316,7 +314,7 @@ export class MockApiServer {
         status: 'healthy',
         version: '1.0.0-mock',
         timestamp: new Date().toISOString(),
-      }
+      },
     };
   }
 
@@ -329,7 +327,7 @@ export class MockApiServer {
         return {
           success: false,
           error: 'Issue ID is required',
-          code: 'MISSING_ISSUE_ID'
+          code: 'MISSING_ISSUE_ID',
         };
       }
 
@@ -339,31 +337,31 @@ export class MockApiServer {
         id: issueId,
         severity: 'warning',
         title: 'Sample Compliance Issue',
-        description: 'This is a detailed description of the compliance issue found in the document.',
+        description:
+          'This is a detailed description of the compliance issue found in the document.',
         location: {
           page: 5,
           section: 'Technical Approach',
-          text: 'Relevant text excerpt from the document'
+          text: 'Relevant text excerpt from the document',
         },
         regulation: {
           framework: 'FAR',
           section: '52.204-8',
-          reference: 'FAR 52.204-8 - Annual Representations and Certifications'
+          reference: 'FAR 52.204-8 - Annual Representations and Certifications',
         },
         remediation: 'Recommended steps to address this compliance issue.',
       };
 
       return {
         success: true,
-        data: issue
+        data: issue,
       };
-
     } catch (error) {
       console.error('Issue details error:', error);
       return {
         success: false,
         error: 'Failed to get issue details',
-        code: 'ISSUE_DETAILS_FAILED'
+        code: 'ISSUE_DETAILS_FAILED',
       };
     }
   }

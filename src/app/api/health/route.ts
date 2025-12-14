@@ -5,7 +5,7 @@
 
 /**
  * Next.js API Route for Health Check
- * 
+ *
  * This route now uses the Strands integration adapter to show both
  * web service and Strands service health status.
  */

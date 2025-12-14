@@ -216,9 +216,11 @@ class HttpClient {
     }
 
     // Check for specific connection errors
-    if (error.message.includes('ECONNREFUSED') || 
-        error.message.includes('ENOTFOUND') ||
-        error.message.includes('ECONNRESET')) {
+    if (
+      error.message.includes('ECONNREFUSED') ||
+      error.message.includes('ENOTFOUND') ||
+      error.message.includes('ECONNRESET')
+    ) {
       return 'SERVICE_UNAVAILABLE';
     }
 
@@ -504,13 +506,17 @@ export class StrandsApiClient {
    * Start compliance analysis
    * Requirement 2.1: Validate against core FAR/DFARS requirements
    */
-  async startAnalysis(proposalId: string, documentId?: string, filename?: string): Promise<ApiResponse<AnalysisSessionResponse>> {
+  async startAnalysis(
+    proposalId: string,
+    documentId?: string,
+    filename?: string
+  ): Promise<ApiResponse<AnalysisSessionResponse>> {
     // Check service health before attempting analysis
     if (!(await this.isServiceHealthy())) {
       return {
         success: false,
         error: 'Strands service is not available. Please try again later.',
-        code: 'SERVICE_UNAVAILABLE'
+        code: 'SERVICE_UNAVAILABLE',
       };
     }
 
@@ -543,7 +549,10 @@ export class StrandsApiClient {
    * Requirement 3.1: Show compliance status and findings
    */
   async getResults(sessionId: string): Promise<ApiResponse<ComplianceResultsResponse>> {
-    return this.httpClient.get<ComplianceResultsResponse>(`/api/analysis/${sessionId}/results`, 300000); // 5 minutes cache
+    return this.httpClient.get<ComplianceResultsResponse>(
+      `/api/analysis/${sessionId}/results`,
+      300000
+    ); // 5 minutes cache
   }
 
   /**
@@ -616,15 +625,22 @@ export class StrandsApiClient {
   /**
    * Check if Strands service is available
    */
-  async healthCheck(): Promise<ApiResponse<{ status: string; version: string; checks?: Record<string, string> }>> {
-    const result = await this.httpClient.get<{ status: string; version: string; checks?: Record<string, string> }>('/api/health');
-    
+  async healthCheck(): Promise<
+    ApiResponse<{ status: string; version: string; checks?: Record<string, string> }>
+  > {
+    const result = await this.httpClient.get<{
+      status: string;
+      version: string;
+      checks?: Record<string, string>;
+    }>('/api/health');
+
     // Update health check cache
     this.lastHealthCheck = {
       timestamp: Date.now(),
-      healthy: result.success && (result.data?.status === 'healthy' || result.data?.status === 'degraded')
+      healthy:
+        result.success && (result.data?.status === 'healthy' || result.data?.status === 'degraded'),
     };
-    
+
     return result;
   }
 
@@ -634,19 +650,23 @@ export class StrandsApiClient {
    */
   async isServiceHealthy(): Promise<boolean> {
     // Use cached result if available and recent
-    if (this.lastHealthCheck && 
-        Date.now() - this.lastHealthCheck.timestamp < this.healthCheckCacheMs) {
+    if (
+      this.lastHealthCheck &&
+      Date.now() - this.lastHealthCheck.timestamp < this.healthCheckCacheMs
+    ) {
       return this.lastHealthCheck.healthy;
     }
 
     try {
       const result = await this.healthCheck();
-      return result.success && (result.data?.status === 'healthy' || result.data?.status === 'degraded');
+      return (
+        result.success && (result.data?.status === 'healthy' || result.data?.status === 'degraded')
+      );
     } catch (error) {
       // Update cache with failure
       this.lastHealthCheck = {
         timestamp: Date.now(),
-        healthy: false
+        healthy: false,
       };
       return false;
     }
@@ -663,7 +683,7 @@ export class StrandsApiClient {
       if (await this.isServiceHealthy()) {
         return true;
       }
-      await new Promise(resolve => setTimeout(resolve, checkInterval));
+      await new Promise((resolve) => setTimeout(resolve, checkInterval));
     }
     return false;
   }
@@ -682,22 +702,24 @@ export class StrandsApiClient {
   }> {
     try {
       const result = await this.healthCheck();
-      
+
       return {
-        healthy: result.success && (result.data?.status === 'healthy' || result.data?.status === 'degraded'),
+        healthy:
+          result.success &&
+          (result.data?.status === 'healthy' || result.data?.status === 'degraded'),
         baseUrl: this.baseUrl,
         status: result.data?.status,
         version: result.data?.version,
         checks: result.data?.checks,
         lastChecked: Date.now(),
-        error: result.success ? undefined : result.error
+        error: result.success ? undefined : result.error,
       };
     } catch (error) {
       return {
         healthy: false,
         baseUrl: this.baseUrl,
         lastChecked: Date.now(),
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
   }
@@ -715,13 +737,11 @@ function createStrandsApiClient() {
     config = configModule.apiConfiguration;
   } catch (error) {
     // Fallback configuration if api-config is not available
-    const baseUrl = apiConfig.useMockApis 
-      ? 'http://localhost:3000' 
-      : apiConfig.strandsBaseUrl;
-    
+    const baseUrl = apiConfig.useMockApis ? 'http://localhost:3000' : apiConfig.strandsBaseUrl;
+
     config = {
       baseUrl,
-      useMock: apiConfig.useMockApis
+      useMock: apiConfig.useMockApis,
     };
   }
 

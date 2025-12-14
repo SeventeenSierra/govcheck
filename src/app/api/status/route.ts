@@ -5,7 +5,7 @@
 
 /**
  * Next.js API Route for Service Status
- * 
+ *
  * Provides detailed status information for debugging the end-to-end workflow.
  */
 

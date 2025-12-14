@@ -9,7 +9,7 @@ import type { ApiResponse } from '../services/strands-api-client';
 
 /**
  * Next.js API Route Adapter
- * 
+ *
  * Thin adapter layer that connects Next.js API routes to the
  * framework-independent mock API server. This allows the same
  * business logic to be used across different frameworks.
@@ -47,14 +47,17 @@ async function extractJsonFromRequest<T = any>(request: NextRequest): Promise<T 
  */
 function toNextResponse<T>(apiResponse: ApiResponse<T>, successStatus = 200): NextResponse {
   if (apiResponse.success) {
-    return NextResponse.json({
-      success: true,
-      data: apiResponse.data
-    }, { status: successStatus });
+    return NextResponse.json(
+      {
+        success: true,
+        data: apiResponse.data,
+      },
+      { status: successStatus }
+    );
   } else {
     // Map error codes to HTTP status codes
     let status = 500; // Default server error
-    
+
     switch (apiResponse.code) {
       case 'MISSING_FILE':
       case 'MISSING_PROPOSAL_ID':
@@ -76,17 +79,20 @@ function toNextResponse<T>(apiResponse: ApiResponse<T>, successStatus = 200): Ne
         break;
     }
 
-    return NextResponse.json({
-      success: false,
-      error: apiResponse.error,
-      code: apiResponse.code
-    }, { status });
+    return NextResponse.json(
+      {
+        success: false,
+        error: apiResponse.error,
+        code: apiResponse.code,
+      },
+      { status }
+    );
   }
 }
 
 /**
  * Next.js API Route Handlers
- * 
+ *
  * These functions can be directly exported from Next.js API route files
  */
 export const NextJsApiHandlers = {
@@ -96,7 +102,7 @@ export const NextJsApiHandlers = {
    */
   async handleDocumentUpload(request: NextRequest): Promise<NextResponse> {
     const file = await extractFileFromRequest(request);
-    
+
     if (!file) {
       return NextResponse.json(
         { success: false, error: 'No file provided', code: 'MISSING_FILE' },
@@ -113,7 +119,7 @@ export const NextJsApiHandlers = {
    */
   async handleAnalysisStart(request: NextRequest): Promise<NextResponse> {
     const body = await extractJsonFromRequest<{ proposalId: string }>(request);
-    
+
     if (!body?.proposalId) {
       return NextResponse.json(
         { success: false, error: 'Proposal ID is required', code: 'MISSING_PROPOSAL_ID' },
@@ -133,7 +139,7 @@ export const NextJsApiHandlers = {
     { params }: { params: Promise<{ sessionId: string }> }
   ): Promise<NextResponse> {
     const { sessionId } = await params;
-    
+
     if (!sessionId) {
       return NextResponse.json(
         { success: false, error: 'Session ID is required', code: 'MISSING_SESSION_ID' },
@@ -153,7 +159,7 @@ export const NextJsApiHandlers = {
     { params }: { params: Promise<{ sessionId: string }> }
   ): Promise<NextResponse> {
     const { sessionId } = await params;
-    
+
     if (!sessionId) {
       return NextResponse.json(
         { success: false, error: 'Session ID is required', code: 'MISSING_SESSION_ID' },
@@ -173,7 +179,7 @@ export const NextJsApiHandlers = {
     { params }: { params: Promise<{ sessionId: string }> }
   ): Promise<NextResponse> {
     const { sessionId } = await params;
-    
+
     if (!sessionId) {
       return NextResponse.json(
         { success: false, error: 'Session ID is required', code: 'MISSING_SESSION_ID' },
@@ -193,7 +199,7 @@ export const NextJsApiHandlers = {
     { params }: { params: Promise<{ issueId: string }> }
   ): Promise<NextResponse> {
     const { issueId } = await params;
-    
+
     if (!issueId) {
       return NextResponse.json(
         { success: false, error: 'Issue ID is required', code: 'MISSING_ISSUE_ID' },
@@ -216,9 +222,9 @@ export const NextJsApiHandlers = {
 
 /**
  * Convenience exports for Next.js API routes
- * 
+ *
  * These can be imported and used directly in Next.js route files:
- * 
+ *
  * // app/api/documents/upload/route.ts
  * export { POST as POST } from '@/adapters/nextjs-adapter';
  */
