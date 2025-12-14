@@ -12,6 +12,8 @@ __pycache__/
 /coverage
 /test-results/
 /playwright-report/
+test_output*.txt
+src/seed-data/test_*.pdf
 
 # next.js
 /.next/
