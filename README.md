@@ -10,6 +10,32 @@ Proposal Prepper Phase 1 is a **laptop-deployable application** designed to vali
 
 ## Quick Start
 
+**🚀 New to this project?** See the [**Quick Start Guide**](./docs/public/QUICKSTART.md) for a 5-minute setup.
+
+### For Team Members
+
+| I want to... | Read this |
+|--------------|-----------|
+| **Deploy the full application** | [DEPLOYMENT.md](./docs/public/DEPLOYMENT.md) |
+| **Integrate my backend with the UI** | [API_INTEGRATION.md](./docs/public/API_INTEGRATION.md) |
+| **Run with Docker** | [containers/README.md](./containers/README.md) |
+| **Understand the UI architecture** | [APPENDIX_A_UI_DEVELOPMENT.md](./docs/public/APPENDIX_A_UI_DEVELOPMENT.md) |
+
+### Docker Deployment (Recommended)
+
+```bash
+# Start the complete application (Web UI + API + Database + Storage)
+cd containers
+./start.sh -d
+
+# Access at:
+# - Web UI: http://localhost:3000
+# - API: http://localhost:8080/docs
+# - MinIO: http://localhost:9001
+```
+
+### Local Development (Alternative)
+
 ```bash
 # Enter Nix development shell
 nix develop
