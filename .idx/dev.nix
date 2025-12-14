@@ -1,24 +1,43 @@
-# To learn more about how to use Nix to configure your environment
-# see: https://firebase.google.com/docs/studio/customize-workspace
-{pkgs}: {
-  # Which nixpkgs channel to use.
-  channel = "stable-24.11"; # or "unstable"
-  # Use https://search.nixos.org/packages to find packages
-  packages = [
-    pkgs.nodejs_22
+{ pkgs, ... }: {
+  # Which nixpkgs channel to use. We use unstable to match the project's flake.nix.
+  channel = "unstable";
+
+  # This list is manually synchronized with the buildInputs in flake.nix
+  # to ensure a consistent development environment inside IDX.
+  packages = with pkgs; [
+    nodejs_22
+    pnpm
+    biome
+    python313
+    python313Packages.pip
+    python313Packages.uvicorn
+    python313Packages.fastapi
+    docker
+    docker-compose
+    podman
+    podman-compose
+    playwright
+    nodePackages.typescript
+    gitleaks
+    git-filter-repo
+    google-cloud-sdk
+    act
+    semgrep
+    trivy
   ];
+
   # Sets environment variables in the workspace
   env = {};
-  # This adds a file watcher to startup the firebase emulators. The emulators will only start if
-  # a firebase.json file is written into the user's directory
+
+  # Preserved from original config: Firebase emulators setup
   services.firebase.emulators = {
-    # Disabling because we are using prod backends right now
     detect = false;
     projectId = "demo-app";
     services = ["auth" "firestore"];
   };
+
+  # Preserved from original config: IDX/VSCode settings
   idx = {
-    # Search for the extensions you want on https://open-vsx.org/ and use "publisher.id"
     extensions = [
       # "vscodevim.vim"
     ];
@@ -29,12 +48,14 @@
         ];
       };
     };
-    # Enable previews and customize configuration
     previews = {
       enable = true;
       previews = {
         web = {
-          command = ["pnpm" "run" "dev" "--" "--port" "$PORT" "--hostname" "0.0.0.0"];
+          # This command now calls 'next' directly, avoiding the argument parsing
+          # issue with 'pnpm run'. The 'next' command is available in the PATH
+          # thanks to the Nix environment.
+          command = ["next" "dev" "--port" "$PORT" "--hostname" "0.0.0.0"];
           manager = "web";
         };
       };
