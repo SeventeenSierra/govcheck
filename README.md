@@ -6,8 +6,6 @@
 
 GovCheck Phase 1 is a **laptop-deployable application** designed to validate NSF PAPPG compliance for research proposals. The system uses AI-powered analysis to ensure proposals meet federal funding requirements before submission.
 
-**Note:** This is Phase 1 of the larger OBI-One platform. For comprehensive end-state specifications and the full platform architecture, see the [obi-one repository](https://github.com/yourusername/obi-one).
-
 ## Quick Start
 
 **🚀 New to this project?** See the [**Quick Start Guide**](./docs/public/QUICKSTART.md) for a 5-minute setup.
