@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+
+node_modules/
+dist/
+.next/
+storybook-static/
+services/strands-agent/
+data/seed/
+inbox/
