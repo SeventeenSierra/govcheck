@@ -1,0 +1,35 @@
+{
+  "_comment": "SPDX-License-Identifier: AGPL-3.0-or-later",
+  "_copyright": "SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC",
+  "$schema": "https://infisical.com/schemas/infisical.json",
+  "workspaceId": "",
+  "defaultEnvironment": "dev",
+  "services": {
+    "web": {
+      "path": "apps/web",
+      "environments": ["dev"]
+    },
+    "strands-agent": {
+      "path": "services/strands-agent",
+      "environments": ["dev"],
+      "requiredSecrets": [
+        "AWS_REGION",
+        "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_ACCESS_KEY",
+        "BEDROCK_MODEL_ID"
+      ]
+    },
+    "genkit-service": {
+      "path": "services/genkit-service",
+      "environments": ["dev"],
+      "requiredSecrets": ["GOOGLE_API_KEY", "GENKIT_ENV"]
+    }
+  },
+  "environments": {
+    "dev": {
+      "description": "Local laptop development environment"
+    }
+  },
+  "secretsPath": ".env",
+  "includeImports": true
+}

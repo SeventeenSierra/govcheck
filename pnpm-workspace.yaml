@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+
+packages:
+  - "packages/*"
+
+  # Note: We don't have apps/ in our standalone structure
+  # Note: strands-agent is Python-based, not included in pnpm workspace
+  # Note: inbox/ is excluded to prevent workspace conflicts
