@@ -1,0 +1,33 @@
+name: Auto Tag on Merge
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - develop
+      - main
+
+jobs:
+  tag-release:
+    if: github.event.pull_request.merged == true && (startsWith(github.head_ref, 'release/') || startsWith(github.head_ref, 'hotfix/'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Extract Tag Name
+        id: extract_tag
+        run: |
+          BRANCH_NAME="${{ github.head_ref }}"
+          TAG_NAME=${BRANCH_NAME#*/}
+          echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+          
+      - name: Create Tag
+        uses: mathieudutour/github-tag-action@v6.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          custom_tag: ${{ steps.extract_tag.outputs.tag_name }}
+          tag_prefix: ""
