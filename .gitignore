@@ -31,6 +31,8 @@ dev_output.log
 
 # local env files
 .env*.local
+.direnv/
+
 
 # vercel
 .vercel
