@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
 
 {
-  description = "GovCheck - Federal Compliance Validation";
+  description = "Proposal Prepper (Contract Checker) - NSF PAPPG Compliance Validation";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -23,6 +23,18 @@
             pnpm
             biome
             
+            # Python for strands-agent service
+            python313
+            python313Packages.pip
+            python313Packages.uvicorn
+            python313Packages.fastapi
+
+            # Container runtime options
+            docker
+            docker-compose
+            podman
+            podman-compose
+
             # E2E testing (Playwright)
             playwright
 
@@ -33,6 +45,9 @@
             gitleaks
             git-filter-repo
 
+            # GCP tools
+            google-cloud-sdk
+
             # Local Workflow Runners & Security
             act
             semgrep
@@ -40,7 +55,7 @@
           ];
 
           shellHook = ''
-            echo "🚀 GovCheck Dev Environment (Frontend)"
+            echo "🚀 Proposal Prepper Dev Environment"
             echo "Node: $(node --version)"
             echo "pnpm: $(pnpm --version)"
             

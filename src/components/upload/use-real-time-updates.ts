@@ -11,8 +11,20 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { strandsApiClient, type WebSocketMessage } from '@/services/strands-api-client';
+// import { strandsApiClient, type WebSocketMessage } from '@/services/strands-api-client';
+import type { WebSocketMessage } from '@/services/mock-analysis-service';
 import type { UploadSession } from '@/types/app';
+
+// Mock strandsApiClient for simulation
+const strandsApiClient = {
+  connectWebSocket: async () => { },
+  disconnectWebSocket: () => { },
+  isWebSocketConnected: () => false,
+  subscribeToUploadProgress: (_cb: any) => { },
+  subscribeToAnalysisProgress: (_cb: any) => { },
+  subscribeToAnalysisComplete: (_cb: any) => { },
+  subscribeToErrors: (_cb: any) => { }
+};
 
 export interface RealTimeUpdateState {
   connected: boolean;

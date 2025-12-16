@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import { Button, Select, Badge } from '@17sierra/ui';
 import { Play, FileText } from 'lucide-react';
-import { strandsApiClient } from '@/services/strands-api-client';
+// import { strandsApiClient } from '@/services/strands-api-client';
 import type { UploadSession } from '@/types/app';
 
 // List of available seed files

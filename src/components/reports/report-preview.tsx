@@ -3,11 +3,9 @@
 import { AlertTriangle, Calendar, CheckCircle2, Download, FileText, Maximize2 } from 'lucide-react';
 import { Badge, Button } from '@17sierra/ui';
 
-type ReportPreviewProps = {
-  isVisible: boolean;
-};
+import { type ReportPreviewProps } from './types';
 
-const ReportPreview = ({ isVisible }: ReportPreviewProps) => {
+const ReportPreview = ({ isVisible, reportData }: ReportPreviewProps) => {
   if (!isVisible) return null;
 
   return (

@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-import { CoordinatorService } from './agents/coordinator';
-import { FarAgent } from './agents/far';
-import { EoAgent } from './agents/eo';
-import { TechAgent } from './agents/tech';
+// Imports removed for simulation mode
+// import { CoordinatorService } from './agents/coordinator';
+// import { FarAgent } from './agents/far';
+// import { EoAgent } from './agents/eo';
+// import { TechAgent } from './agents/tech';
 
 export type AgentType = 'far' | 'eo' | 'tech' | 'coordinator';
 
@@ -17,11 +18,12 @@ export interface MockStep {
 
 // Use an async function to get steps since services are async
 export const getMockDemoSteps = async (): Promise<MockStep[]> => {
-    const s1 = CoordinatorService.initiate();
-    const s2 = await FarAgent.runCheck();
-    const s3 = await EoAgent.runCheck();
-    const s4 = await TechAgent.runCheck();
-    const s5 = CoordinatorService.aggregate();
+    // Simulation Only: Static mock steps
+    const s1 = { stepId: 1, agent: 'coordinator', message: 'Initiating analysis', duration: 100 };
+    const s2 = { stepId: 2, agent: 'far', message: 'Checking FAR clauses', duration: 500 };
+    const s3 = { stepId: 3, agent: 'eo', message: 'Checking EO requirements', duration: 500 };
+    const s4 = { stepId: 4, agent: 'tech', message: 'Validating technical format', duration: 500 };
+    const s5 = { stepId: 5, agent: 'coordinator', message: 'Aggregating results', duration: 100 };
 
     return [
         { ...s1, id: s1.stepId, agent: 'coordinator', status: 'pending' },

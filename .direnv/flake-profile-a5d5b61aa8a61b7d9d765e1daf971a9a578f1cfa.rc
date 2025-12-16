@@ -19,9 +19,9 @@ LINENO='80'
 MACHTYPE='aarch64-apple-darwin24.6.0'
 MACOSX_DEPLOYMENT_TARGET='14.0'
 export MACOSX_DEPLOYMENT_TARGET
-NIX_BUILD_CORES='14'
+NIX_BUILD_CORES='8'
 export NIX_BUILD_CORES
-NIX_CFLAGS_COMPILE=' -frandom-seed=97dnasa8bn'
+NIX_CFLAGS_COMPILE=' -frandom-seed=czma9v0jhf'
 export NIX_CFLAGS_COMPILE
 NIX_DONT_SET_RPATH='1'
 export NIX_DONT_SET_RPATH
@@ -131,7 +131,7 @@ name='nix-shell-env'
 export name
 nativeBuildInputs=''
 export nativeBuildInputs
-out='/Users/afos/Documents/Github/proposal-prepper/outputs/out'
+out='/Users/afla/Documents/GitHub/proposal-prepper-legacy/outputs/out'
 export out
 outputBin='out'
 outputDev='out'
@@ -163,7 +163,7 @@ preConfigurePhases=' updateAutotoolsGnuConfigScriptsPhase'
 declare -a preFixupHooks=('_moveToShare' '_multioutDocs' '_multioutDevs' )
 preferLocalBuild='1'
 export preferLocalBuild
-prefix='/Users/afos/Documents/Github/proposal-prepper/outputs/out'
+prefix='/Users/afla/Documents/GitHub/proposal-prepper-legacy/outputs/out'
 declare -a propagatedBuildDepFiles=('propagated-build-build-deps' 'propagated-native-build-inputs' 'propagated-build-target-deps' )
 propagatedBuildInputs=''
 export propagatedBuildInputs
@@ -173,7 +173,7 @@ export propagatedNativeBuildInputs
 declare -a propagatedTargetDepFiles=('propagated-target-target-deps' )
 shell='/nix/store/p0k9r5h8qs7220xdbdihhfgzwjcly70x-bash-5.3p3/bin/bash'
 export shell
-shellHook='echo "🚀 GovCheck Dev Environment"
+shellHook='echo "🚀 Proposal Prepper Dev Environment"
 echo "Node: $(node --version)"
 echo "pnpm: $(pnpm --version)"
 

@@ -21,11 +21,19 @@ import { AlertCircle, CheckCircle, Clock, FileText, TrendingUp, Zap } from '@17s
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { SimulationControls } from './simulation-controls';
-import type { WebSocketMessage } from '@/services/strands-api-client';
 import { UploadManager } from './upload-manager';
 import { useRealTimeUpdates } from './use-real-time-updates';
 import type { UploadSession } from '@/types/app';
-import { strandsApiClient } from '@/services/strands-api-client';
+import type { WebSocketMessage } from '@/services/mock-analysis-service';
+import { analysisService as mockAnalysisService } from '@/services/mock-analysis-service';
+// import { strandsApiClient } from '@/services/strands-api-client';
+
+// Mock client wrapper to match expected interface
+const strandsApiClient = {
+  getResults: mockAnalysisService.getResults,
+  getAnalysisStatus: (id: string) => mockAnalysisService.getAnalysisStatus(id).then(s => ({ success: !!s, data: s })),
+  startAnalysis: (id: string, _pid?: string, _fname?: string) => mockAnalysisService.startAnalysis({ proposalId: id }).then(r => ({ success: r.success, data: { id: r.sessionId }, error: r.error }))
+};
 
 export interface UploadWorkflowProps {
   /** Callback when the complete workflow finishes */
@@ -233,7 +241,7 @@ export function UploadWorkflow({
         if (response.success && response.data) {
           console.log('Analysis started:', response.data.id);
           setAnalysisState({
-            sessionId: response.data.id,
+            sessionId: response.data.id || null,
             status: 'queued',
             progress: 0,
             currentStep: 'Analysis queued',

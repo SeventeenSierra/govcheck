@@ -8,8 +8,8 @@
 import { Bug, Button, RefreshCw, Settings } from '@17sierra/ui';
 import React from 'react';
 import { AppHeader, TwoPanelLayout } from '@/components/layout';
-import { ReportPreview } from '@/components/reports';
 import { RFPInterface } from '@/components/rfp';
+import { ReportPreview, ReportStatus, ReportTemplate, ReportFormat } from '@/components/reports';
 
 /**
  * RFP Mock Page - Development and testing interface
@@ -134,13 +134,16 @@ export default function RFPMockPage() {
             reportData={
               analysisResults
                 ? {
-                    id: 'mock-report-123',
-                    title: 'Mock Compliance Report',
-                    reference: 'MOCK-2024-001',
-                    generatedAt: new Date(),
-                    complianceScore: 92,
-                    status: 'ready' as const,
-                  }
+                  id: 'mock-report-123',
+                  title: 'Mock Compliance Report',
+                  reference: 'MOCK-2024-001',
+                  generatedAt: new Date(),
+                  complianceScore: 92,
+                  status: ReportStatus.READY,
+                  analysisResults: analysisResults,
+                  template: ReportTemplate.STANDARD,
+                  format: ReportFormat.PDF,
+                }
                 : undefined
             }
           />

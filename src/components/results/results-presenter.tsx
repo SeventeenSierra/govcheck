@@ -15,7 +15,8 @@ import {
   XCircle,
 } from '@17sierra/ui';
 import { IssueList } from '@/components/issues';
-import { resultsService } from '@/services';
+// import { resultsService } from '@/services';
+import { analysisService as resultsService } from '@/services/mock-analysis-service';
 import { RegulatoryReferences } from './regulatory-references';
 import type { ResultsPresenterProps } from './types';
 import { ComplianceStatus } from './types';

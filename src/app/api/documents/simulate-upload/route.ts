@@ -1,6 +1,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
-import { strandsApiClient } from '@/services/strands-api-client';
+import { MockStrandsClient } from '@/services/mock-strands-client';
 
 export async function POST(request: NextRequest) {
     try {
@@ -15,23 +15,20 @@ export async function POST(request: NextRequest) {
         }
 
         // Call Strands service to simulate upload
-        const result = await strandsApiClient.simulateUpload(filename);
+        const mockClient = new MockStrandsClient();
+        const result = await mockClient.uploadDocument(new File([""], filename), () => { });
 
         if (result.success && result.data) {
             // Automatically start analysis after simulated upload, similar to real upload workflow
-            const analysisResult = await strandsApiClient.startAnalysis(
-                result.data.id,
-                result.data.id,
-                result.data.filename,
-                result.data.s3Key
-            );
+            // Mock analysis start
+            const analysisSessionId = `analysis_${result.data.id}`;
 
             return NextResponse.json({
                 success: true,
                 data: {
                     ...result.data,
-                    analysisSessionId: analysisResult.data?.id,
-                    analysisStatus: analysisResult.data?.status || 'queued',
+                    analysisSessionId: analysisSessionId,
+                    analysisStatus: 'queued',
                     message: 'Simulation started successfully'
                 }
             });
