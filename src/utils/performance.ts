@@ -7,7 +7,7 @@
  * Performance Utilities
  *
  * Implements caching strategies and performance optimizations
- * for the Proposal Prepper application.
+ * for the GovCheck application.
  *
  * Requirement 5.1: Load time performance optimization
  */
@@ -316,9 +316,9 @@ export namespace PerformanceMonitor {
 }
 
 // Export cache instances for common use cases
-export const apiCache = new BrowserCache<unknown>('proposal-prepper-api', 10 * 60 * 1000); // 10 minutes
+export const apiCache = new BrowserCache<unknown>('govcheck-api', 10 * 60 * 1000); // 10 minutes
 export const uiStateCache = new MemoryCache<unknown>(60 * 1000); // 1 minute
-export const resultsCache = new BrowserCache<unknown>('proposal-prepper-results', 60 * 60 * 1000); // 1 hour
+export const resultsCache = new BrowserCache<unknown>('govcheck-results', 60 * 60 * 1000); // 1 hour
 
 // Export cache classes for custom instances
 export { MemoryCache, BrowserCache };

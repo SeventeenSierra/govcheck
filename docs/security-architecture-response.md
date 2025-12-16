@@ -1,7 +1,7 @@
-# Strategic Response: Adapting Secure Architecture for Proposal Prepper
+# Strategic Response: Adapting Secure Architecture for GovCheck
 
 **To:** Architecture Review Board
-**From:** Proposal Prepper Engineering (Antigravity)
+**From:** GovCheck Engineering (Antigravity)
 **Date:** 2025-12-14
 **Subject:** Alignment Strategy for "Secure-by-Design" Container Implementation
 
@@ -9,7 +9,7 @@
 
 We have reviewed the proposed *"Secure-by-Design Architecture for Containerized Development Environments"* and endorse its core philosophy: **security must be intrinsic to the environment, not an afterthought.**
 
-However, to ensure successful adoption for the **Proposal Prepper** application, the generic recommendations must be adapted to our specific operational realities:
+However, to ensure successful adoption for the **GovCheck** application, the generic recommendations must be adapted to our specific operational realities:
 1.  **Primary Development on macOS:** Our "local" environment is macOS, where Linux container primitives (namespaces, cgroups) run inside a VM.
 2.  **Hybrid Deployment (Local + Cloud):** The setup must seamlessly bridge the gap between a local MacBook and a remote Cloud Workstation.
 3.  **Modern Toolchain:** We utilize **Biome** for zero-config, high-performance linting, replacing the ESLint/Prettier stack.
@@ -69,7 +69,7 @@ graph TD
 
 ## 2. Toolchain Modernization: The Biome Shift
 
-The proposal recommends **ESLint + Prettier** for the "Shift Left" security strategy. For `proposal-prepper`, we have standardized on **Biome**.
+The proposal recommends **ESLint + Prettier** for the "Shift Left" security strategy. For `govcheck`, we have standardized on **Biome**.
 
 ### 2.1 Why Biome Fits "Secure-by-Design" Better
 *   **Performance:** Biome is Rust-based and orders of magnitude faster. This directly addresses the "Security Fatigue" concern in the report—developers are less likely to disable a linter that runs instantly.
@@ -190,7 +190,7 @@ The "Secure-by-Design" setup helps us meet NIST 800-171 requirements (often rele
 *   **SBOM Generation:** We will implement the configured `trivy` scans to generate an SBOM for every build of `strands`. This becomes a compliance artifact we can show to users/auditors.
 
 ### 4.2 Data Persistence
-The report mentions isolating the DB. For `proposal-prepper`, we have local document storage (uploads).
+The report mentions isolating the DB. For `govcheck`, we have local document storage (uploads).
 *   **Constraint:** On macOS, bind-mounting large document folders can be slow.
 *   **Action:** We will use a named volume for the `uploads` directory to ensure I/O performance, rather than a direct bind mount to the MacOS host filesystem, unless direct debugging of the PDF files is required.
 

@@ -4,7 +4,7 @@
 /**
  * Utilities
  *
- * Shared utility functions and helpers for the Proposal Prepper
+ * Shared utility functions and helpers for the GovCheck
  * threshold functionality. Includes validation, formatting, and
  * common operations used across components.
  */

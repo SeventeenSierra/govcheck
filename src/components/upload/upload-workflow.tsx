@@ -17,23 +17,13 @@
 
 'use client';
 
-import { AlertCircle, CheckCircle, Clock, FileText, TrendingUp, Zap } from '@17sierra/ui';
-import type React from 'react';
-import { useCallback, useEffect, useState } from 'react';
-import { SimulationControls } from './simulation-controls';
+import React, { useState, useCallback, useEffect } from 'react';
+import { AlertCircle, CheckCircle, Clock, Zap, FileText, TrendingUp } from '@17sierra/ui';
 import { UploadManager } from './upload-manager';
 import { useRealTimeUpdates } from './use-real-time-updates';
 import type { UploadSession } from '@/types/app';
-import type { WebSocketMessage } from '@/services/mock-analysis-service';
-import { analysisService as mockAnalysisService } from '@/services/mock-analysis-service';
-// import { strandsApiClient } from '@/services/strands-api-client';
-
-// Mock client wrapper to match expected interface
-const strandsApiClient = {
-  getResults: mockAnalysisService.getResults,
-  getAnalysisStatus: (id: string) => mockAnalysisService.getAnalysisStatus(id).then(s => ({ success: !!s, data: s })),
-  startAnalysis: (id: string, _pid?: string, _fname?: string) => mockAnalysisService.startAnalysis({ proposalId: id }).then(r => ({ success: r.success, data: { id: r.sessionId }, error: r.error }))
-};
+import type { WebSocketMessage } from '@/services/strands-api-client';
+import { strandsApiClient } from '@/services/strands-api-client';
 
 export interface UploadWorkflowProps {
   /** Callback when the complete workflow finishes */
@@ -77,6 +67,71 @@ export function UploadWorkflow({
     error: null,
   });
 
+  // Real-time updates via WebSocket
+  const realTimeUpdates = useRealTimeUpdates({
+    autoConnect: true,
+    currentSession: uploadSession,
+    onUploadProgress: useCallback((message: WebSocketMessage) => {
+      console.log('Upload progress update:', message);
+      // Upload progress is handled by UploadManager
+    }, []),
+    onAnalysisProgress: useCallback(
+      (message: WebSocketMessage, session?: UploadSession) => {
+        console.log('Analysis progress update:', message);
+
+        if (message.sessionId === analysisState.sessionId) {
+          const data = message.data as any;
+          setAnalysisState((prev) => ({
+            ...prev,
+            status: data.status || prev.status,
+            progress: data.progress || prev.progress,
+            currentStep: data.currentStep || prev.currentStep,
+          }));
+        }
+      },
+      [analysisState.sessionId]
+    ),
+    onAnalysisComplete: useCallback(
+      (message: WebSocketMessage, session?: UploadSession) => {
+        console.log('Analysis complete:', message);
+
+        if (message.sessionId === analysisState.sessionId) {
+          setAnalysisState((prev) => ({
+            ...prev,
+            status: 'completed',
+            progress: 100,
+            currentStep: 'Analysis completed',
+          }));
+
+          // Fetch final results
+          fetchAnalysisResults(message.sessionId);
+        }
+      },
+      [analysisState.sessionId]
+    ),
+    onError: useCallback(
+      (message: WebSocketMessage, session?: UploadSession) => {
+        console.error('WebSocket error:', message);
+
+        if (message.sessionId === analysisState.sessionId) {
+          const errorData = message.data as any;
+          setAnalysisState((prev) => ({
+            ...prev,
+            status: 'failed',
+            error: errorData.error || 'Analysis failed',
+            currentStep: 'Analysis failed',
+          }));
+
+          onWorkflowError?.(errorData.error || 'Analysis failed', {
+            sessionId: message.sessionId,
+            uploadSession,
+          });
+        }
+      },
+      [analysisState.sessionId, uploadSession, onWorkflowError]
+    ),
+  });
+
   // Fetch analysis results
   const fetchAnalysisResults = useCallback(
     async (sessionId: string) => {
@@ -108,76 +163,6 @@ export function UploadWorkflow({
     },
     [uploadSession, onWorkflowComplete]
   );
-
-  // Real-time updates via WebSocket
-  const realTimeUpdates = useRealTimeUpdates({
-    autoConnect: true,
-    currentSession: uploadSession,
-    onUploadProgress: useCallback((message: WebSocketMessage) => {
-      console.log('Upload progress update:', message);
-      // Upload progress is handled by UploadManager
-    }, []),
-    onAnalysisProgress: useCallback(
-      (message: WebSocketMessage, _session?: UploadSession) => {
-        console.log('Analysis progress update:', message);
-
-        if (message.sessionId === analysisState.sessionId) {
-          const data = message.data as any;
-          setAnalysisState((prev) => ({
-            ...prev,
-            status: data.status || prev.status,
-            progress: data.progress || prev.progress,
-            currentStep: data.currentStep || prev.currentStep,
-          }));
-        }
-      },
-      [analysisState.sessionId]
-    ),
-    onAnalysisComplete: useCallback(
-      (message: WebSocketMessage, _session?: UploadSession) => {
-        console.log('Analysis complete:', message);
-
-        if (message.sessionId === analysisState.sessionId) {
-          setAnalysisState((prev) => ({
-            ...prev,
-            status: 'completed',
-            progress: 100,
-            currentStep: 'Analysis completed',
-          }));
-
-          // Fetch final results
-          fetchAnalysisResults(message.sessionId);
-        }
-      },
-      [
-        analysisState.sessionId, // Fetch final results
-        fetchAnalysisResults,
-      ]
-    ),
-    onError: useCallback(
-      (message: WebSocketMessage, _session?: UploadSession) => {
-        console.error('WebSocket error:', message);
-
-        if (message.sessionId === analysisState.sessionId) {
-          const errorData = message.data as any;
-          setAnalysisState((prev) => ({
-            ...prev,
-            status: 'failed',
-            error: errorData.error || 'Analysis failed',
-            currentStep: 'Analysis failed',
-          }));
-
-          onWorkflowError?.(errorData.error || 'Analysis failed', {
-            sessionId: message.sessionId,
-            uploadSession,
-          });
-        }
-      },
-      [analysisState.sessionId, uploadSession, onWorkflowError]
-    ),
-  });
-
-
 
   // Poll analysis status if not using WebSocket
   useEffect(() => {
@@ -230,6 +215,28 @@ export function UploadWorkflow({
     fetchAnalysisResults,
   ]);
 
+  // Handle upload completion
+  const handleUploadComplete = useCallback((session: UploadSession) => {
+    console.log('Upload completed:', session);
+    setUploadSession(session);
+
+    // Check if analysis was automatically started
+    if (session.analysisSessionId) {
+      console.log('Analysis automatically started:', session.analysisSessionId);
+      setAnalysisState({
+        sessionId: session.analysisSessionId,
+        status: 'queued',
+        progress: 0,
+        currentStep: 'Analysis queued',
+        results: null,
+        error: null,
+      });
+    } else {
+      // Start analysis manually if not automatically started
+      startAnalysis(session.id, session.filename);
+    }
+  }, []);
+
   // Start analysis manually
   const startAnalysis = useCallback(
     async (proposalId: string, filename?: string) => {
@@ -241,7 +248,7 @@ export function UploadWorkflow({
         if (response.success && response.data) {
           console.log('Analysis started:', response.data.id);
           setAnalysisState({
-            sessionId: response.data.id || null,
+            sessionId: response.data.id,
             status: 'queued',
             progress: 0,
             currentStep: 'Analysis queued',
@@ -268,36 +275,6 @@ export function UploadWorkflow({
     },
     [onWorkflowError]
   );
-
-  // Handle upload completion
-  const handleUploadComplete = useCallback(
-    (session: UploadSession) => {
-      console.log('Upload completed:', session);
-      setUploadSession(session);
-
-      // Check if analysis was automatically started
-      if (session.analysisSessionId) {
-        console.log('Analysis automatically started:', session.analysisSessionId);
-        setAnalysisState({
-          sessionId: session.analysisSessionId,
-          status: 'queued',
-          progress: 0,
-          currentStep: 'Analysis queued',
-          results: null,
-          error: null,
-        });
-      } else {
-        // Start analysis manually if not automatically started
-        startAnalysis(session.id, session.filename);
-      }
-    },
-    [
-      // Start analysis manually if not automatically started
-      startAnalysis,
-    ]
-  );
-
-
 
   // Handle upload error
   const handleUploadError = useCallback(
@@ -342,13 +319,6 @@ export function UploadWorkflow({
           onUploadError={handleUploadError}
           disabled={disabled}
         />
-
-        {!uploadSession && (
-          <SimulationControls
-            onComplete={handleUploadComplete}
-            onError={(err) => onWorkflowError?.(err)}
-          />
-        )}
       </div>
 
       {/* Analysis Section */}
@@ -379,8 +349,9 @@ export function UploadWorkflow({
             {/* WebSocket Connection Status */}
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <div
-                className={`w-2 h-2 rounded-full ${realTimeUpdates.connected ? 'bg-green-500' : 'bg-gray-300'
-                  }`}
+                className={`w-2 h-2 rounded-full ${
+                  realTimeUpdates.connected ? 'bg-green-500' : 'bg-gray-300'
+                }`}
               />
               {realTimeUpdates.connected ? 'Live updates' : 'Polling for updates'}
             </div>
@@ -480,10 +451,10 @@ export function UploadWorkflow({
                 workflowStatus,
                 uploadSession: uploadSession
                   ? {
-                    id: uploadSession.id,
-                    status: uploadSession.status,
-                    analysisSessionId: uploadSession.analysisSessionId,
-                  }
+                      id: uploadSession.id,
+                      status: uploadSession.status,
+                      analysisSessionId: uploadSession.analysisSessionId,
+                    }
                   : null,
                 analysisState,
                 realTimeUpdates: {

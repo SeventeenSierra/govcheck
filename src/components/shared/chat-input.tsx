@@ -5,8 +5,9 @@
 
 'use client';
 
-import { Button, ChevronRight, Loader2, Textarea } from '@17sierra/ui';
 import React from 'react';
+import { Button, Textarea } from '@17sierra/ui';
+import { ChevronRight, Loader2 } from '@17sierra/ui';
 
 /**
  * Chat Input Component Props

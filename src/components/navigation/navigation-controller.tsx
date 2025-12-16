@@ -5,7 +5,8 @@
 
 'use client';
 
-import { Button, ChevronLeft, ChevronRight, Home } from '@17sierra/ui';
+import { Button } from '@17sierra/ui';
+import { ChevronLeft, ChevronRight, Home } from '@17sierra/ui';
 import type React from 'react';
 import { useCallback, useMemo } from 'react';
 

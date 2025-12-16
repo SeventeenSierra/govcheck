@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
 
-// Commitlint configuration for Proposal Prepper (Contract Checker)
+// Commitlint configuration for GovCheck (Contract Checker)
 // Supports conventional commits with AI agent trailers
 
 export default {
@@ -47,7 +47,7 @@ export default {
         "deps", // Dependencies
 
         // Project areas
-        "compliance", // NSF PAPPG compliance logic
+        "compliance", // Federal Compliance compliance logic
         "orchestration", // Federated mesh orchestration
         "api", // API routes and endpoints
         "components", // UI components

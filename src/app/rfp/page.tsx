@@ -7,8 +7,8 @@
 
 import React from 'react';
 import { AppHeader, TwoPanelLayout } from '@/components/layout';
-import { ReportPreview } from '@/components/reports';
 import { RFPInterface } from '@/components/rfp';
+import { ReportPreview } from '@/components/reports';
 
 /**
  * RFP Analysis Page - Consolidated interface for proposal processing
@@ -25,14 +25,12 @@ import { RFPInterface } from '@/components/rfp';
  */
 export default function RFPPage() {
   const [activeProject, setActiveProject] = React.useState<string | null>(null);
-  // biome-ignore lint/suspicious/noExplicitAny: Legacy state type
   const [analysisResults, setAnalysisResults] = React.useState<any>(null);
 
   const handleProjectStart = (projectId: string) => {
     setActiveProject(projectId);
   };
 
-  // biome-ignore lint/suspicious/noExplicitAny: Legacy callback type
   const handleAnalysisComplete = (results: any) => {
     setAnalysisResults(results);
   };

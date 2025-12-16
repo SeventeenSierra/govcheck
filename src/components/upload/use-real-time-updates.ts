@@ -11,20 +11,8 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-// import { strandsApiClient, type WebSocketMessage } from '@/services/strands-api-client';
-import type { WebSocketMessage } from '@/services/mock-analysis-service';
+import { strandsApiClient, type WebSocketMessage } from '@/services/strands-api-client';
 import type { UploadSession } from '@/types/app';
-
-// Mock strandsApiClient for simulation
-const strandsApiClient = {
-  connectWebSocket: async () => { },
-  disconnectWebSocket: () => { },
-  isWebSocketConnected: () => false,
-  subscribeToUploadProgress: (_cb: any) => { },
-  subscribeToAnalysisProgress: (_cb: any) => { },
-  subscribeToAnalysisComplete: (_cb: any) => { },
-  subscribeToErrors: (_cb: any) => { }
-};
 
 export interface RealTimeUpdateState {
   connected: boolean;
@@ -169,7 +157,6 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
   };
 
   // Auto-connect on mount if requested
-  // biome-ignore lint/correctness/useExhaustiveDependencies: connect/disconnect are external stable refs
   useEffect(() => {
     if (autoConnect) {
       connect().catch(console.error);
