@@ -43,6 +43,7 @@ export interface AgentInterfaceProps {
   /** Callback to start demo analysis */
   startDemo: () => void;
   /** Callback when analysis completes */
+  // biome-ignore lint/suspicious/noExplicitAny: Legacy callback type
   onAnalysisComplete?: (results: any) => void;
   /** Additional CSS classes */
   className?: string;

@@ -1,29 +1,61 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
-// SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
-
 'use client';
+// SPDX-License-Identifier: AGPL-3.0-or-later
 
-import Link from 'next/link';
-import { FileText } from '@17sierra/ui';
+import { useEffect, useState } from 'react';
+import AgentInterface from '@/components/agent-interface';
+import Sidebar from '@/components/layout/sidebar';
+import TopBar from '@/components/layout/top-bar';
+import { ReportPreview } from '@/components/reports';
 
-export default function HomePage() {
+export default function App() {
+  const [activeProject, setActiveProject] = useState<string | null>(null);
+  const [showReport, setShowReport] = useState(false);
+  const [isSidebarOpen, setSidebarOpen] = useState(true);
+
+  // Demo Trigger
+  const startDemo = () => {
+    setActiveProject('demo-running');
+    // Report appears after animation finishes (approx 5 steps * 1.5s = 7.5s, cutting short for UX)
+    setTimeout(() => {
+      setShowReport(true);
+    }, 7500);
+  };
+
+  const resetDemo = () => {
+    setActiveProject(null);
+    setShowReport(false);
+    if (!isSidebarOpen) {
+      setSidebarOpen(true);
+    }
+  };
+
+  useEffect(() => {
+    if (activeProject) {
+      setShowReport(false);
+      if (activeProject !== 'demo-running') {
+        setTimeout(() => {
+          setShowReport(true);
+        }, 500);
+      }
+    }
+  }, [activeProject]);
+
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center">
-      <div className="text-center">
-        <div className="mb-8">
-          <div className="inline-flex items-center gap-3 mb-4">
-            <FileText size={40} className="text-blue-600" />
-            <h1 className="text-3xl font-bold text-gray-900">GovCheck</h1>
-          </div>
-          <p className="text-gray-600">AI-powered federal proposal compliance analysis</p>
-        </div>
+    <div className="h-screen bg-background flex flex-col font-body text-slate-800 overflow-hidden">
+      <TopBar toggleSidebar={() => setSidebarOpen(!isSidebarOpen)} isSidebarOpen={isSidebarOpen} />
 
-        <Link
-          href="/rfp"
-          className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-        >
-          Start Analysis
-        </Link>
+      <div className="flex flex-1 overflow-hidden h-[calc(100vh-64px)]">
+        <Sidebar
+          activeProject={activeProject}
+          setActiveProject={setActiveProject}
+          resetDemo={resetDemo}
+          isOpen={isSidebarOpen}
+        />
+
+        <main className="flex-1 flex relative bg-white shadow-inner-xl m-0 md:my-2 md:mr-2 md:rounded-lg overflow-hidden border-t md:border border-gray-200/80 transition-all duration-300">
+          <AgentInterface activeProject={activeProject} startDemo={startDemo} />
+          <ReportPreview isVisible={showReport} />
+        </main>
       </div>
     </div>
   );

@@ -5,9 +5,8 @@
 
 'use client';
 
-import React from 'react';
-import { Button } from '@17sierra/ui';
-import { Settings, User, HelpCircle } from '@17sierra/ui';
+import { Button, HelpCircle, Settings, User } from '@17sierra/ui';
+import type React from 'react';
 
 /**
  * Application mode types
@@ -69,7 +68,7 @@ export interface AppHeaderProps {
  * ```tsx
  * <AppHeader
  *   mode="agent"
- *   title="GovCheck"
+ *   title="Proposal Prepper"
  *   subtitle="Analysis in progress..."
  *   actions={[
  *     { id: 'export', label: 'Export', icon: Download, onClick: handleExport }
@@ -80,7 +79,7 @@ export interface AppHeaderProps {
  */
 export const AppHeader: React.FC<AppHeaderProps> = ({
   mode = 'proposals',
-  title = 'GovCheck',
+  title = 'Proposal Prepper',
   subtitle,
   className = '',
   showModeBadge = true,
@@ -144,7 +143,13 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
       <div className="flex items-center gap-3 text-slate-800 font-semibold text-lg">
         {logo || (
           <div className="bg-primary text-primary-foreground p-1.5 rounded-lg">
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <svg
+              className="w-5 h-5"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              role="img"
+              aria-label="Logo"
+            >
               <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
@@ -154,6 +159,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 
         {showModeBadge && (
           <button
+            type="button"
             onClick={handleModeClick}
             className={`text-[10px] px-2 py-0.5 rounded-full border uppercase font-bold tracking-wider transition-colors hover:opacity-80 ${getModeColor(mode)}`}
             title={`Current mode: ${mode}. Click to switch modes.`}

@@ -19,10 +19,10 @@ export type {
 export { IssueSeverity } from '@/components/results/types';
 
 // Import for local use
-import {
+import type {
+  ExtendedComplianceIssue,
+  ExtendedIssueLocation,
   IssueSeverity,
-  type ExtendedComplianceIssue,
-  type ExtendedIssueLocation,
 } from '@/components/results/types';
 
 /**

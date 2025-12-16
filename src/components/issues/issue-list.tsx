@@ -7,13 +7,13 @@
 
 import { AlertCircle, ChevronDown, ChevronRight, MapPin, XCircle } from '@17sierra/ui';
 import { useState } from 'react';
-import { IssueDetails } from './issue-details';
 import { generateRemediationRecommendation } from '@/components/results/remediation-utils';
 import {
   type ExtendedComplianceIssue,
   type IssueListProps,
   IssueSeverity,
 } from '@/components/results/types';
+import { IssueDetails } from './issue-details';
 
 /**
  * Issue List Component
