@@ -10,17 +10,16 @@
  * for testing proposal compliance analysis functionality.
  */
 
-export * from './types';
 export * from './grants';
-
 // Re-export commonly used functions for convenience
 export {
-  seedGrants,
-  getRandomSeedGrant,
-  getSeedGrantById,
   getFundedGrants,
   getGrantsByFunder,
   getNSFGrants,
-  seedGrantToUploadSession,
+  getRandomSeedGrant,
+  getSeedGrantById,
+  seedGrants,
   seedGrantToAnalysisResult,
+  seedGrantToUploadSession,
 } from './grants';
+export * from './types';

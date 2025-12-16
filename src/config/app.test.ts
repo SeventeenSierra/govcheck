@@ -59,7 +59,12 @@ describe('Application Configuration', () => {
 
   describe('apiConfig', () => {
     it('should have correct service URLs', () => {
-      expect(apiConfig.strandsBaseUrl).toContain('8080');
+      if (typeof window !== 'undefined') {
+        // In browser/jsdom, default is empty string (relative path)
+        expect(apiConfig.strandsBaseUrl).toBe('');
+      } else {
+        expect(apiConfig.strandsBaseUrl).toContain('8080');
+      }
     });
 
     it('should have reasonable timeout and retry settings', () => {
