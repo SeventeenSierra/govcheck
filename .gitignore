@@ -63,7 +63,7 @@ next-env.d.ts
 # Configuration & Workflows
 /.agent/
 /.kiro/
-/.github/
+# /.github/
 /.husky/
 /.vscode/
 /.security/
