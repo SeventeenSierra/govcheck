@@ -57,6 +57,8 @@ dev_output.log
 
 # local env files
 .env*.local
+.direnv/
+
 
 # vercel
 .vercel
@@ -87,18 +89,13 @@ next-env.d.ts
 # /.storybook/
 # /src/test-utils/
 
-# Infrastructure & DevOps (PolyForm-Perimeter)
-# /containers/
-# /database/
-# /scripts/
-
-# Configuration & Workflows (PolyForm-Perimeter)
-# /.agent/
-# /.kiro/
+# Configuration & Workflows
+/.agent/
+/.kiro/
 # /.github/
-# /.husky/
-# /.vscode/
-# /.security/
+/.husky/
+/.vscode/
+/.security/
 
 # Development Artifacts
 # /development/
