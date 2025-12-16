@@ -1,7 +1,33 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
+
+# =============================================================================
+# BRANCH-SPECIFIC GITIGNORE STRATEGY
+# =============================================================================
+# 
+# This .gitignore supports branch-specific content management:
+#
+# AI-SSDF-NONOPEN BRANCH:
+#   - All content is tracked and committed (exclusions are commented out)
+#   - Contains full licensing work, private docs, proprietary content
+#
+# OTHER BRANCHES (main, develop):
+#   - Uncomment the "AI-SSDF-NONOPEN SPECIFIC EXCLUSIONS" section
+#   - This will exclude proprietary content when merging/cherry-picking
+#
+# USAGE:
+#   1. On ai-ssdf-nonopen: Keep exclusions commented (track everything)
+#   2. When merging to other branches: Uncomment exclusions as needed
+#   3. Use selective git add/commit for fine-grained control
+#
+# =============================================================================
+
 # dependencies
 /node_modules
+/.pnpm-store
 /.pnp
 .pnp.js
+.pnpm-store
 
 # testing
 /coverage
@@ -39,39 +65,89 @@ dev_output.log
 *.tsbuildinfo
 next-env.d.ts
 
-# Branch-specific exclusions (backend & dev tools for develop branch)
+# =============================================================================
+# BRANCH-SPECIFIC CONTENT EXCLUSIONS
+# =============================================================================
 
-# Backend Services (Python AI service)
-/services/
+# -----------------------------------------------------------------------------
+# AI-SSDF-NONOPEN BRANCH SPECIFIC EXCLUSIONS
+# -----------------------------------------------------------------------------
+# Comment out this entire section when merging to develop branch
+# Uncomment when you want to exclude this content from commits
 
-# Backend TypeScript Integration
-/src/adapters/
-/src/app/api/
-/src/services/
+# Backend Services (PolyForm-Perimeter - Python AI service)
+# /services/
 
-# Development Tools
-/.storybook/
-/src/test-utils/
+# Backend TypeScript Integration (PolyForm-Perimeter)
+# /src/adapters/
+# /src/app/api/
+# /src/services/
 
-# Infrastructure & DevOps
-/containers/
-/database/
-/scripts/
+# Development Tools (PolyForm-Perimeter)
+# /.storybook/
+# /src/test-utils/
 
-# Configuration & Workflows
-/.agent/
-/.kiro/
-/.github/
-/.husky/
-/.vscode/
-/.security/
+# Infrastructure & DevOps (PolyForm-Perimeter)
+# /containers/
+# /database/
+# /scripts/
+
+# Configuration & Workflows (PolyForm-Perimeter)
+# /.agent/
+# /.kiro/
+# /.github/
+# /.husky/
+# /.vscode/
+# /.security/
 
 # Development Artifacts
-/development/
+# /development/
 
-# Private Documentation
-/docs/private/
-/docs/troubleshooting/
+# Private Documentation (All Rights Reserved)
+# /docs/private/
+# /docs/troubleshooting/
 
-# Legal & Signatures
-/signatures/
+# Signatures and Legal
+# /signatures/
+
+# -----------------------------------------------------------------------------
+# END AI-SSDF-NONOPEN SPECIFIC EXCLUSIONS
+# -----------------------------------------------------------------------------
+
+# =============================================================================
+# UNIVERSAL EXCLUSIONS (ALWAYS IGNORED)
+# =============================================================================
+
+# Vendor Code (Various licenses - preserve originals)
+/vendor/
+
+# Root Configuration Files (tracked but can be selectively excluded)
+# Uncomment individual lines below to exclude specific config files:
+# /commitlint.config.mjs
+# /.gitleaks.toml
+# /biome.json
+# /next.config.ts
+# /tailwind.config.ts
+# /tsconfig.json
+# /vitest.config.ts
+# /playwright.config.ts
+# /postcss.config.mjs
+# /knip.json
+# /renovate.json
+# /pnpm-workspace.yaml
+# /docker-compose.yml
+# /flake.nix
+# /flake.lock
+
+# NOTE: flake.lock must be pure JSON (no SPDX headers allowed)
+.direnv/
+
+# Python
+__pycache__/
+*.pyc
+
+# Local Workspace
+proposal-prepper-homelab.code-workspace
+
+# pnpm store
+.pnpm-store/

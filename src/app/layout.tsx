@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="light">
+    <html lang="en" className="light" suppressHydrationWarning>
       <head>
         {/* Font optimization for Requirement 5.1: Load time performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -25,8 +25,7 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
           rel="stylesheet"
         />
-        {/* Preload critical resources */}
-        <link rel="preload" href="/favicon.ico" as="image" />
+
         {/* DNS prefetch for API endpoints */}
         <link rel="dns-prefetch" href="//localhost:8080" />
       </head>
