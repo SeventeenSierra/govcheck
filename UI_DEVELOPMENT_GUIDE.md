@@ -29,7 +29,7 @@ The GovCheck web interface represents a modern, accessible, and enterprise-grade
 ## Architecture
 
 ### Frontend Architecture
-The web interface is a standalone Next.js application that integrates with your backend API:
+The web interface is a standalone Next.js application that int`egrates with your backend API:
 
 ```
 ┌─────────────────────────────────────┐
