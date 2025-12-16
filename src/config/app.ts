@@ -4,7 +4,7 @@
 /**
  * Application Configuration
  *
- * Configuration constants and settings for the Proposal Prepper application.
+ * Configuration constants and settings for the GovCheck application.
  * Centralizes all configurable values used across components, services, and utilities.
  */
 
@@ -84,7 +84,7 @@ export const apiConfig = {
   strandsBaseUrl:
     process.env.NEXT_PUBLIC_STRANDS_URL ||
     process.env.STRANDS_SERVICE_URL ||
-    (typeof window === 'undefined' ? 'http://strands:8080' : ''),
+    (typeof window === 'undefined' ? 'http://strands:8080' : 'http://localhost:8080'),
   /** Use mock APIs for development (when external services aren't available) */
   useMockApis: process.env.NEXT_PUBLIC_USE_MOCK_APIS === 'true',
   /** API request timeout in milliseconds */

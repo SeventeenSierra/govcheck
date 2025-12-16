@@ -5,7 +5,7 @@
  * Type Definitions Index
  *
  * Centralized exports for all TypeScript interfaces and types
- * used across the Proposal Prepper application.
+ * used across the GovCheck application.
  */
 
 // Re-export common types that might be used across the application

@@ -81,7 +81,7 @@ function getNumberEnvVar(name: string, fallback: number): number {
   const value = getEnvVar(name);
   if (!value) return fallback;
   const parsed = parseInt(value, 10);
-  return Number.isNaN(parsed) ? fallback : parsed;
+  return isNaN(parsed) ? fallback : parsed;
 }
 
 /**
@@ -237,9 +237,7 @@ export class ApiConfigurationManager {
    * Notify all listeners of configuration changes
    */
   private notifyListeners(): void {
-    this.listeners.forEach((listener) => {
-      listener(this.config);
-    });
+    this.listeners.forEach((listener) => listener(this.config));
   }
 
   /**
