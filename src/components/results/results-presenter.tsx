@@ -5,10 +5,17 @@
 
 'use client';
 
-import { Button } from '@17sierra/ui';
-import { AlertCircle, CheckCircle, Download, FileText, RefreshCw, XCircle } from '@17sierra/ui';
-import { resultsService } from '@/services';
+import {
+  AlertCircle,
+  Button,
+  CheckCircle,
+  Download,
+  FileText,
+  RefreshCw,
+  XCircle,
+} from '@17sierra/ui';
 import { IssueList } from '@/components/issues';
+import { resultsService } from '@/services';
 import { RegulatoryReferences } from './regulatory-references';
 import type { ResultsPresenterProps } from './types';
 import { ComplianceStatus } from './types';

@@ -5,8 +5,7 @@
 
 'use client';
 
-import { Badge, Button } from '@17sierra/ui';
-import { CheckCircle2, Download, Maximize2, ExternalLink } from '@17sierra/ui';
+import { Badge, Button, CheckCircle2, Download, Maximize2 } from '@17sierra/ui';
 import type { AnalysisResults } from '@/components/results/types';
 
 /**
@@ -64,11 +63,11 @@ export interface ReportPreviewProps {
  */
 const ReportPreview: React.FC<ReportPreviewProps> = ({
   isVisible,
-  reportData,
-  isGenerating = false,
-  onDownload,
-  onFullscreen,
-  onShare,
+  reportData: _reportData,
+  isGenerating: _isGenerating = false,
+  onDownload: _onDownload,
+  onFullscreen: _onFullscreen,
+  onShare: _onShare,
   className = '',
 }) => {
   if (!isVisible) return null;
