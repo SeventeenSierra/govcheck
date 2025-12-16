@@ -15,7 +15,7 @@ import { AlertCircle, Button, CheckCircle, FileText, Upload, X } from '@17sierra
 import type React from 'react';
 import { useCallback, useRef, useState } from 'react';
 import { errorConfig, uploadConfig, validationConfig } from '@/config/app';
-import { strandsApiClient } from '@/services';
+// import { strandsApiClient } from '@/services'; // Removed for simulation mode
 import { MockStrandsClient } from '@/services/mock-strands-client';
 import { type UploadSession, UploadStatus } from '@/types/app';
 
@@ -161,41 +161,15 @@ export function UploadManager({
         // biome-ignore lint/suspicious/noImplicitAnyLet: Complex type inference
         let response;
 
-        try {
-          // Try real API first
-          console.log('Attempting upload to real API...');
-          response = await strandsApiClient.uploadDocument(file, (progress: number) => {
-            const progressSession = { ...updatedSession, progress };
-            setCurrentUpload(progressSession);
-            onUploadProgress?.(progress, progressSession);
-          });
-          console.log('Real API upload successful');
-        } catch (realApiError) {
-          console.log('Real API failed, attempting mock fallback:', realApiError);
-
-          // Provide detailed error context
-          const apiErrorMessage =
-            realApiError instanceof Error ? realApiError.message : 'Unknown API error';
-          console.log(`API Error Details: ${apiErrorMessage}`);
-
-          // Check if it's a network connectivity issue
-          if (
-            apiErrorMessage.includes('fetch') ||
-            apiErrorMessage.includes('network') ||
-            apiErrorMessage.includes('ECONNREFUSED')
-          ) {
-            console.log('Network connectivity issue detected, using mock client');
-          }
-
-          // Fallback to mock client
-          const mockClient = new MockStrandsClient();
-          response = await mockClient.uploadDocument(file, (progress: number) => {
-            const progressSession = { ...updatedSession, progress };
-            setCurrentUpload(progressSession);
-            onUploadProgress?.(progress, progressSession);
-          });
-          console.log('Mock client upload successful');
-        }
+        // Simulation Only Mode
+        const mockClient = new MockStrandsClient();
+        console.log('Using MockStrandsClient for simulation');
+        response = await mockClient.uploadDocument(file, (progress: number) => {
+          const progressSession = { ...updatedSession, progress };
+          setCurrentUpload(progressSession);
+          onUploadProgress?.(progress, progressSession);
+        });
+        console.log('Mock client upload successful');
 
         if (response.success && response.data) {
           const completedSession: UploadSession = {

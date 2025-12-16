@@ -10,8 +10,13 @@ import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { type AnalysisStep, AnalysisSteps, ChatInput } from '@/components/shared';
 import { UploadWorkflow } from '@/components/upload/upload-workflow';
-import { StrandsIntegrationUtils } from '@/services';
 import type { UploadSession } from '@/types/app';
+
+// Mock utils for simulation mode
+const SimulationUtils = {
+  getServiceConfig: () => ({ baseUrl: 'http://localhost:3000', version: '0.0.0-simulation' }),
+  ensureServiceReady: async () => ({ ready: true, message: 'Simulation mode active' })
+};
 
 /**
  * RFP Interface Props
@@ -50,8 +55,8 @@ const ServiceStatusIndicator: React.FC = () => {
   useEffect(() => {
     const checkServiceStatus = async () => {
       try {
-        const config = StrandsIntegrationUtils.getServiceConfig();
-        const serviceReady = await StrandsIntegrationUtils.ensureServiceReady();
+        const config = SimulationUtils.getServiceConfig();
+        const serviceReady = await SimulationUtils.ensureServiceReady();
 
         setServiceStatus({
           healthy: serviceReady.ready,
@@ -368,11 +373,10 @@ export const RFPInterface: React.FC<RFPInterfaceProps> = ({
                   </div>
                   <div className="flex-1">
                     <div
-                      className={`p-4 rounded-2xl text-sm leading-relaxed ${
-                        message.type === 'assistant'
-                          ? 'bg-slate-50 border border-gray-200 rounded-tl-none text-slate-800'
-                          : 'bg-primary text-primary-foreground rounded-tr-none'
-                      }`}
+                      className={`p-4 rounded-2xl text-sm leading-relaxed ${message.type === 'assistant'
+                        ? 'bg-slate-50 border border-gray-200 rounded-tl-none text-slate-800'
+                        : 'bg-primary text-primary-foreground rounded-tr-none'
+                        }`}
                     >
                       {message.content}
                     </div>
