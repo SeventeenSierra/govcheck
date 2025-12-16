@@ -5,11 +5,12 @@
 
 'use client';
 
-import { Bug, Button, RefreshCw, Settings } from '@17sierra/ui';
 import React from 'react';
 import { AppHeader, TwoPanelLayout } from '@/components/layout';
 import { RFPInterface } from '@/components/rfp';
-import { ReportPreview, ReportStatus, ReportTemplate, ReportFormat } from '@/components/reports';
+import { ReportPreview } from '@/components/reports';
+import { Button } from '@17sierra/ui';
+import { Settings, RefreshCw, Bug } from '@17sierra/ui';
 
 /**
  * RFP Mock Page - Development and testing interface
@@ -25,7 +26,6 @@ import { ReportPreview, ReportStatus, ReportTemplate, ReportFormat } from '@/com
  */
 export default function RFPMockPage() {
   const [activeProject, setActiveProject] = React.useState<string | null>(null);
-  // biome-ignore lint/suspicious/noExplicitAny: Legacy mock state
   const [analysisResults, setAnalysisResults] = React.useState<any>(null);
   const [mockSettings, setMockSettings] = React.useState({
     uploadDelay: 1000,
@@ -38,7 +38,6 @@ export default function RFPMockPage() {
     setActiveProject(projectId);
   };
 
-  // biome-ignore lint/suspicious/noExplicitAny: Legacy mock callback
   const handleAnalysisComplete = (results: any) => {
     setAnalysisResults(results);
   };
@@ -134,16 +133,13 @@ export default function RFPMockPage() {
             reportData={
               analysisResults
                 ? {
-                  id: 'mock-report-123',
-                  title: 'Mock Compliance Report',
-                  reference: 'MOCK-2024-001',
-                  generatedAt: new Date(),
-                  complianceScore: 92,
-                  status: ReportStatus.READY,
-                  analysisResults: analysisResults,
-                  template: ReportTemplate.STANDARD,
-                  format: ReportFormat.PDF,
-                }
+                    id: 'mock-report-123',
+                    title: 'Mock Compliance Report',
+                    reference: 'MOCK-2024-001',
+                    generatedAt: new Date(),
+                    complianceScore: 92,
+                    status: 'ready' as const,
+                  }
                 : undefined
             }
           />
@@ -159,7 +155,7 @@ export default function RFPMockPage() {
           <h4 className="font-semibold text-sm mb-3 text-gray-800">Mock Controls</h4>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-600">Fast Mode</span>
+              <label className="text-xs text-gray-600">Fast Mode</label>
               <Button
                 size="sm"
                 variant={mockSettings.fastMode ? 'default' : 'outline'}
@@ -170,7 +166,7 @@ export default function RFPMockPage() {
               </Button>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-600">Simulate Errors</span>
+              <label className="text-xs text-gray-600">Simulate Errors</label>
               <Button
                 size="sm"
                 variant={mockSettings.simulateErrors ? 'destructive' : 'outline'}

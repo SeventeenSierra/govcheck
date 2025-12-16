@@ -4,7 +4,7 @@
 /**
  * Application Type Definitions
  *
- * Core TypeScript interfaces and types for the Proposal Prepper application.
+ * Core TypeScript interfaces and types for the GovCheck application.
  * These types define the data models used across the upload, analysis,
  * and results presentation components.
  */

@@ -5,7 +5,7 @@
  * Configuration Index
  *
  * Centralized exports for all configuration settings used
- * across the Proposal Prepper application.
+ * across the GovCheck application.
  */
 
 export * from './app';

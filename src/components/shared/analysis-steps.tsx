@@ -5,8 +5,8 @@
 
 'use client';
 
-import { CheckCircle2, Loader2 } from '@17sierra/ui';
 import React from 'react';
+import { CheckCircle2, Loader2 } from '@17sierra/ui';
 
 /**
  * Analysis step status enumeration
@@ -88,7 +88,7 @@ export const AnalysisSteps: React.FC<AnalysisStepsProps> = ({
   // Notify parent of status changes
   React.useEffect(() => {
     if (onStepStatusChange) {
-      steps.forEach((_step) => {
+      steps.forEach((step) => {
         // This would be called when status actually changes in a real implementation
         // For now, we just ensure the callback is properly typed
       });
@@ -107,6 +107,7 @@ export const AnalysisSteps: React.FC<AnalysisStepsProps> = ({
             <div className="w-2 h-2 bg-red-500 rounded-full" />
           </div>
         );
+      case 'pending':
       default:
         return <div className="w-[18px] h-[18px] rounded-full border-2 border-gray-300" />;
     }

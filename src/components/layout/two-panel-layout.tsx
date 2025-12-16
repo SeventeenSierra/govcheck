@@ -171,10 +171,9 @@ export const TwoPanelLayout: React.FC<TwoPanelLayoutProps> = ({
 
       {/* Resizer */}
       {resizable && isRightPanelVisible && rightPanel && (
-        // biome-ignore lint/a11y/noStaticElementInteractions: Resizer needs mouse events
         <div
           className={`w-1 bg-gray-200 hover:bg-gray-300 cursor-col-resize transition-colors ${
-            isResizing ? 'bg-blue-400 hover:bg-blue-400' : ''
+            isResizing ? 'bg-primary' : ''
           }`}
           onMouseDown={handleMouseDown}
           title="Drag to resize panels"

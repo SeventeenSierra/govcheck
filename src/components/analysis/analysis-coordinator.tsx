@@ -7,12 +7,7 @@
 
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
-export interface AnalysisRequest {
-  proposalId: string;
-  frameworks: string[];
-  options?: any;
-}
-import { analysisService } from '@/services/mock-analysis-service';
+import { type AnalysisRequest, analysisService } from '@/services';
 import {
   type AnalysisResult,
   type AnalysisSession,
@@ -226,13 +221,13 @@ export const AnalysisCoordinator: React.FC<AnalysisCoordinatorProps> = ({
     try {
       // Set up event handlers for analysis service
       analysisService.setEventHandlers({
-        onProgress: (_sessionId: string, progress: number, currentStep: string) => {
+        onProgress: (_sessionId, progress, currentStep) => {
           setSession((prev) => (prev ? { ...prev, progress, currentStep } : null));
           if (session) {
             onProgressUpdate?.({ ...session, progress, currentStep });
           }
         },
-        onComplete: (_sessionId: string, completedSession: AnalysisSession) => {
+        onComplete: (_sessionId, completedSession) => {
           setSession(completedSession);
           setIsAnalyzing(false);
 
@@ -257,15 +252,15 @@ export const AnalysisCoordinator: React.FC<AnalysisCoordinatorProps> = ({
           setResult(analysisResult);
           onAnalysisComplete?.(analysisResult);
         },
-        onError: (_sessionId: string, error: string) => {
+        onError: (_sessionId, error) => {
           setSession((prev) =>
             prev
               ? {
-                ...prev,
-                status: AnalysisStatus.FAILED,
-                errorMessage: error,
-                currentStep: 'Analysis failed',
-              }
+                  ...prev,
+                  status: AnalysisStatus.FAILED,
+                  errorMessage: error,
+                  currentStep: 'Analysis failed',
+                }
               : null
           );
           setIsAnalyzing(false);
@@ -289,7 +284,7 @@ export const AnalysisCoordinator: React.FC<AnalysisCoordinatorProps> = ({
 
       const result = await analysisService.startAnalysis(request);
 
-      if (result.success && result.sessionId) {
+      if (result.success) {
         // Get initial session state
         const initialSession = await analysisService.getAnalysisStatus(result.sessionId);
         if (initialSession) {
@@ -375,12 +370,13 @@ export const AnalysisCoordinator: React.FC<AnalysisCoordinatorProps> = ({
           <div className="flex justify-between items-center mb-2">
             <h3 className="text-lg font-medium">Analysis Status</h3>
             <span
-              className={`px-2 py-1 rounded text-sm ${session.status === AnalysisStatus.COMPLETED
-                ? 'bg-green-100 text-green-800'
-                : session.status === AnalysisStatus.FAILED
-                  ? 'bg-red-100 text-red-800'
-                  : 'bg-blue-100 text-blue-800'
-                }`}
+              className={`px-2 py-1 rounded text-sm ${
+                session.status === AnalysisStatus.COMPLETED
+                  ? 'bg-green-100 text-green-800'
+                  : session.status === AnalysisStatus.FAILED
+                    ? 'bg-red-100 text-red-800'
+                    : 'bg-blue-100 text-blue-800'
+              }`}
             >
               {session.status.toUpperCase()}
             </span>
@@ -438,12 +434,13 @@ export const AnalysisCoordinator: React.FC<AnalysisCoordinatorProps> = ({
             <div>
               <span className="font-medium">Status:</span>
               <span
-                className={`ml-2 px-2 py-1 rounded ${result.status === 'pass'
-                  ? 'bg-green-100 text-green-800'
-                  : result.status === 'fail'
-                    ? 'bg-red-100 text-red-800'
-                    : 'bg-yellow-100 text-yellow-800'
-                  }`}
+                className={`ml-2 px-2 py-1 rounded ${
+                  result.status === 'pass'
+                    ? 'bg-green-100 text-green-800'
+                    : result.status === 'fail'
+                      ? 'bg-red-100 text-red-800'
+                      : 'bg-yellow-100 text-yellow-800'
+                }`}
               >
                 {result.status.toUpperCase()}
               </span>

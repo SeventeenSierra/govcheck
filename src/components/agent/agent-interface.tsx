@@ -3,15 +3,8 @@
 
 'use client';
 
-import {
-  Bot,
-  Button,
-  CheckCircle2,
-  ChevronRight,
-  FileCheck,
-  Loader2,
-  Textarea,
-} from '@17sierra/ui';
+import { Button, Textarea } from '@17sierra/ui';
+import { Bot, CheckCircle2, ChevronRight, FileCheck, Loader2 } from '@17sierra/ui';
 import { useEffect, useState } from 'react';
 
 type AnalysisStep = {

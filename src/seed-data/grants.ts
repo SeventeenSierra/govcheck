@@ -4,8 +4,8 @@
  */
 
 import { IssueSeverity } from '@/components/analysis/types';
-import { UploadStatus } from '../types/app';
 import type { SeedGrant } from './types';
+import { UploadStatus } from '../types/app';
 
 /**
  * Seed data from AATB dataset for testing proposal compliance analysis

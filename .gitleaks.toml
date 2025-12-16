@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
 
-# Gitleaks configuration for Proposal Prepper (Contract Checker)
+# Gitleaks configuration for GovCheck (Contract Checker)
 # Federated Mesh microservice architecture with AWS Bedrock, Google Genkit
 
 [extend]
@@ -59,7 +59,7 @@ description = "Service URL with embedded credentials"
 regex = '''https?://[^:]+:[^@]+@[^\s]+'''
 tags = ["service", "auth", "url"]
 
-# NSF PAPPG / Compliance specific
+# Federal Compliance / Compliance specific
 [[rules]]
 id = "nsf-api-key"
 description = "NSF or government API keys"

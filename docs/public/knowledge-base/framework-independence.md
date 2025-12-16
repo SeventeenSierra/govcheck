@@ -1,6 +1,6 @@
 # Framework-Independent API Architecture
 
-This document explains how the Proposal Prepper API has been designed to be completely framework-independent, allowing you to use it with Next.js, Express, standalone servers, or any other framework.
+This document explains how the GovCheck API has been designed to be completely framework-independent, allowing you to use it with Next.js, Express, standalone servers, or any other framework.
 
 ## Architecture Overview
 
