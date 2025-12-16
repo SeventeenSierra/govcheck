@@ -5,12 +5,12 @@
 
 'use client';
 
-import React, { useCallback, useState, useEffect } from 'react';
-import { Button } from '@17sierra/ui';
-import { Bot, FileCheck, Sparkles, CheckCircle, AlertCircle, XCircle } from '@17sierra/ui';
-import { AnalysisSteps, ChatInput, type AnalysisStep } from '@/components/shared';
+import { Bot, Button, CheckCircle, FileCheck, Sparkles, XCircle } from '@17sierra/ui';
+import type React from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { type AnalysisStep, AnalysisSteps, ChatInput } from '@/components/shared';
 import { UploadWorkflow } from '@/components/upload/upload-workflow';
-import { strandsApiClient, StrandsIntegrationUtils } from '@/services';
+import { StrandsIntegrationUtils } from '@/services';
 import type { UploadSession } from '@/types/app';
 
 /**
@@ -61,7 +61,7 @@ const ServiceStatusIndicator: React.FC = () => {
           baseUrl: config.baseUrl,
           version: config.version,
         });
-      } catch (error) {
+      } catch (_error) {
         setServiceStatus({
           healthy: false,
           message: 'Unable to check service status',

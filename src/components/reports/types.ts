@@ -93,6 +93,7 @@ export interface ReportGenerationOptions {
   /** Custom branding options */
   branding?: ReportBranding;
   /** Additional metadata */
+  // biome-ignore lint/suspicious/noExplicitAny: Flexible metadata
   metadata?: Record<string, any>;
 }
 

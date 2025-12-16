@@ -5,12 +5,11 @@
 
 'use client';
 
+import { Bug, Button, RefreshCw, Settings } from '@17sierra/ui';
 import React from 'react';
 import { AppHeader, TwoPanelLayout } from '@/components/layout';
-import { RFPInterface } from '@/components/rfp';
 import { ReportPreview } from '@/components/reports';
-import { Button } from '@17sierra/ui';
-import { Settings, RefreshCw, Bug } from '@17sierra/ui';
+import { RFPInterface } from '@/components/rfp';
 
 /**
  * RFP Mock Page - Development and testing interface
@@ -26,6 +25,7 @@ import { Settings, RefreshCw, Bug } from '@17sierra/ui';
  */
 export default function RFPMockPage() {
   const [activeProject, setActiveProject] = React.useState<string | null>(null);
+  // biome-ignore lint/suspicious/noExplicitAny: Legacy mock state
   const [analysisResults, setAnalysisResults] = React.useState<any>(null);
   const [mockSettings, setMockSettings] = React.useState({
     uploadDelay: 1000,
@@ -38,6 +38,7 @@ export default function RFPMockPage() {
     setActiveProject(projectId);
   };
 
+  // biome-ignore lint/suspicious/noExplicitAny: Legacy mock callback
   const handleAnalysisComplete = (results: any) => {
     setAnalysisResults(results);
   };
@@ -155,7 +156,7 @@ export default function RFPMockPage() {
           <h4 className="font-semibold text-sm mb-3 text-gray-800">Mock Controls</h4>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-xs text-gray-600">Fast Mode</label>
+              <span className="text-xs text-gray-600">Fast Mode</span>
               <Button
                 size="sm"
                 variant={mockSettings.fastMode ? 'default' : 'outline'}
@@ -166,7 +167,7 @@ export default function RFPMockPage() {
               </Button>
             </div>
             <div className="flex items-center justify-between">
-              <label className="text-xs text-gray-600">Simulate Errors</label>
+              <span className="text-xs text-gray-600">Simulate Errors</span>
               <Button
                 size="sm"
                 variant={mockSettings.simulateErrors ? 'destructive' : 'outline'}
