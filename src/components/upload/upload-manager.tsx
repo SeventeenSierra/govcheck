@@ -4,15 +4,14 @@
 /**
  * Upload Manager Component
  *
- * Handles basic document upload functionality for the GovCheck application.
+ * Handles basic document upload functionality for the Proposal Prepper application.
  * Implements requirements 1.1, 1.2, 1.3, 1.4, and 1.5 for PDF upload, validation,
  * confirmation, error handling, and progress tracking.
  */
 
 'use client';
 
-import { Button } from '@17sierra/ui';
-import { AlertCircle, CheckCircle, FileText, Upload, X } from '@17sierra/ui';
+import { AlertCircle, Button, CheckCircle, FileText, Upload, X } from '@17sierra/ui';
 import type React from 'react';
 import { useCallback, useRef, useState } from 'react';
 import { errorConfig, uploadConfig, validationConfig } from '@/config/app';
@@ -159,6 +158,7 @@ export function UploadManager({
       setCurrentUpload(updatedSession);
 
       try {
+        // biome-ignore lint/suspicious/noImplicitAnyLet: Complex type inference
         let response;
 
         try {
@@ -520,21 +520,21 @@ export function UploadManager({
         onClick={
           !isUploading
             ? (e) => {
-                // Only handle click if it's not from a button or other interactive element
-                if (e.target === e.currentTarget || (e.target as HTMLElement).tagName === 'DIV') {
-                  handleClick(e);
-                }
+              // Only handle click if it's not from a button or other interactive element
+              if (e.target === e.currentTarget || (e.target as HTMLElement).tagName === 'DIV') {
+                handleClick(e);
               }
+            }
             : undefined
         }
         onKeyDown={
           !isUploading
             ? (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  handleClick();
-                }
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleClick();
               }
+            }
             : undefined
         }
         tabIndex={!isUploading && !disabled ? 0 : -1}

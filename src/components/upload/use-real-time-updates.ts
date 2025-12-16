@@ -157,6 +157,7 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
   };
 
   // Auto-connect on mount if requested
+  // biome-ignore lint/correctness/useExhaustiveDependencies: connect/disconnect are external stable refs
   useEffect(() => {
     if (autoConnect) {
       connect().catch(console.error);
