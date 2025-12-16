@@ -3,7 +3,7 @@
  * SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
  */
 
-import { IssueSeverity } from '@/components/analysis/types';
+import type { IssueSeverity } from '@/components/analysis/types';
 
 /**
  * Grant metadata structure from AATB dataset

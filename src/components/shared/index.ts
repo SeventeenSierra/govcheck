@@ -10,9 +10,9 @@
  */
 
 export {
-  AnalysisSteps,
   type AnalysisStep,
   type AnalysisStepStatus,
+  AnalysisSteps,
   type AnalysisStepsProps,
 } from './analysis-steps';
 export { ChatInput, type ChatInputProps } from './chat-input';

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The GovCheck web interface represents a modern, accessible, and enterprise-grade user experience for FAR compliance validation. Built with Next.js 16 and React 19, the interface prioritizes usability, performance, and compliance with federal accessibility standards (Section 508/WCAG 2.1 AA).
+The Proposal Prepper web interface represents a modern, accessible, and enterprise-grade user experience for FAR compliance validation. Built with Next.js 16 and React 19, the interface prioritizes usability, performance, and compliance with federal accessibility standards (Section 508/WCAG 2.1 AA).
 
 ## Technology Stack
 
@@ -29,7 +29,7 @@ The GovCheck web interface represents a modern, accessible, and enterprise-grade
 ## Architecture
 
 ### Frontend Architecture
-The web interface is a standalone Next.js application that int`egrates with your backend API:
+The web interface is a standalone Next.js application that integrates with your backend API:
 
 ```
 ┌─────────────────────────────────────┐
@@ -462,6 +462,6 @@ pnpm format
 
 ## Conclusion
 
-The GovCheck web interface delivers an enterprise-grade user experience that balances usability, accessibility, and performance. Built on modern web technologies and design principles, the interface provides government users with an efficient tool for ensuring FAR compliance while maintaining the highest standards of code quality and user experience.
+The Proposal Prepper web interface delivers an enterprise-grade user experience that balances usability, accessibility, and performance. Built on modern web technologies and design principles, the interface provides government users with an efficient tool for ensuring FAR compliance while maintaining the highest standards of code quality and user experience.
 
 The modular architecture and comprehensive testing strategy ensure maintainability and extensibility, positioning the application for future enhancements and scaling to support additional compliance frameworks beyond FAR.

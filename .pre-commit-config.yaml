@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # SPDX-FileCopyrightText: 2025 Seventeen Sierra LLC
 
-# Pre-commit configuration for GovCheck (Contract Checker)
+# Pre-commit configuration for Proposal Prepper (Contract Checker)
 # Federated Mesh microservice architecture
 
 repos:
